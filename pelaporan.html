@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mock-Up — Pelaporan (Linked)</title>
+  
+<link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+  
+<div class="appbar">
+  <div class="topbar">
+    <div class="inner">
+      <div class="brand">
+        <div class="badge" aria-hidden="true"></div>
+        <div>
+          <b>Dashboard MoNEv Adaptasi</b>
+          <!-- <small class="muted">Ringkas • Drill-down sektoral & kewilayahan</small> -->
+        </div>
+      </div>
+
+      <div class="userbox">
+        <div class="searchbox">
+          <span class="sicon" aria-hidden="true">⌕</span>
+          <input id="globalSearch" type="search" placeholder="Cari sektor, wilayah, indikator, aksi..." />
+        </div>
+
+        <button class="helpbtn" id="helpBtn" type="button" title="Bantuan">?</button>
+
+        <!-- <span class="userchip">Periode: 2024</span> -->
+        <span class="avatar" title="User"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <div class="inner tabrow">
+      <div class="pagehead">
+        <h1>Beranda</h1>
+        <div class="sub">Ringkasan nasional untuk memulai eksplorasi.</div>
+      </div>
+
+      <nav class="menu menu-right">
+        <a href="index.html">Beranda</a>
+        <a href="horizontal.html">Sektoral</a>
+        <a href="vertical.html">Kewilayahan</a>
+        <a href="impact.html">Impact/Outcome</a>
+        <a href="aksi_pembiayaan.html">Aksi & Pembiayaan</a>
+        <a href="pelaporan.html" class="active">Pelaporan</a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+  <div class="wrap">
+    <header>
+      <h1>Pelaporan & Transparansi</h1>
+      <p>Halaman ini mengonsolidasikan keluaran monitoring untuk kebutuhan pelaporan nasional dan keterpautan internasional (mis. BTR/NC). Fokus operasional: penguncian periode, versioning, audit trail, dan ekspor format ringkas.</p>
+    </header>
+
+    <section class="grid">
+      <div class="card span-6">
+        <div class="hd"><div>
+          <div class="h">Penguncian Periode & Versioning</div>
+          <div class="s">Menjaga konsistensi antarperiode dan keterbandingan</div>
+        </div><span class="pill">Governance</span></div>
+        <div class="bd">
+          <div class="table-wrap"><table>
+            <thead>
+              <tr><th style="width:18%">Periode</th><th style="width:22%">Status</th><th style="width:28%">Versi</th><th style="width:32%">Catatan</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>2023</td><td><span class="tag good">Terkunci</span></td><td>v1.2 (final)</td><td>Audit trail lengkap</td></tr>
+              <tr><td>2024</td><td><span class="tag warn">Pra-kunci</span></td><td>v0.9 (draft)</td><td>Perbaikan isu QA/QC berjalan</td></tr>
+              <tr><td>2025</td><td><span class="tag bad">Terbuka</span></td><td>v0.4 (work-in-progress)</td><td>Input berjalan, belum final</td></tr>
+            </tbody>
+          </table></div>
+          <div class="btnrow">
+            <button id="btnLock">Simulasi Kunci Periode</button>
+            <button class="primary" id="btnExport">Ekspor Paket Pelaporan</button>
+          </div>
+          <div class="footer-note">Catatan: “kunci periode” memastikan angka yang dilaporkan tidak berubah setelah disahkan.</div>
+        </div>
+      </div>
+
+      <div class="card span-6">
+        <div class="hd"><div>
+          <div class="h">Pemetaan Keluaran → Format Pelaporan (Dummy)</div>
+          <div class="s">Menarik ringkasan dari indikator, aksi, dan QA/QC</div>
+        </div><span class="pill">Mapping</span></div>
+        <div class="bd">
+          <table>
+            <thead>
+              <tr><th style="width:26%">Keluaran Dashboard</th><th style="width:24%">Tujuan</th><th style="width:26%">Format</th><th style="width:24%">Sumber</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Ringkasan indikator (nasional/sektor/wilayah)</td><td>Ringkasan kinerja</td><td>CSV/JSON + tabel ringkas</td><td>Indikator Bab 5 + QA/QC</td></tr>
+              <tr><td>Daftar aksi & pembiayaan</td><td>Audit trail</td><td>CSV + lampiran</td><td>SRN + CBT + AKSARA</td></tr>
+              <tr><td>Isu kualitas data</td><td>Perbaikan berkelanjutan</td><td>Issue log</td><td>QA/QC</td></tr>
+            </tbody>
+          </table>
+          <div class="footer-note">Catatan: pemetaan ini dapat dikembangkan menjadi template resmi untuk BTR/NC.</div>
+        </div>
+      </div>
+
+      <div class="card span-12">
+        <div class="hd"><div>
+          <div class="h">Paket Ekspor (Simulasi)</div>
+          <div class="s">Ringkasan + lampiran (aksi, metadata, QA/QC log)</div>
+        </div><span class="pill">Export</span></div>
+        <div class="bd">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+            <div class="card" style="box-shadow:none">
+              <div class="bd">
+                <b>Ringkasan Indikator</b>
+                <div style="color:var(--muted);font-size:13px;margin:6px 0 10px">Nasional, sektoral, kewilayahan</div>
+                <span class="pill">CSV/JSON</span>
+              </div>
+            </div>
+            <div class="card" style="box-shadow:none">
+              <div class="bd">
+                <b>Daftar Aksi</b>
+                <div style="color:var(--muted);font-size:13px;margin:6px 0 10px">Aksi + kode SRN</div>
+                <span class="pill">CSV</span>
+              </div>
+            </div>
+            <div class="card" style="box-shadow:none">
+              <div class="bd">
+                <b>Pembiayaan CBT</b>
+                <div style="color:var(--muted);font-size:13px;margin:6px 0 10px">Tag adaptasi + agregasi</div>
+                <span class="pill">CSV</span>
+              </div>
+            </div>
+            <div class="card" style="box-shadow:none">
+              <div class="bd">
+                <b>Metadata & QA/QC</b>
+                <div style="color:var(--muted);font-size:13px;margin:6px 0 10px">Definisi, source, issue log</div>
+                <span class="pill">PDF/CSV</span>
+              </div>
+            </div>
+          </div>
+          <div class="footer-note">Catatan: struktur paket membantu memastikan keterbandingan antarperiode dan memudahkan audit.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="box">
+      <div class="hd"><b id="mt">Info</b><button id="close">Tutup</button></div>
+      <div class="bd" id="mb"></div>
+    </div>
+  </div>
+
+<script>
+  const modal=document.getElementById('modal'), mt=document.getElementById('mt'), mb=document.getElementById('mb');
+  function open(title, html){mt.textContent=title; mb.innerHTML=html; modal.style.display='flex';}
+  function close(){modal.style.display='none';}
+  document.getElementById('close').onclick=close;
+  modal.onclick=(e)=>{if(e.target===modal) close();}
+
+  document.getElementById('btnLock').onclick=()=>open("Simulasi Penguncian Periode", `
+    <p>Simulasi ini menggambarkan prosedur operasional “kunci periode” untuk menjaga konsistensi data pelaporan.</p>
+    <ul>
+      <li>Periksa kelengkapan indikator dan status verifikasi.</li>
+      <li>Pastikan metadata, definisi indikator, dan sumber data terdokumentasi.</li>
+      <li>Finalisasi issue log QA/QC dan tindakan koreksi.</li>
+      <li>Terbitkan <b>versi</b> (mis. v1.0) dan simpan audit trail.</li>
+    </ul>
+  `);
+
+  document.getElementById('btnExport').onclick=()=>{
+    const text=[
+      "Paket Pelaporan (Dummy)",
+      "• Ringkasan indikator (CSV/JSON)",
+      "• Daftar aksi (CSV)",
+      "• Pembiayaan CBT (CSV)",
+      "• Metadata & QA/QC (PDF/CSV)",
+      "",
+      "Catatan: output ini untuk uji UX."
+    ].join("\n");
+    const blob=new Blob([text],{type:"text/plain;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download="Paket_Pelaporan_Dummy.txt";
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  };
+    // --- Help modal ---
+  const helpBtn = document.getElementById("helpBtn");
+  const helpModal = document.getElementById("helpModal");
+  const helpClose = document.getElementById("helpClose");
+
+  if(helpBtn && helpModal && helpClose){
+    helpBtn.onclick = () => helpModal.style.display = "flex";
+    helpClose.onclick = () => helpModal.style.display = "none";
+    helpModal.addEventListener("click", (e) => {
+      if(e.target === helpModal) helpModal.style.display = "none";
+    });
+  }
+
+  // --- Simple search (filter Akses Cepat cards + highlight text) ---
+  const search = document.getElementById("globalSearch");
+  if(search){
+    const cards = Array.from(document.querySelectorAll(".qcard"));
+    search.addEventListener("input", () => {
+      const q = search.value.trim().toLowerCase();
+      cards.forEach(el => {
+        const text = el.innerText.toLowerCase();
+        el.style.display = (!q || text.includes(q)) ? "block" : "none";
+      });
+    });
+  }
+</script>
+</body>
+</html>
