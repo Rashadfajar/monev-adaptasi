@@ -1,0 +1,2077 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Horizontal Guideline – MoNEv Adaptation</title>
+  <style>
+    /* =========================================================
+      LIGHT STYLE — mirip screenshot (clean, soft, modern)
+      Drop-in override untuk class yang sudah kamu punya
+    ========================================================= */
+
+    :root{
+      /* page */
+      --bg0:#F6F8FC;         /* page base */
+      --bg1:#FFFFFF;         /* surfaces */
+      --bg2:#F1F4FA;         /* soft header tint */
+
+      /* cards / panels */
+      --panel:#FFFFFF;
+      --panel2:#F7F9FE;
+
+      /* borders */
+      --stroke: rgba(17, 24, 39, .08);
+      --stroke2: rgba(59,130,246,.18);
+
+      /* text */
+      --text:#0F172A;        /* slate-900 */
+      --muted:#64748B;       /* slate-500 */
+      --muted2:#94A3B8;      /* slate-400 */
+
+      /* accents (blue primary seperti gambar) */
+      --accent:#3B82F6;      /* blue-500 */
+      --accent2:#22C55E;     /* green-500 */
+      --accent3:#F59E0B;     /* amber-500 */
+      --danger:#EF4444;      /* red-500 */
+
+      /* depth (soft shadow ala dashboard) */
+      --shadow: 0 10px 30px rgba(15, 23, 42, .08);
+      --shadow2: 0 6px 16px rgba(15, 23, 42, .08);
+
+      --radius:16px;
+      --radius2:22px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+
+      /* subtle glass (light) */
+      --glass: rgba(255,255,255,.75);
+      --glass2: rgba(255,255,255,.55);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      line-height:1.35;
+
+      /* background mirip gambar: putih + hint biru lembut */
+      background:
+        radial-gradient(900px 520px at 12% 10%, rgba(59,130,246,.10), transparent 60%),
+        radial-gradient(850px 520px at 88% 12%, rgba(99,102,241,.06), transparent 60%),
+        radial-gradient(900px 620px at 55% 95%, rgba(59,130,246,.06), transparent 62%),
+        linear-gradient(180deg, #FFFFFF, var(--bg0));
+      background-attachment: fixed;
+    }
+
+    /* matikan noise overlay dark kamu */
+    body:before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      background: transparent;
+      opacity:0;
+    }
+
+    /* container */
+    .app{
+      max-width:1220px;
+      margin:0 auto;
+      padding:22px 16px 40px;
+    }
+
+    /* =========================================================
+      TOPBAR (putih, sticky, shadow lembut)
+    ========================================================= */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:14px 14px;
+
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.86);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+
+      /* position:sticky; */
+      top:10px;
+      z-index:20;
+      backdrop-filter: blur(10px);
+    }
+
+    /* brand */
+    .brand{display:flex; gap:12px; align-items:center; min-width:260px}
+    .brand h1{margin:0; font-size:18px; letter-spacing:.2px}
+    .brand p{margin:4px 0 0; color:var(--muted); font-size:12px}
+
+    /* logo jadi icon biru lembut seperti screenshot */
+    .logo{
+      width:38px;height:38px;border-radius:12px;
+      background: linear-gradient(135deg, rgba(59,130,246,.95), rgba(99,102,241,.75));
+      box-shadow: 0 10px 18px rgba(59,130,246,.18);
+      border:1px solid rgba(59,130,246,.18);
+      position:relative;
+    }
+    .logo:after{content:none}
+
+    /* controls pills */
+    .controls{display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
+    .pill{
+      display:flex; gap:10px; align-items:center;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.70);
+      border-radius:999px;
+      padding:8px 10px;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    /* inputs */
+    select, input[type="text"], input[type="number"], textarea{
+      width:100%;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.90);
+      color:var(--text);
+      border-radius: 999px;
+      padding:10px 14px;
+      outline:none;
+      box-shadow: 0 1px 0 rgba(15,23,42,.03);
+    }
+    textarea{
+      border-radius: 14px;
+      min-height:90px;
+      resize:vertical;
+    }
+    select:focus, input:focus, textarea:focus{
+      border-color: rgba(59,130,246,.45);
+      box-shadow: 0 0 0 4px rgba(59,130,246,.12);
+    }
+
+    /* buttons */
+    .btn{
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.85);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      transition: transform .05s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+      font-weight:800;
+      font-size:13px;
+      box-shadow: var(--shadow2);
+    }
+    .btn:hover{
+      background: rgba(255,255,255,1);
+      border-color: rgba(17,24,39,.14);
+    }
+    .btn:active{transform: scale(.99)}
+
+    /* primary (blue) */
+    .btn.primary{
+      border-color: rgba(59,130,246,.30);
+      background: linear-gradient(180deg, rgba(59,130,246,.14), rgba(59,130,246,.08));
+      box-shadow: 0 10px 20px rgba(59,130,246,.12), var(--shadow2);
+    }
+
+    /* status buttons */
+    .btn.good{
+      border-color: rgba(34,197,94,.30);
+      background: linear-gradient(180deg, rgba(34,197,94,.14), rgba(34,197,94,.08));
+    }
+    .btn.warn{
+      border-color: rgba(245,158,11,.28);
+      background: linear-gradient(180deg, rgba(245,158,11,.14), rgba(245,158,11,.08));
+    }
+    .btn.danger{
+      border-color: rgba(239,68,68,.28);
+      background: linear-gradient(180deg, rgba(239,68,68,.14), rgba(239,68,68,.08));
+    }
+
+    /* =========================================================
+      TABS (nav pill)
+    ========================================================= */
+    .tabs{margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .tab{
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.75);
+      color:var(--muted);
+      border-radius:999px;
+      padding:9px 14px;
+      cursor:pointer;
+      user-select:none;
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.2px;
+      box-shadow: 0 6px 14px rgba(15,23,42,.06);
+    }
+    .tab.active{
+      color:#0B1220;
+      border-color: rgba(59,130,246,.28);
+      background: linear-gradient(180deg, rgba(59,130,246,.18), rgba(59,130,246,.10));
+    }
+
+    /* =========================================================
+      LAYOUT GRID + PANELS
+    ========================================================= */
+    .grid{
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      gap:14px;
+      margin-top:14px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns: 1fr}
+      .brand{min-width:unset}
+    }
+
+    .sidebar, .content{
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.86);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+    }
+    .sidebar{padding:14px}
+    .content{padding:18px 18px}
+
+    /* headings */
+    .section-title{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px}
+    .section-title h2{margin:0; font-size:18px}
+    .section-title p{margin:6px 0 0; font-size:13px; color:var(--muted)}
+
+    /* =========================================================
+      KPI CARDS (putih, border tipis)
+    ========================================================= */
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:10px;
+    }
+    .kpi{
+      border:1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.78));
+      border-radius: 16px;
+      padding:12px;
+      box-shadow: 0 6px 16px rgba(15,23,42,.06);
+    }
+    .kpi .n{font-size:22px; font-weight:950; margin:2px 0}
+    .kpi .t{font-size:12px; color:var(--muted)}
+    .kpi .s{font-size:11px; color:var(--muted2)}
+
+    .kpi.good{border-color: rgba(34,197,94,.22)}
+    .kpi.warn{border-color: rgba(245,158,11,.22)}
+    .kpi.bad{border-color: rgba(239,68,68,.22)}
+
+    .divider{height:1px; background: rgba(15,23,42,.08); margin:14px 0}
+
+    /* =========================================================
+      MENU ITEMS (sidebar nav)
+    ========================================================= */
+    /* .menu{display:flex; flex-direction:column; gap:8px}
+    .menu .item{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:10px 12px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.80);
+      border-radius: 14px;
+      cursor:pointer;
+      color:var(--muted);
+      font-weight:800;
+      font-size:13px;
+      box-shadow: 0 6px 14px rgba(15,23,42,.05);
+    }
+    .menu .item:hover{
+      border-color: rgba(17,24,39,.14);
+      background: rgba(255,255,255,.95);
+    }
+    .menu .item.active{
+      color:#0B1220;
+      border-color: rgba(59,130,246,.28);
+      background: linear-gradient(180deg, rgba(59,130,246,.16), rgba(59,130,246,.08));
+    } */
+
+    /* badges */
+    .badge{
+      font-family:var(--mono);
+      font-size:11px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      color:var(--muted);
+      background: rgba(255,255,255,.70);
+    }
+    .badge.good{border-color: rgba(34,197,94,.22); color:#166534; background: rgba(34,197,94,.10)}
+    .badge.warn{border-color: rgba(245,158,11,.22); color:#92400E; background: rgba(245,158,11,.10)}
+    .badge.bad{border-color: rgba(239,68,68,.22); color:#991B1B; background: rgba(239,68,68,.10)}
+
+    /* =========================================================
+      CONTENT CARDS
+    ========================================================= */
+    .card{
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.88);
+      border-radius: var(--radius2);
+      padding:14px;
+      margin-bottom:12px;
+      box-shadow: var(--shadow2);
+    }
+    .card h3{margin:0 0 8px; font-size:15px}
+    .card p{margin:0; color:var(--muted); font-size:13px}
+
+    /* tables */
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius: 16px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.92);
+      box-shadow: var(--shadow2);
+    }
+    th, td{
+      padding:10px 10px;
+      border-bottom:1px solid rgba(15,23,42,.08);
+      font-size:13px;
+      vertical-align:top;
+    }
+    th{
+      text-align:left;
+      color:var(--muted);
+      font-weight:900;
+      background: rgba(15,23,42,.03);
+    }
+    tr:last-child td{border-bottom:none}
+
+    /* status dots */
+    .status-dot{
+      width:9px;height:9px;border-radius:50%;
+      display:inline-block; margin-right:8px;
+      background: var(--muted2);
+      box-shadow: 0 0 0 2px rgba(15,23,42,.06);
+    }
+    .sdraft{background:#60A5FA} /* blue */
+    .ssub{background: #F59E0B}  /* amber */
+    .sacc{background: #22C55E}  /* green */
+    .srev{background: #EF4444}  /* red */
+
+    /* helpers */
+    .muted{color:var(--muted)}
+    .small{font-size:12px}
+    .footer-note{margin-top:10px; font-size:12px; color:var(--muted2)}
+    .hidden{display:none !important}
+
+    /* toast */
+    .toast{
+      position:fixed;
+      right:16px;
+      bottom:16px;
+      background: rgba(255,255,255,.92);
+      border:1px solid var(--stroke);
+      padding:12px 14px;
+      border-radius: 14px;
+      color:var(--text);
+      box-shadow: var(--shadow);
+      max-width:360px;
+      display:none;
+      z-index:50;
+      backdrop-filter: blur(10px);
+    }
+    .toast.show{display:block}
+    .toast .t{font-weight:950; font-size:13px}
+    .toast .m{color:var(--muted); font-size:12px; margin-top:4px}
+    .pillcode{font-family:var(--mono); font-size:11px; color:#1E293B}
+    /* =========================================================
+      APPBAR + DROPDOWN (MPC-style)
+      Untuk markup:
+      .appbar .tabbar .inner.tabrow nav.menu.menu-right
+      .dd .dd-btn + .dd-menu a
+    ========================================================= */
+
+    /* container bar */
+    .appbar{
+      position: sticky;
+      top: 10px;
+      z-index: 30;
+      margin-bottom: 14px;
+    }
+    .tabbar{
+      /* border: 1px solid var(--stroke, rgba(255,255,255,.10)); */
+      background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035));
+      border-radius: var(--radius2, 22px);
+      /* box-shadow: var(--shadow, 0 14px 36px rgba(0,0,0,.45)); */
+      backdrop-filter: blur(14px);
+    }
+    .tabbar .inner{
+      padding: 12px 14px;
+    }
+
+    /* nav row */
+    .tabrow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+
+    /* menu base */
+    .menu{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .menu-right{ margin-left:auto; }
+
+    /* links in menu */
+    .menu a{
+      text-decoration:none;
+      color: #000000;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 8px 18px rgba(0,0,0,.16);
+      transition: transform .06s ease, background .2s ease, border-color .2s ease;
+    }
+    .menu a:hover{
+      background: rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.18);
+    }
+    .menu a:active{ transform: scale(.99); }
+
+    /* active link (pills) */
+    .menu a.active,
+    .menu a[aria-current="page"]{
+      color: var(--text, #EAF1FF);
+      border-color: rgba(105,183,255,.55);
+      background: linear-gradient(180deg, rgba(105,183,255,.18), rgba(105,183,255,.10));
+      box-shadow: 0 10px 24px rgba(105,183,255,.10), 0 8px 18px rgba(0,0,0,.16);
+    }
+
+    /* =========================================================
+      DROPDOWN (.dd)
+    ========================================================= */
+    .dd{
+      position: relative;
+      display:inline-flex;
+      align-items:center;
+    }
+
+    /* dropdown button */
+    .dd-btn{
+      appearance:none;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      color: #000000;
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(0,0,0,.16);
+      transition: transform .06s ease, background .2s ease, border-color .2s ease, color .2s ease;
+    }
+    .dd-btn:hover{
+      background: rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.18);
+    }
+    .dd-btn:active{ transform: scale(.99); }
+
+    /* active state dropdown group */
+    .dd.active .dd-btn,
+    .dd-btn.active{
+      color: var(--text, #EAF1FF);
+      border-color: rgba(37,99,235,.30);
+      background: rgba(37,99,235,.10);
+      box-shadow: 0 10px 24px rgba(105,183,255,.10), 0 8px 18px rgba(0,0,0,.16);
+    }
+
+    /* dropdown menu */
+    .dd-menu{
+      position:absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      min-width: 240px;
+
+      padding: 10px;
+      border-radius: 16px;
+
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.96);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+
+      display: none;
+      transform: translateY(-4px);
+    }
+
+    /* show on hover / focus (no JS) */
+    .dd:hover .dd-menu,
+    .dd:focus-within .dd-menu{
+      display:block;
+      transform: translateY(0);
+    }
+
+    /* dropdown links */
+    .dd-menu a{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+
+      width:100%;
+      border-radius: 12px;
+      padding: 9px 10px;
+
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      box-shadow: none;
+
+      color: var(--muted, #000000);
+      font-size: 12px;
+      font-weight: 850;
+      text-decoration:none;
+      margin: 6px 0;
+    }
+    .dd-menu a:hover{
+      background: rgba(255,255,255,.055);
+      border-color: rgba(255,255,255,.18);
+    }
+
+    /* active item inside dropdown */
+    .dd-menu a.active{
+      color: var(--text, #000000);
+      /* border-color: rgba(105,183,255,.55); */
+      border-color: rgba(37,99,235,.30);
+      background: rgba(37,99,235,.10);
+      /* background: linear-gradient(180deg, rgba(105,183,255,.15), rgba(105,183,255,.08)); */
+    }
+
+    .dd-menu::before{
+      content:"";
+      position:absolute;
+      top:-7px;
+      right: 14px;
+      width: 12px;
+      height: 12px;
+      transform: rotate(45deg);
+      background: rgba(255,255,255,.96);
+      border-left: 1px solid var(--stroke);
+      border-top: 1px solid var(--stroke);
+    }
+
+    /* mobile: dropdown full width feel */
+    @media (max-width: 720px){
+      .menu{ gap: 8px; }
+      .dd-menu{
+        right: 0;
+        left: 0;
+        min-width: unset;
+      }
+    }
+
+  </style>
+
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Horizontal Guideline – Sectoral Adaptation MoNEv</h1>
+          <p>Single entry → Review (KLH) → MPC Dashboard (Horizontal)</p>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="pill">
+          <span class="muted">Role</span>
+          <select id="roleSelect" aria-label="Role">
+            <option value="kl">K/L (Sector Ministry)</option>
+            <option value="klh">KLH Reviewer</option>
+            <option value="mpc">MPC Dashboard (Horizontal)</option>
+          </select>
+        </div>
+        <div class="pill">
+          <span class="muted">Year</span>
+          <select id="yearSelect" aria-label="Year">
+            <option>2025</option>
+            <option selected>2026</option>
+            <option>2027</option>
+          </select>
+        </div>
+        
+        <!-- <div class="navdrop" aria-label="Navigate">
+          <button class="navbtn" type="button">Menu ▾</button>
+          <div class="navmenu" role="menu">
+            <a href="index.html">Beranda</a>
+            <div class="navsep"></div>
+
+            <div class="navlbl">Horizontal</div>
+            <a href="horizontal.html">Dashboard Horizontal</a>
+            <a href="horizontal_guideline.html" class="active">Guideline Horizontal</a>
+
+            <div class="navlbl">Vertikal</div>
+            <a href="vertical.html">Dashboard Vertikal</a>
+            <a href="vertical_guideline.html">Guideline Vertikal</a>
+
+            <div class="navlbl">Impact</div>
+            <a href="impact.html">Dashboard Impact</a>
+            <a href="impact_assessment.html">Impact Assessment</a>
+
+            <div class="navsep"></div>
+            <a href="aksi_pembiayaan.html">Aksi &amp; Pembiayaan</a>
+            <a href="pelaporan.html">Pelaporan</a>
+          </div>
+        </div> -->
+
+        <button class="btn primary" id="demoBtn">Load Demo Data</button>
+      </div>
+    </div>
+
+
+    <div class="appbar">
+      <div class="tabbar">
+        <div class="inner tabrow">
+          <nav class="menu menu-right">
+            <a href="index.html" class="">Beranda</a>
+
+            <div class="dd active">
+              <button class="dd-btn active" type="button">Horizontal ▾</button>
+              <div class="dd-menu">
+                <a href="horizontal.html" class="">Dashboard Horizontal</a>
+                <a href="horizontal_guideline.html" class="active">Guideline Horizontal</a>
+              </div>
+            </div>
+
+            <div class="dd">
+              <button class="dd-btn" type="button">Vertikal ▾</button>
+              <div class="dd-menu">
+                <a href="vertical.html" class="">Dashboard Vertikal</a>
+                <a href="vertical_guideline.html" class="">Guideline Vertikal</a>
+              </div>
+            </div>
+
+            <div class="dd">
+              <button class="dd-btn" type="button">Impact ▾</button>
+              <div class="dd-menu">
+                <a href="impact.html" class="">Dashboard Impact</a>
+                <a href="impact_assessment.html" class="">Impact Assessment</a>
+              </div>
+            </div>
+
+            <a href="aksi_pembiayaan.html" class="">Aksi &amp; Pembiayaan</a>
+            <a href="pelaporan.html" class="">Pelaporan</a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  
+
+    <div class="tabs" id="topTabs">
+      <div class="tab active" data-screen="kl.home">K/L Home</div>
+      <div class="tab" data-screen="kl.form">K/L Form (Table 4)</div>
+      <div class="tab" data-screen="kl.review">K/L Review & Submit (Box 3)</div>
+      <div class="tab" data-screen="klh.inbox">KLH Inbox</div>
+      <div class="tab" data-screen="klh.detail">KLH Review</div>
+      <div class="tab" data-screen="mpc.overview">MPC Overview</div>
+      <div class="tab" data-screen="mpc.explorer">MPC Explorer</div>
+    </div>
+
+    <div class="grid">
+      <aside class="sidebar">
+        <div class="section-title">
+          <div>
+            <h2>Navigation</h2>
+            <p>Jump by workflow stage</p>
+          </div>
+          <span class="badge">v0.1</span>
+        </div>
+        <div class="menu" id="sideMenu">
+          <div class="item active" data-screen="kl.home">
+            <span>K/L Landing</span>
+            <span class="badge">H0</span>
+          </div>
+          <div class="item" data-screen="kl.list">
+            <span>My Reports</span>
+            <span class="badge">H2</span>
+          </div>
+          <div class="item" data-screen="kl.form">
+            <span>Create/Edit Report</span>
+            <span class="badge">H3</span>
+          </div>
+          <div class="item" data-screen="kl.review">
+            <span>Checklist & Submit</span>
+            <span class="badge">H6</span>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="item" data-screen="klh.inbox">
+            <span>KLH Inbox</span>
+            <span class="badge">R1</span>
+          </div>
+          <div class="item" data-screen="klh.detail">
+            <span>KLH Review Detail</span>
+            <span class="badge">R2</span>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="item" data-screen="mpc.overview">
+            <span>MPC Overview</span>
+            <span class="badge">M1</span>
+          </div>
+          <div class="item" data-screen="mpc.nap">
+            <span>NAP Alignment</span>
+            <span class="badge">M2</span>
+          </div>
+          <div class="item" data-screen="mpc.indicators">
+            <span>Indicator Snapshot</span>
+            <span class="badge">M3</span>
+          </div>
+          <div class="item" data-screen="mpc.explorer">
+            <span>Action Explorer</span>
+            <span class="badge">M5</span>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="card">
+            <h3>Workflow States</h3>
+            <p><span class="status-dot sdraft"></span>draft</p>
+            <p><span class="status-dot ssub"></span>submitted</p>
+            <p><span class="status-dot sacc"></span>accepted</p>
+            <p><span class="status-dot srev"></span>needs_revision</p>
+            <div class="footer-note">
+              Data used in MPC dashboard: <span class="pillcode">accepted only</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+
+        <!-- K/L HOME -->
+        <section id="kl.home" class="">
+          <div class="section-title">
+            <div>
+              <h2>K/L Home (Landing)</h2>
+              <p>Entry point for sector ministries to create and manage annual reports.</p>
+            </div>
+            <span class="badge good">K/L</span>
+          </div>
+
+          <div class="kpis">
+            <div class="kpi">
+              <div class="t">Draft Reports</div>
+              <div class="n" id="kpiDraft">0</div>
+              <div class="s">Continue filling before submission</div>
+            </div>
+            <div class="kpi warn">
+              <div class="t">Submitted</div>
+              <div class="n" id="kpiSubmitted">0</div>
+              <div class="s">Pending KLH review</div>
+            </div>
+            <div class="kpi good">
+              <div class="t">Accepted</div>
+              <div class="n" id="kpiAccepted">0</div>
+              <div class="s">Ready for national consolidation</div>
+            </div>
+            <div class="kpi bad">
+              <div class="t">Needs Revision</div>
+              <div class="n" id="kpiRevision">0</div>
+              <div class="s">Please fix and resubmit</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="two">
+            <div class="card">
+              <h3>Quick actions</h3>
+              <div class="row-actions">
+                <button class="btn primary" data-nav="kl.form">+ Create New Report</button>
+                <button class="btn" data-nav="kl.list">View My Reports</button>
+                <button class="btn" data-nav="kl.review">Run Checklist</button>
+              </div>
+              <p class="footer-note">This mock-up follows the locked field order (Table 4) and checklist (Box 3).</p>
+            </div>
+            <div class="card">
+              <h3>Requirements snapshot</h3>
+              <p>Report must include: <b>Identity</b>, <b>Official indicator</b>, <b>Baseline/Target/Realization</b>, <b>Status</b>, <b>Evidence types</b>, and <b>NAP priority tagging</b>.</p>
+              <div class="callout" style="margin-top:10px">
+                <strong>Principle:</strong> single entry → multiple use (sector reporting → national consolidation → MPC dashboard). No new system obligation at sector level.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- K/L LIST -->
+        <section id="kl.list" class="hidden">
+          <div class="section-title">
+            <div>
+              <h2>My Reports</h2>
+              <p>Draft / submitted / accepted / revision requests.</p>
+            </div>
+            <span class="badge good">K/L</span>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Report ID</th>
+                <th>Aksi Adaptasi</th>
+                <th>Sektor</th>
+                <th>Lokasi</th>
+                <th>Tahun</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="reportRows">
+              <!-- injected -->
+            </tbody>
+          </table>
+
+          <div class="footer-note">Tip: Use “Duplicate for Next Year” to keep action identity consistent across years (optional productivity feature).</div>
+        </section>
+
+        <!-- K/L FORM (Wizard) -->
+        <section id="kl.form" class="hidden">
+          <div class="section-title">
+            <div>
+              <h2>Create/Edit Report (Wizard)</h2>
+              <p>Fields follow Table 4 (1–18). Only official indicator list is selectable.</p>
+            </div>
+            <span class="badge good">K/L</span>
+          </div>
+
+          <div class="wizard" id="wizardSteps">
+            <span class="step active" data-step="1">Step 1 – Identity (1–6)</span>
+            <span class="step" data-step="2">Step 2 – Indicator & Values (7–11)</span>
+            <span class="step" data-step="3">Step 3 – Progress (12–15)</span>
+            <span class="step" data-step="4">Step 4 – Evidence & NAP (16–18)</span>
+            <span class="step" data-step="5">Review</span>
+          </div>
+
+          <!-- Step 1 -->
+          <div class="card" id="step1">
+            <h3>Step 1. Identitas Aksi Adaptasi</h3>
+            <div class="form">
+              <div>
+                <label>1. Kementerian/Lembaga</label>
+                <select id="f1_ministry">
+                  <option value="">Select…</option>
+                  <option value="KEMENTAN">Kementerian Pertanian</option>
+                  <option value="KEMENKES">Kementerian Kesehatan</option>
+                  <option value="KEMENPUPR">Kementerian Pekerjaan Umum</option>
+                </select>
+              </div>
+              <div>
+                <label>2. Unit Pelaksana</label>
+                <select id="f2_unit">
+                  <option value="">Select…</option>
+                  <option value="DIT_TP">Direktorat Tanaman Pangan</option>
+                  <option value="DIT_KESLING">Direktorat Kesehatan Lingkungan</option>
+                  <option value="DIT_SDA">Direktorat SDA</option>
+                </select>
+              </div>
+              <div class="full">
+                <label>3. Nama Aksi Adaptasi</label>
+                <input id="f3_action" type="text" placeholder="e.g., Penyesuaian Pola Tanam Berbasis Informasi Iklim" />
+              </div>
+              <div>
+                <label>4. Sektor</label>
+                <select id="f4_sector">
+                  <option value="">Select…</option>
+                  <option value="AGRICULTURE">Pertanian</option>
+                  <option value="HEALTH">Kesehatan</option>
+                  <option value="WATER">Air</option>
+                  <option value="INFRA">Infrastruktur</option>
+                  <option value="ECOSYSTEM">Ekosistem</option>
+                </select>
+              </div>
+              <div>
+                <label>5. Lokasi Pelaksanaan</label>
+                <select id="f5_location">
+                  <option value="">Select…</option>
+                  <option value="NATIONAL">Nasional</option>
+                  <option value="PROV_JATENG">Jawa Tengah</option>
+                  <option value="PROV_KALTIM">Kalimantan Timur</option>
+                  <option value="PROV_PAPUA">Papua</option>
+                </select>
+              </div>
+              <div>
+                <label>6. Periode Pelaporan</label>
+                <select id="f6_year">
+                  <option>2025</option>
+                  <option selected>2026</option>
+                  <option>2027</option>
+                </select>
+              </div>
+            </div>
+            <div class="row-actions" style="margin-top:12px">
+              <button class="btn" id="saveDraft1">Save Draft</button>
+              <button class="btn primary" id="nextTo2">Next</button>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="card hidden" id="step2">
+            <h3>Step 2. Indikator dan Angka</h3>
+            <div class="form">
+              <div class="full">
+                <label>7. Indikator Adaptasi (Official List)</label>
+                <select id="f7_indicator">
+                  <option value="">Select…</option>
+                  <option value="IND_LUAS_ADAPTIF" data-unit="Hektar">Luas lahan pertanian yang menerapkan pola tanam adaptif</option>
+                  <option value="IND_FASKES_TAHAN" data-unit="Unit">Jumlah faskes dengan rencana kesiapsiagaan iklim</option>
+                  <option value="IND_INFRA_TAHAN" data-unit="Unit">Jumlah infrastruktur yang ditingkatkan ketahanannya</option>
+                </select>
+                <div class="hint">Only indicators from the official list can be selected.</div>
+              </div>
+              <div>
+                <label>8. Satuan Indikator (auto)</label>
+                <input id="f8_unit" type="text" readonly placeholder="Auto-filled" />
+              </div>
+              <div>
+                <label>9. Baseline</label>
+                <input id="f9_baseline" type="number" min="0" placeholder="e.g., 12000" />
+                <div class="hint">If unavailable, leave blank and explain in “Catatan Tambahan”.</div>
+              </div>
+              <div>
+                <label>10. Target Periode</label>
+                <input id="f10_target" type="number" min="0" placeholder="e.g., 15000" />
+              </div>
+              <div>
+                <label>11. Realisasi</label>
+                <input id="f11_real" type="number" min="0" placeholder="e.g., 14200" />
+              </div>
+              <div class="full">
+                <div class="callout" id="logicNote">
+                  <strong>Logic check:</strong> status should be consistent with target vs realization. Warnings appear at Review.
+                </div>
+              </div>
+            </div>
+            <div class="row-actions" style="margin-top:12px">
+              <button class="btn" id="backTo1">Back</button>
+              <button class="btn" id="saveDraft2">Save Draft</button>
+              <button class="btn primary" id="nextTo3">Next</button>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="card hidden" id="step3">
+            <h3>Step 3. Evaluasi Kemajuan (Non-Impact)</h3>
+            <div class="form">
+              <div>
+                <label>12. Status Kemajuan</label>
+                <select id="f12_status">
+                  <option value="">Select…</option>
+                  <option value="TERCAPAI">Tercapai</option>
+                  <option value="SEBAGIAN">Sebagian Tercapai</option>
+                  <option value="DALAM_PROSES">Dalam Proses</option>
+                  <option value="BELUM">Belum Tercapai</option>
+                  <option value="DITUNDA">Ditunda</option>
+                  <option value="DIHENTIKAN">Dihentikan</option>
+                </select>
+              </div>
+              <div class="full">
+                <label>13. Ringkasan Kemajuan (max ~500 chars)</label>
+                <textarea id="f13_summary" placeholder="2–3 kalimat ringkas, faktual."></textarea>
+              </div>
+              <div class="full">
+                <label>14. Hambatan Utama</label>
+                <textarea id="f14_barriers" placeholder="Ringkas, faktual."></textarea>
+              </div>
+              <div class="full">
+                <label>15. Tindak Lanjut</label>
+                <textarea id="f15_followup" placeholder="Langkah perbaikan untuk periode berikutnya."></textarea>
+              </div>
+            </div>
+            <div class="row-actions" style="margin-top:12px">
+              <button class="btn" id="backTo2">Back</button>
+              <button class="btn" id="saveDraft3">Save Draft</button>
+              <button class="btn primary" id="nextTo4">Next</button>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="card hidden" id="step4">
+            <h3>Step 4. Bukti & Penautan NAP</h3>
+            <div class="form">
+              <div class="full">
+                <label>16. Jenis Bukti (multi-select)</label>
+                <div class="card" style="margin:0; background: rgba(255,255,255,.02)">
+                  <label class="small"><input type="checkbox" class="ev" value="LAPORAN" /> Laporan kegiatan</label><br/>
+                  <label class="small"><input type="checkbox" class="ev" value="FOTO" /> Foto/Video lapangan</label><br/>
+                  <label class="small"><input type="checkbox" class="ev" value="NOTULEN" /> Notulen/BA kegiatan</label><br/>
+                  <label class="small"><input type="checkbox" class="ev" value="DOK" /> Dokumen kebijakan/SK</label><br/>
+                  <label class="small"><input type="checkbox" class="ev" value="PETA" /> Peta/Daftar lokasi</label><br/>
+                  <label class="small"><input type="checkbox" class="ev" value="LOG" /> Output sistem/aplikasi (screenshot/log)</label><br/>
+                  <label class="small"><input type="checkbox" id="evOtherChk" /> Lainnya</label>
+                  <div style="margin-top:8px" id="evOtherWrap" class="hidden">
+                    <input id="evOtherTxt" type="text" placeholder="Sebutkan bukti lainnya…" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="full">
+                <label>17. Penautan Prioritas NAP</label>
+                <select id="f17_nap">
+                  <option value="">Select…</option>
+                  <option value="NAP_FOOD">Ketahanan pangan dan pertanian adaptif</option>
+                  <option value="NAP_HEALTH">Ketahanan kesehatan</option>
+                  <option value="NAP_WATER">Ketahanan air</option>
+                  <option value="NAP_ECOSYSTEM">Ketahanan ekosistem & lanskap</option>
+                </select>
+              </div>
+
+              <div class="full">
+                <label>18. Catatan Tambahan (opsional)</label>
+                <textarea id="f18_notes" placeholder="Misalnya jelaskan baseline yang belum tersedia."></textarea>
+              </div>
+            </div>
+
+            <div class="row-actions" style="margin-top:12px">
+              <button class="btn" id="backTo3">Back</button>
+              <button class="btn" id="saveDraft4">Save Draft</button>
+              <button class="btn primary" id="goReview">Review</button>
+            </div>
+          </div>
+
+          <!-- Step 5 Review -->
+          <div class="card hidden" id="step5">
+            <h3>Review (Read-only Summary)</h3>
+            <div class="two">
+              <div class="card" style="margin:0">
+                <h3>Identity (1–6)</h3>
+                <p id="sumIdentity" class="muted"></p>
+              </div>
+              <div class="card" style="margin:0">
+                <h3>Indicator & Values (7–11)</h3>
+                <p id="sumIndicator" class="muted"></p>
+              </div>
+              <div class="card" style="margin:0">
+                <h3>Progress (12–15)</h3>
+                <p id="sumProgress" class="muted"></p>
+              </div>
+              <div class="card" style="margin:0">
+                <h3>Evidence & NAP (16–18)</h3>
+                <p id="sumEvidence" class="muted"></p>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="row-actions">
+              <button class="btn" id="editBack">Back to Edit</button>
+              <button class="btn warn" data-nav="kl.review">Run Checklist (Box 3)</button>
+              <button class="btn primary" id="saveAsDraftAll">Save Draft</button>
+            </div>
+            <div class="footer-note">Submission happens after passing Box 3 checklist.</div>
+          </div>
+        </section>
+
+        <!-- K/L CHECKLIST & SUBMIT -->
+        <section id="kl.review" class="hidden">
+          <div class="section-title">
+            <div>
+              <h2>Pre-Submission Checklist (Box 3)</h2>
+              <p>Checklist must pass before submit to KLH. Hard blocks reflect mandatory requirements.</p>
+            </div>
+            <span class="badge good">K/L</span>
+          </div>
+
+          <div class="card">
+            <h3>Checklist</h3>
+            <div id="checkItems" class="small"></div>
+            <div class="divider"></div>
+            <div class="row-actions">
+              <button class="btn" id="runChecklist">Run Checklist</button>
+              <button class="btn good" id="submitBtn" disabled>Submit to KLH</button>
+              <button class="btn" data-nav="kl.form">Back to Form</button>
+            </div>
+            <div class="footer-note" id="checkHint">Tip: Missing baseline is allowed only if explained in “Catatan Tambahan”.</div>
+          </div>
+
+          <div class="card">
+            <h3>Acceptance Criteria (Box 2 – summary)</h3>
+            <p>Report is acceptable if: mandatory fields are complete, official indicator is used, values and status are consistent, evidence is traceable, NAP tagging exists, and reflection is provided.</p>
+          </div>
+        </section>
+
+        <!-- KLH INBOX -->
+        <section id="klh.inbox" class="hidden">
+          <div class="section-title">
+            <div>
+              <h2>KLH Inbox (Pending Review)</h2>
+              <p>Incoming sectoral reports. Review for completeness & consistency only.</p>
+            </div>
+            <span class="badge warn">KLH</span>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Report ID</th>
+                <th>K/L</th>
+                <th>Aksi</th>
+                <th>Sektor</th>
+                <th>Lokasi</th>
+                <th>Tahun</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="inboxRows"></tbody>
+          </table>
+
+          <div class="footer-note">Reviewer cannot edit data values. Decisions: Accept or Request Revision.</div>
+        </section>
+
+        <!-- KLH DETAIL / REVIEW -->
+        <section id="klh.detail" class="hidden">
+          <div class="section-title">
+            <div>
+              <h2>KLH Review Detail</h2>
+              <p>Read-only view of Table 4 fields + decision panel.</p>
+            </div>
+            <span class="badge warn">KLH</span>
+          </div>
+
+          <div class="card">
+            <h3>Report Detail (Read-only)</h3>
+            <p class="muted" id="klhDetailText">Open a report from the inbox to review.</p>
+          </div>
+
+          <div class="two">
+            <div class="card" style="margin:0">
+              <h3>Auto Checklist</h3>
+              <div id="klhAutoCheck" class="small muted"></div>
+            </div>
+            <div class="card" style="margin:0">
+              <h3>Decision</h3>
+              <label>Reviewer Notes (required for revision request)</label>
+              <textarea id="klhNotes" placeholder="e.g., Baseline not explained. Status inconsistent with values."></textarea>
+              <div class="row-actions" style="margin-top:10px">
+                <button class="btn good" id="klhAccept">Accept</button>
+                <button class="btn danger" id="klhRevise">Request Revision</button>
+              </div>
+              <div class="footer-note">Accepted reports become available in MPC dashboard (accepted only).</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- MPC OVERVIEW -->
+        <section id="mpc.overview" class="hidden">
+          <div class="section-title">
+            <div>
+              <h2>MPC Dashboard – Horizontal Overview</h2>
+              <p>Accepted-only national aggregation. No scoring, no ranking. For learning & reporting.</p>
+            </div>
+            <span class="badge">MPC</span>
+          </div>
+
+          <div class="kpis">
+            <div class="kpi good">
+              <div class="t">Accepted Actions</div>
+              <div class="n" id="mpcAccepted">0</div>
+              <div class="s">Used for national aggregation</div>
+            </div>
+            <div class="kpi">
+              <div class="t">Sectors Covered</div>
+              <div class="n" id="mpcSectors">0</div>
+              <div class="s">Across K/L reporting</div>
+            </div>
+            <div class="kpi">
+              <div class="t">NAP Priorities Covered</div>
+              <div class="n" id="mpcNap">0</div>
+              <div class="s">Tagged by K/L</div>
+            </div>
+            <div class="kpi warn">
+              <div class="t">Submitted (not yet accepted)</div>
+              <div class="n" id="mpcPending">0</div>
+              <div class="s">Not shown in MPC analytics</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="two">
+            <div class="card" style="margin:0">
+              <h3>Status Distribution (concept)</h3>
+              <p class="muted" id="statusDist">—</p>
+              <div class="footer-note">Source: Field 12 (Status Kemajuan) from accepted reports.</div>
+            </div>
+            <div class="card" style="margin:0">
+              <h3>NAP Alignment (concept)</h3>
+              <p class="muted" id="napDist">—</p>
+              <div class="footer-note">Source: Field 17 (Penautan Prioritas NAP).</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- MPC NAP -->
+        <section id="mpc.nap" class="hidden">
+          <div class="section-title">
+            <div>
+              <h2>MPC – NAP Alignment</h2>
+              <p>Coverage of tagged NAP priorities by sector and action counts (accepted-only).</p>
+            </div>
+            <span class="badge">MPC</span>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>NAP Priority</th>
+                <th>Accepted Actions</th>
+                <th>Sectors Involved</th>
+              </tr>
+            </thead>
+            <tbody id="napTable"></tbody>
+          </table>
+        </section>
+
+        <!-- MPC INDICATORS -->
+        <section id="mpc.indicators" class="hidden">
+          <div class="section-title">
+            <div>
+              <h2>MPC – Indicator Snapshot</h2>
+              <p>Indicator usage and basic aggregation (non-impact, accepted-only).</p>
+            </div>
+            <span class="badge">MPC</span>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Indicator</th>
+                <th>Sector</th>
+                <th># Actions</th>
+                <th>Sum Realisasi</th>
+                <th>Unit</th>
+              </tr>
+            </thead>
+            <tbody id="indicatorTable"></tbody>
+          </table>
+        </section>
+
+        <!-- MPC EXPLORER -->
+        <section id="mpc.explorer" class="hidden">
+          <div class="section-title">
+            <div>
+              <h2>MPC – Action Explorer</h2>
+              <p>Browse accepted actions. Drill down to read-only Table 4 content.</p>
+            </div>
+            <span class="badge">MPC</span>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Report ID</th>
+                <th>K/L</th>
+                <th>Aksi</th>
+                <th>Sektor</th>
+                <th>Lokasi</th>
+                <th>Tahun</th>
+                <th>Status</th>
+                <th>NAP</th>
+                <th>View</th>
+              </tr>
+            </thead>
+            <tbody id="explorerRows"></tbody>
+          </table>
+
+          <div class="divider"></div>
+
+          <div class="card">
+            <h3>Action Detail (Read-only)</h3>
+            <p class="muted" id="actionDetail">Select an accepted action to view detail.</p>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">
+    <div class="t" id="toastTitle">Saved</div>
+    <div class="m" id="toastMsg">Draft saved.</div>
+  </div>
+
+  <script>
+    // --- Demo Data Store (in-memory, for UI mock-up only) ---
+    const store = {
+      currentReportId: "RPT-0001",
+      reports: [
+        // seeded via "Load Demo Data" for better UX
+      ],
+      draft: {
+        // Table 4 fields
+        f1_ministry: "",
+        f2_unit: "",
+        f3_action: "",
+        f4_sector: "",
+        f5_location: "",
+        f6_year: "2026",
+        f7_indicator: "",
+        f8_unit: "",
+        f9_baseline: "",
+        f10_target: "",
+        f11_real: "",
+        f12_status: "",
+        f13_summary: "",
+        f14_barriers: "",
+        f15_followup: "",
+        f16_evidence: [],
+        f16_evidence_other: "",
+        f17_nap: "",
+        f18_notes: "",
+        workflow: "draft" // draft/submitted/accepted/needs_revision
+      },
+      selectedInboxReportId: null,
+      selectedMpcReportId: null
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const screens = [...document.querySelectorAll("main.content section")];
+
+    function showToast(title, msg){
+      $("toastTitle").textContent = title;
+      $("toastMsg").textContent = msg;
+      $("toast").classList.add("show");
+      setTimeout(() => $("toast").classList.remove("show"), 2200);
+    }
+
+    function setActiveScreen(screenId){
+      screens.forEach(s => s.classList.add("hidden"));
+      const target = document.getElementById(screenId);
+      if(target) target.classList.remove("hidden");
+
+      // tabs active
+      document.querySelectorAll(".tab").forEach(t=>{
+        t.classList.toggle("active", t.dataset.screen === screenId);
+      });
+      // side menu active
+      document.querySelectorAll(".menu .item").forEach(i=>{
+        i.classList.toggle("active", i.dataset.screen === screenId);
+      });
+
+      // role-driven hint
+      refreshRoleTabs();
+      refreshAllViews();
+    }
+
+    function refreshRoleTabs(){
+      const role = $("roleSelect").value; // kl/klh/mpc
+      const allowed = new Set();
+      if(role === "kl"){
+        ["kl.home","kl.list","kl.form","kl.review"].forEach(x=>allowed.add(x));
+      } else if(role === "klh"){
+        ["klh.inbox","klh.detail"].forEach(x=>allowed.add(x));
+      } else {
+        ["mpc.overview","mpc.nap","mpc.indicators","mpc.explorer"].forEach(x=>allowed.add(x));
+      }
+      // grey-out (hidden) tabs not allowed
+      document.querySelectorAll(".tab").forEach(t=>{
+        const ok = allowed.has(t.dataset.screen);
+        t.style.opacity = ok ? "1" : ".35";
+        t.style.pointerEvents = ok ? "auto" : "none";
+      });
+      document.querySelectorAll(".menu .item").forEach(i=>{
+        const ok = allowed.has(i.dataset.screen);
+        i.style.opacity = ok ? "1" : ".35";
+        i.style.pointerEvents = ok ? "auto" : "none";
+      });
+
+      // if current screen disallowed, jump to first allowed
+      const visible = screens.find(s => !s.classList.contains("hidden"));
+      if(visible && !allowed.has(visible.id)){
+        setActiveScreen([...allowed][0]);
+      }
+    }
+
+    // --- Helpers for display ---
+    function ministryName(code){
+      return ({
+        "KEMENTAN":"Kementerian Pertanian",
+        "KEMENKES":"Kementerian Kesehatan",
+        "KEMENPUPR":"Kementerian Pekerjaan Umum"
+      })[code] || "—";
+    }
+    function sectorName(code){
+      return ({
+        "AGRICULTURE":"Pertanian",
+        "HEALTH":"Kesehatan",
+        "WATER":"Air",
+        "INFRA":"Infrastruktur",
+        "ECOSYSTEM":"Ekosistem"
+      })[code] || "—";
+    }
+    function locationName(code){
+      return ({
+        "NATIONAL":"Nasional",
+        "PROV_JATENG":"Jawa Tengah",
+        "PROV_KALTIM":"Kalimantan Timur",
+        "PROV_PAPUA":"Papua"
+      })[code] || "—";
+    }
+    function napName(code){
+      return ({
+        "NAP_FOOD":"Ketahanan pangan dan pertanian adaptif",
+        "NAP_HEALTH":"Ketahanan kesehatan",
+        "NAP_WATER":"Ketahanan air",
+        "NAP_ECOSYSTEM":"Ketahanan ekosistem & lanskap"
+      })[code] || "—";
+    }
+    function indicatorName(code){
+      return ({
+        "IND_LUAS_ADAPTIF":"Luas lahan pertanian yang menerapkan pola tanam adaptif",
+        "IND_FASKES_TAHAN":"Jumlah faskes dengan rencana kesiapsiagaan iklim",
+        "IND_INFRA_TAHAN":"Jumlah infrastruktur yang ditingkatkan ketahanannya"
+      })[code] || "—";
+    }
+    function statusLabel(code){
+      return ({
+        "TERCAPAI":"Tercapai",
+        "SEBAGIAN":"Sebagian Tercapai",
+        "DALAM_PROSES":"Dalam Proses",
+        "BELUM":"Belum Tercapai",
+        "DITUNDA":"Ditunda",
+        "DIHENTIKAN":"Dihentikan"
+      })[code] || "—";
+    }
+    function workflowBadge(w){
+      const dot = w === "draft" ? "sdraft" : w === "submitted" ? "ssub" : w === "accepted" ? "sacc" : "srev";
+      const name = w;
+      return `<span class="status-dot ${dot}"></span>${name}`;
+    }
+
+    // --- Render views ---
+    function refreshKPIs(){
+      const year = $("yearSelect").value;
+      const mine = store.reports.filter(r => String(r.f6_year) === String(year));
+      const draft = mine.filter(r => r.workflow === "draft").length;
+      const sub = mine.filter(r => r.workflow === "submitted").length;
+      const acc = mine.filter(r => r.workflow === "accepted").length;
+      const rev = mine.filter(r => r.workflow === "needs_revision").length;
+
+      $("kpiDraft").textContent = draft;
+      $("kpiSubmitted").textContent = sub;
+      $("kpiAccepted").textContent = acc;
+      $("kpiRevision").textContent = rev;
+
+      // MPC cards
+      $("mpcAccepted").textContent = acc;
+      $("mpcPending").textContent = sub;
+      const sectors = new Set(mine.filter(r=>r.workflow==="accepted").map(r=>r.f4_sector)).size;
+      const naps = new Set(mine.filter(r=>r.workflow==="accepted").map(r=>r.f17_nap)).size;
+      $("mpcSectors").textContent = sectors;
+      $("mpcNap").textContent = naps;
+
+      // status distribution text
+      const dist = {};
+      mine.filter(r=>r.workflow==="accepted").forEach(r=>{
+        const k = statusLabel(r.f12_status);
+        dist[k] = (dist[k]||0)+1;
+      });
+      $("statusDist").textContent = Object.keys(dist).length
+        ? Object.entries(dist).map(([k,v])=>`${k}: ${v}`).join(" • ")
+        : "No accepted reports yet.";
+
+      const nd = {};
+      mine.filter(r=>r.workflow==="accepted").forEach(r=>{
+        const k = napName(r.f17_nap);
+        nd[k] = (nd[k]||0)+1;
+      });
+      $("napDist").textContent = Object.keys(nd).length
+        ? Object.entries(nd).map(([k,v])=>`${k}: ${v}`).join(" • ")
+        : "No NAP tags in accepted reports yet.";
+    }
+
+    function renderMyReports(){
+      const year = $("yearSelect").value;
+      const mine = store.reports.filter(r => String(r.f6_year) === String(year));
+      const rows = mine.map(r => `
+        <tr>
+          <td><span class="pillcode">${r.report_id}</span></td>
+          <td>${r.f3_action || "—"}</td>
+          <td>${sectorName(r.f4_sector)}</td>
+          <td>${locationName(r.f5_location)}</td>
+          <td>${r.f6_year}</td>
+          <td>${workflowBadge(r.workflow)}</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn" onclick="window.__openReport('${r.report_id}')">Open</button>
+              <button class="btn" onclick="window.__duplicateReport('${r.report_id}')">Duplicate</button>
+            </div>
+          </td>
+        </tr>
+      `).join("");
+      $("reportRows").innerHTML = rows || `<tr><td colspan="7" class="muted">No reports for this year. Click “Create New Report”.</td></tr>`;
+    }
+
+    function renderInbox(){
+      const year = $("yearSelect").value;
+      const inbox = store.reports.filter(r => String(r.f6_year) === String(year) && r.workflow === "submitted");
+      const rows = inbox.map(r => `
+        <tr>
+          <td><span class="pillcode">${r.report_id}</span></td>
+          <td>${ministryName(r.f1_ministry)}</td>
+          <td>${r.f3_action}</td>
+          <td>${sectorName(r.f4_sector)}</td>
+          <td>${locationName(r.f5_location)}</td>
+          <td>${r.f6_year}</td>
+          <td>${workflowBadge(r.workflow)}</td>
+          <td><button class="btn primary" onclick="window.__openInbox('${r.report_id}')">Open for Review</button></td>
+        </tr>
+      `).join("");
+      $("inboxRows").innerHTML = rows || `<tr><td colspan="8" class="muted">No submitted reports in inbox for this year.</td></tr>`;
+    }
+
+    function renderMpcTables(){
+      const year = $("yearSelect").value;
+      const acc = store.reports.filter(r => String(r.f6_year) === String(year) && r.workflow === "accepted");
+
+      // NAP table
+      const napAgg = {};
+      acc.forEach(r=>{
+        const k = r.f17_nap || "";
+        if(!k) return;
+        if(!napAgg[k]) napAgg[k] = {count:0, sectors:new Set()};
+        napAgg[k].count += 1;
+        napAgg[k].sectors.add(sectorName(r.f4_sector));
+      });
+      const napRows = Object.keys(napAgg).map(k=>`
+        <tr>
+          <td>${napName(k)}</td>
+          <td>${napAgg[k].count}</td>
+          <td>${[...napAgg[k].sectors].join(", ")}</td>
+        </tr>
+      `).join("");
+      $("napTable").innerHTML = napRows || `<tr><td colspan="3" class="muted">No accepted reports to aggregate.</td></tr>`;
+
+      // Indicator table
+      const indAgg = {};
+      acc.forEach(r=>{
+        const k = r.f7_indicator || "";
+        if(!k) return;
+        const key = k + "|" + (r.f4_sector||"");
+        if(!indAgg[key]) indAgg[key] = {indicator:k, sector:r.f4_sector, count:0, sum:0, unit:r.f8_unit || ""};
+        indAgg[key].count += 1;
+        const val = Number(r.f11_real || 0);
+        indAgg[key].sum += isFinite(val) ? val : 0;
+      });
+      const indRows = Object.values(indAgg).map(x=>`
+        <tr>
+          <td>${indicatorName(x.indicator)}</td>
+          <td>${sectorName(x.sector)}</td>
+          <td>${x.count}</td>
+          <td>${x.sum.toLocaleString()}</td>
+          <td>${x.unit || "—"}</td>
+        </tr>
+      `).join("");
+      $("indicatorTable").innerHTML = indRows || `<tr><td colspan="5" class="muted">No accepted reports to aggregate.</td></tr>`;
+
+      // Explorer
+      const expRows = acc.map(r=>`
+        <tr>
+          <td><span class="pillcode">${r.report_id}</span></td>
+          <td>${ministryName(r.f1_ministry)}</td>
+          <td>${r.f3_action}</td>
+          <td>${sectorName(r.f4_sector)}</td>
+          <td>${locationName(r.f5_location)}</td>
+          <td>${r.f6_year}</td>
+          <td>${statusLabel(r.f12_status)}</td>
+          <td>${napName(r.f17_nap)}</td>
+          <td><button class="btn" onclick="window.__mpcSelect('${r.report_id}')">View</button></td>
+        </tr>
+      `).join("");
+      $("explorerRows").innerHTML = expRows || `<tr><td colspan="9" class="muted">No accepted actions available.</td></tr>`;
+
+      if(store.selectedMpcReportId){
+        const rr = store.reports.find(r=>r.report_id === store.selectedMpcReportId);
+        if(rr){
+          $("actionDetail").innerHTML = detailHtml(rr);
+        }
+      }
+    }
+
+    function detailHtml(r){
+      const ev = (r.f16_evidence || []).concat(r.f16_evidence_other ? ["Lainnya: " + r.f16_evidence_other] : []);
+      return `
+        <div class="small">
+          <b>1. K/L:</b> ${ministryName(r.f1_ministry)}<br/>
+          <b>2. Unit:</b> ${r.f2_unit || "—"}<br/>
+          <b>3. Aksi:</b> ${r.f3_action}<br/>
+          <b>4. Sektor:</b> ${sectorName(r.f4_sector)}<br/>
+          <b>5. Lokasi:</b> ${locationName(r.f5_location)}<br/>
+          <b>6. Tahun:</b> ${r.f6_year}<br/><br/>
+
+          <b>7. Indikator:</b> ${indicatorName(r.f7_indicator)}<br/>
+          <b>8. Unit:</b> ${r.f8_unit || "—"}<br/>
+          <b>9. Baseline:</b> ${r.f9_baseline === "" ? "—" : Number(r.f9_baseline).toLocaleString()}<br/>
+          <b>10. Target:</b> ${r.f10_target === "" ? "—" : Number(r.f10_target).toLocaleString()}<br/>
+          <b>11. Realisasi:</b> ${r.f11_real === "" ? "—" : Number(r.f11_real).toLocaleString()}<br/>
+          <b>12. Status:</b> ${statusLabel(r.f12_status)}<br/><br/>
+
+          <b>13. Ringkasan:</b> ${escapeHtml(r.f13_summary || "—")}<br/>
+          <b>14. Hambatan:</b> ${escapeHtml(r.f14_barriers || "—")}<br/>
+          <b>15. Tindak Lanjut:</b> ${escapeHtml(r.f15_followup || "—")}<br/><br/>
+
+          <b>16. Bukti:</b> ${ev.length ? ev.map(escapeHtml).join(", ") : "—"}<br/>
+          <b>17. NAP:</b> ${napName(r.f17_nap)}<br/>
+          <b>18. Catatan:</b> ${escapeHtml(r.f18_notes || "—")}<br/><br/>
+
+          <b>Workflow:</b> ${r.workflow}
+        </div>
+      `;
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, m => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
+      }[m]));
+    }
+
+    function renderKlhDetail(){
+      const id = store.selectedInboxReportId;
+      if(!id){
+        $("klhDetailText").textContent = "Open a report from the inbox to review.";
+        $("klhAutoCheck").innerHTML = "—";
+        return;
+      }
+      const r = store.reports.find(x=>x.report_id === id);
+      if(!r){
+        $("klhDetailText").textContent = "Report not found.";
+        $("klhAutoCheck").innerHTML = "—";
+        return;
+      }
+      $("klhDetailText").innerHTML = detailHtml(r);
+
+      const checks = buildChecklist(r);
+      $("klhAutoCheck").innerHTML = checks.map(x => `${x.ok ? "✅" : "❌"} ${x.label}`).join("<br/>");
+    }
+
+    // --- Checklist (Box 3) logic ---
+    function buildChecklist(r){
+      // Hard-block rules:
+      const mandatory = [
+        ["Field 1–6 completed (Identity)", !!r.f1_ministry && !!r.f2_unit && !!r.f3_action && !!r.f4_sector && !!r.f5_location && !!r.f6_year],
+        ["Official indicator selected (Field 7)", !!r.f7_indicator],
+        ["Target & Realisasi numeric (Fields 10–11)", r.f10_target !== "" && r.f11_real !== "" && Number(r.f10_target) >= 0 && Number(r.f11_real) >= 0],
+        ["Status selected (Field 12)", !!r.f12_status],
+        ["Reflection filled (Fields 13–15)", !!r.f13_summary && !!r.f14_barriers && !!r.f15_followup],
+        ["Evidence type selected (Field 16)", (r.f16_evidence && r.f16_evidence.length > 0) || !!r.f16_evidence_other],
+        ["NAP priority tagged (Field 17)", !!r.f17_nap],
+      ];
+
+      // Baseline rule: allowed blank if explained in notes
+      const baselineOk = (r.f9_baseline !== "" && Number(r.f9_baseline) >= 0) || (r.f9_baseline === "" && !!r.f18_notes);
+
+      // Consistency check: if status Tercapai but realization < target, warn (soft fail for acceptance; hard fail for submission in this mock)
+      const consistencyOk = !(r.f12_status === "TERCAPAI" && Number(r.f11_real) < Number(r.f10_target));
+
+      return [
+        ...mandatory.map(([label, ok]) => ({label, ok})),
+        {label:"Baseline provided OR explained (Field 9/18)", ok: baselineOk},
+        {label:"Target–Realisasi–Status logically consistent", ok: consistencyOk},
+      ];
+    }
+
+    function runChecklistUI(){
+      const r = getDraftAsReportObject("draft-preview");
+      const checks = buildChecklist(r);
+      $("checkItems").innerHTML = checks.map(c => `<div>${c.ok ? "✅" : "❌"} ${c.label}</div>`).join("");
+      const allOk = checks.every(c => c.ok);
+      $("submitBtn").disabled = !allOk;
+      return allOk;
+    }
+
+    // --- Draft handling ---
+    function pullDraftFromInputs(){
+      store.draft.f1_ministry = $("f1_ministry").value;
+      store.draft.f2_unit = $("f2_unit").value;
+      store.draft.f3_action = $("f3_action").value.trim();
+      store.draft.f4_sector = $("f4_sector").value;
+      store.draft.f5_location = $("f5_location").value;
+      store.draft.f6_year = $("f6_year").value;
+
+      store.draft.f7_indicator = $("f7_indicator").value;
+      store.draft.f8_unit = $("f8_unit").value.trim();
+      store.draft.f9_baseline = $("f9_baseline").value;
+      store.draft.f10_target = $("f10_target").value;
+      store.draft.f11_real = $("f11_real").value;
+
+      store.draft.f12_status = $("f12_status").value;
+      store.draft.f13_summary = $("f13_summary").value.trim();
+      store.draft.f14_barriers = $("f14_barriers").value.trim();
+      store.draft.f15_followup = $("f15_followup").value.trim();
+
+      const ev = [...document.querySelectorAll(".ev")].filter(c=>c.checked).map(c=>c.value);
+      store.draft.f16_evidence = ev;
+      store.draft.f16_evidence_other = $("evOtherChk").checked ? $("evOtherTxt").value.trim() : "";
+      store.draft.f17_nap = $("f17_nap").value;
+      store.draft.f18_notes = $("f18_notes").value.trim();
+    }
+
+    function pushDraftToInputs(){
+      $("f1_ministry").value = store.draft.f1_ministry;
+      $("f2_unit").value = store.draft.f2_unit;
+      $("f3_action").value = store.draft.f3_action;
+      $("f4_sector").value = store.draft.f4_sector;
+      $("f5_location").value = store.draft.f5_location;
+      $("f6_year").value = store.draft.f6_year;
+
+      $("f7_indicator").value = store.draft.f7_indicator;
+      // unit auto set by indicator change
+      if(store.draft.f8_unit) $("f8_unit").value = store.draft.f8_unit;
+
+      $("f9_baseline").value = store.draft.f9_baseline;
+      $("f10_target").value = store.draft.f10_target;
+      $("f11_real").value = store.draft.f11_real;
+
+      $("f12_status").value = store.draft.f12_status;
+      $("f13_summary").value = store.draft.f13_summary;
+      $("f14_barriers").value = store.draft.f14_barriers;
+      $("f15_followup").value = store.draft.f15_followup;
+
+      // evidence
+      document.querySelectorAll(".ev").forEach(c=>c.checked = store.draft.f16_evidence.includes(c.value));
+      $("evOtherChk").checked = !!store.draft.f16_evidence_other;
+      $("evOtherWrap").classList.toggle("hidden", !$("evOtherChk").checked);
+      $("evOtherTxt").value = store.draft.f16_evidence_other;
+
+      $("f17_nap").value = store.draft.f17_nap;
+      $("f18_notes").value = store.draft.f18_notes;
+    }
+
+    function getDraftAsReportObject(report_id){
+      // snapshot of current draft in report-like structure
+      return {
+        report_id: report_id || store.currentReportId,
+        workflow: store.draft.workflow || "draft",
+        ...store.draft,
+      };
+    }
+
+    function saveDraftToStore(){
+      pullDraftFromInputs();
+      const year = store.draft.f6_year || $("yearSelect").value;
+      const existingIdx = store.reports.findIndex(r=>r.report_id === store.currentReportId);
+      const obj = getDraftAsReportObject(store.currentReportId);
+      obj.f6_year = year;
+
+      if(existingIdx >= 0){
+        store.reports[existingIdx] = {...store.reports[existingIdx], ...obj, workflow:"draft"};
+      } else {
+        store.reports.push({...obj, workflow:"draft"});
+      }
+      showToast("Saved", "Draft saved locally (mock-up).");
+      refreshAllViews();
+    }
+
+    function submitDraft(){
+      pullDraftFromInputs();
+      const obj = getDraftAsReportObject(store.currentReportId);
+      const idx = store.reports.findIndex(r=>r.report_id === store.currentReportId);
+      if(idx >= 0){
+        store.reports[idx] = {...store.reports[idx], ...obj, workflow:"submitted"};
+      } else {
+        store.reports.push({...obj, workflow:"submitted"});
+      }
+      showToast("Submitted", "Report submitted to KLH inbox (mock-up).");
+      refreshAllViews();
+      setActiveScreen("klh.inbox");
+      $("roleSelect").value = "klh";
+      refreshRoleTabs();
+    }
+
+    function acceptReport(id){
+      const idx = store.reports.findIndex(r=>r.report_id === id);
+      if(idx >= 0){
+        store.reports[idx].workflow = "accepted";
+        showToast("Accepted", "Report accepted and available for MPC (accepted-only).");
+      }
+      refreshAllViews();
+    }
+
+    function requestRevision(id){
+      const note = $("klhNotes").value.trim();
+      if(!note){
+        showToast("Note required", "Please write reviewer notes before requesting revision.");
+        return;
+      }
+      const idx = store.reports.findIndex(r=>r.report_id === id);
+      if(idx >= 0){
+        store.reports[idx].workflow = "needs_revision";
+        showToast("Revision requested", "Report returned to K/L for correction (mock-up).");
+      }
+      refreshAllViews();
+    }
+
+    // --- Wizard steps ---
+    function gotoWizard(step){
+      ["step1","step2","step3","step4","step5"].forEach(id => $(id).classList.add("hidden"));
+      const sid = step === 1 ? "step1" : step === 2 ? "step2" : step === 3 ? "step3" : step === 4 ? "step4" : "step5";
+      $(sid).classList.remove("hidden");
+
+      // Update steps visual
+      document.querySelectorAll(".step").forEach(s=>{
+        const n = s.dataset.step ? Number(s.dataset.step) : 5;
+        s.classList.toggle("active", (n === step));
+        // simplistic done marking
+        if(n < step) s.classList.add("done");
+        else s.classList.remove("done");
+      });
+
+      // If review step, render summary
+      if(step === 5){
+        pullDraftFromInputs();
+        const d = store.draft;
+        $("sumIdentity").textContent =
+          `${ministryName(d.f1_ministry)} • ${d.f2_unit || "—"} • ${d.f3_action || "—"} • ${sectorName(d.f4_sector)} • ${locationName(d.f5_location)} • ${d.f6_year}`;
+        $("sumIndicator").textContent =
+          `${indicatorName(d.f7_indicator)} • unit: ${d.f8_unit || "—"} • baseline: ${d.f9_baseline || "—"} • target: ${d.f10_target || "—"} • realisasi: ${d.f11_real || "—"}`;
+        $("sumProgress").textContent =
+          `${statusLabel(d.f12_status)} • ${d.f13_summary || "—"}`;
+        const ev = (d.f16_evidence || []).concat(d.f16_evidence_other ? ["Lainnya: "+d.f16_evidence_other] : []);
+        $("sumEvidence").textContent =
+          `Evidence: ${ev.length ? ev.join(", ") : "—"} • NAP: ${napName(d.f17_nap)} • Notes: ${d.f18_notes || "—"}`;
+      }
+    }
+
+    // --- Navigation wiring ---
+    document.querySelectorAll("[data-nav]").forEach(b=>{
+      b.addEventListener("click", ()=> setActiveScreen(b.dataset.nav));
+    });
+    document.querySelectorAll(".tab").forEach(t=>{
+      t.addEventListener("click", ()=> setActiveScreen(t.dataset.screen));
+    });
+    document.querySelectorAll(".menu .item").forEach(i=>{
+      i.addEventListener("click", ()=> setActiveScreen(i.dataset.screen));
+    });
+
+    $("roleSelect").addEventListener("change", refreshRoleTabs);
+    $("yearSelect").addEventListener("change", refreshAllViews);
+
+    // indicator unit auto-fill
+    $("f7_indicator").addEventListener("change", (e)=>{
+      const opt = e.target.selectedOptions[0];
+      const unit = opt ? (opt.getAttribute("data-unit") || "") : "";
+      $("f8_unit").value = unit;
+      store.draft.f8_unit = unit;
+    });
+
+    $("evOtherChk").addEventListener("change", ()=>{
+      $("evOtherWrap").classList.toggle("hidden", !$("evOtherChk").checked);
+    });
+
+    $("nextTo2").addEventListener("click", ()=>{ pullDraftFromInputs(); gotoWizard(2); });
+    $("nextTo3").addEventListener("click", ()=>{ pullDraftFromInputs(); gotoWizard(3); });
+    $("nextTo4").addEventListener("click", ()=>{ pullDraftFromInputs(); gotoWizard(4); });
+    $("goReview").addEventListener("click", ()=>{ pullDraftFromInputs(); gotoWizard(5); });
+    $("editBack").addEventListener("click", ()=>{ gotoWizard(4); });
+
+    $("backTo1").addEventListener("click", ()=> gotoWizard(1));
+    $("backTo2").addEventListener("click", ()=> gotoWizard(2));
+    $("backTo3").addEventListener("click", ()=> gotoWizard(3));
+
+    $("saveDraft1").addEventListener("click", saveDraftToStore);
+    $("saveDraft2").addEventListener("click", saveDraftToStore);
+    $("saveDraft3").addEventListener("click", saveDraftToStore);
+    $("saveDraft4").addEventListener("click", saveDraftToStore);
+    $("saveAsDraftAll").addEventListener("click", saveDraftToStore);
+
+    $("runChecklist").addEventListener("click", ()=>{
+      pullDraftFromInputs();
+      const ok = runChecklistUI();
+      showToast(ok ? "Checklist passed" : "Checklist failed", ok ? "You can submit to KLH." : "Fix items marked ❌ then re-run.");
+    });
+
+    $("submitBtn").addEventListener("click", ()=>{
+      const ok = runChecklistUI();
+      if(!ok){
+        showToast("Cannot submit", "Checklist must pass before submission.");
+        return;
+      }
+      submitDraft();
+    });
+
+    $("klhAccept").addEventListener("click", ()=>{
+      if(!store.selectedInboxReportId) return showToast("No report selected", "Open a report from inbox first.");
+      acceptReport(store.selectedInboxReportId);
+    });
+    $("klhRevise").addEventListener("click", ()=>{
+      if(!store.selectedInboxReportId) return showToast("No report selected", "Open a report from inbox first.");
+      requestRevision(store.selectedInboxReportId);
+    });
+
+    // --- global helper buttons used in tables ---
+    window.__openReport = (id)=>{
+      const r = store.reports.find(x=>x.report_id === id);
+      if(!r) return;
+      store.currentReportId = id;
+      // load into draft inputs for editing (if not accepted)
+      store.draft = {
+        ...store.draft,
+        ...r,
+        workflow: r.workflow
+      };
+      pushDraftToInputs();
+      gotoWizard(1);
+      setActiveScreen("kl.form");
+    };
+
+    window.__duplicateReport = (id)=>{
+      const r = store.reports.find(x=>x.report_id === id);
+      if(!r) return;
+      const newId = "RPT-" + String(Math.floor(1000 + Math.random()*9000));
+      const clone = {...r, report_id:newId, workflow:"draft"};
+      store.reports.push(clone);
+      showToast("Duplicated", `Created ${newId} as draft.`);
+      refreshAllViews();
+    };
+
+    window.__openInbox = (id)=>{
+      store.selectedInboxReportId = id;
+      $("klhNotes").value = "";
+      setActiveScreen("klh.detail");
+      renderKlhDetail();
+    };
+
+    window.__mpcSelect = (id)=>{
+      store.selectedMpcReportId = id;
+      refreshAllViews();
+      setActiveScreen("mpc.explorer");
+    };
+
+    // Demo Data
+    $("demoBtn").addEventListener("click", ()=>{
+      const year = $("yearSelect").value;
+      store.reports = [
+        {
+          report_id:"RPT-0001",
+          workflow:"draft",
+          f1_ministry:"KEMENTAN",
+          f2_unit:"DIT_TP",
+          f3_action:"Penyesuaian Pola Tanam Berbasis Informasi Iklim",
+          f4_sector:"AGRICULTURE",
+          f5_location:"PROV_JATENG",
+          f6_year:year,
+          f7_indicator:"IND_LUAS_ADAPTIF",
+          f8_unit:"Hektar",
+          f9_baseline:"",
+          f10_target:"15000",
+          f11_real:"14200",
+          f12_status:"SEBAGIAN",
+          f13_summary:"Implementasi berjalan di sebagian besar wilayah sasaran, namun diseminasi informasi iklim terlambat di beberapa kabupaten.",
+          f14_barriers:"Akses informasi iklim belum merata pada awal musim tanam.",
+          f15_followup:"Percepatan diseminasi prakiraan musiman dan koordinasi lintas unit.",
+          f16_evidence:["LAPORAN","FOTO","PETA"],
+          f16_evidence_other:"",
+          f17_nap:"NAP_FOOD",
+          f18_notes:"Baseline belum tersedia untuk seluruh wilayah; akan dibangun tahun berikutnya."
+        },
+        {
+          report_id:"RPT-0002",
+          workflow:"submitted",
+          f1_ministry:"KEMENKES",
+          f2_unit:"DIT_KESLING",
+          f3_action:"Penguatan Kesiapsiagaan Faskes terhadap Gelombang Panas",
+          f4_sector:"HEALTH",
+          f5_location:"NATIONAL",
+          f6_year:year,
+          f7_indicator:"IND_FASKES_TAHAN",
+          f8_unit:"Unit",
+          f9_baseline:"120",
+          f10_target:"200",
+          f11_real:"210",
+          f12_status:"TERCAPAI",
+          f13_summary:"Penyusunan SOP dan simulasi kesiapsiagaan dilakukan pada sebagian besar faskes prioritas.",
+          f14_barriers:"Keterbatasan SDM terlatih di beberapa wilayah.",
+          f15_followup:"Pelatihan tambahan dan integrasi ke rencana kerja tahunan.",
+          f16_evidence:["LAPORAN","NOTULEN"],
+          f16_evidence_other:"",
+          f17_nap:"NAP_HEALTH",
+          f18_notes:"Realisasi melebihi target karena tambahan dukungan lintas program."
+        },
+        {
+          report_id:"RPT-0003",
+          workflow:"accepted",
+          f1_ministry:"KEMENPUPR",
+          f2_unit:"DIT_SDA",
+          f3_action:"Peningkatan Ketahanan Infrastruktur SDA terhadap Banjir Ekstrem",
+          f4_sector:"INFRA",
+          f5_location:"PROV_KALTIM",
+          f6_year:year,
+          f7_indicator:"IND_INFRA_TAHAN",
+          f8_unit:"Unit",
+          f9_baseline:"12",
+          f10_target:"20",
+          f11_real:"18",
+          f12_status:"SEBAGIAN",
+          f13_summary:"Penguatan desain dan rehabilitasi prioritas berjalan, namun beberapa paket pekerjaan terdampak keterlambatan pengadaan.",
+          f14_barriers:"Keterlambatan pengadaan dan cuaca ekstrem pada fase konstruksi.",
+          f15_followup:"Penyesuaian jadwal, penguatan manajemen risiko proyek, dan koordinasi O&M.",
+          f16_evidence:["LAPORAN","DOK","PETA"],
+          f16_evidence_other:"",
+          f17_nap:"NAP_WATER",
+          f18_notes:"—"
+        }
+      ];
+
+      // also load current draft from first report
+      store.currentReportId = "RPT-0001";
+      store.draft = {...store.draft, ...store.reports[0], workflow:"draft"};
+      pushDraftToInputs();
+      gotoWizard(1);
+
+      showToast("Demo loaded", "Sample reports created (draft/submitted/accepted).");
+      refreshAllViews();
+    });
+
+    function refreshAllViews(){
+      refreshKPIs();
+      renderMyReports();
+      renderInbox();
+      renderKlhDetail();
+      renderMpcTables();
+      // if on checklist screen, update view
+      const visible = screens.find(s => !s.classList.contains("hidden"));
+      if(visible && visible.id === "kl.review"){
+        runChecklistUI();
+      }
+    }
+
+    // initial state
+    gotoWizard(1);
+    setActiveScreen("kl.home");
+    refreshAllViews();
+
+    // Default role filtering
+    refreshRoleTabs();
+
+    // Keyboard helper: Ctrl/Cmd+K to open search (mock)
+    window.addEventListener("keydown", (e)=>{
+      if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){
+        e.preventDefault();
+        showToast("Tip", "Use left menu + top tabs to navigate screens.");
+      }
+    });
+  </script>
+</body>
+</html>

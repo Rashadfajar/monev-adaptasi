@@ -1,0 +1,1305 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manual Penilaian Dampak Adaptasi Nasional</title>
+  <style>
+    :root{
+      /* ===== Light palette (mirip screenshot) ===== */
+      --bg:#F6F8FC;
+      --panel:#FFFFFF;
+      --panel2:#F7F9FE;
+
+      --text:#0F172A;
+      --muted:#64748B;
+
+      --line:rgba(15,23,42,.10);
+
+      --brand:#3B82F6;   /* primary blue */
+      --brand2:#6366F1;  /* indigo accent */
+      --warn:#F59E0B;
+      --ok:#22C55E;
+      --bad:#EF4444;
+
+      --shadow: 0 10px 30px rgba(15,23,42,.08);
+      --radius: 18px;
+      --radius2: 14px;
+
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 12% 10%, rgba(59,130,246,.10), transparent 55%),
+        radial-gradient(900px 700px at 88% 20%, rgba(99,102,241,.06), transparent 55%),
+        radial-gradient(1000px 700px at 50% 95%, rgba(245,158,11,.05), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+    }
+
+    a{color:inherit}
+
+    .app{
+      display:grid;
+      grid-template-columns: 310px 1fr;
+      min-height:100vh;
+    }
+
+    /* ===== Sidebar (putih, border tipis) ===== */
+    .sidebar{
+      border-right:1px solid var(--line);
+      background: rgba(255,255,255,.88);
+      padding:18px 14px;
+      position:sticky;
+      top:0;
+      height:100vh;
+      overflow:auto;
+      backdrop-filter: blur(10px);
+    }
+
+    .brand{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding:10px 10px 14px;
+      border-bottom:1px solid var(--line);
+      margin-bottom:14px;
+    }
+
+    .logo{
+      width:38px;height:38px;border-radius:12px;
+      background: linear-gradient(135deg, rgba(59,130,246,.95), rgba(99,102,241,.75));
+      box-shadow: 0 10px 18px rgba(59,130,246,.16);
+      border:1px solid rgba(59,130,246,.18);
+    }
+
+    .brand h1{font-size:16px; margin:0; line-height:1.25}
+    .brand p{margin:0; font-size:12px; color:var(--muted)}
+
+    .nav{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding:4px 8px;
+    }
+
+    .nav .group-title{
+      margin:14px 8px 6px;
+      font-size:11px;
+      letter-spacing:.12em;
+      color:rgba(15,23,42,.55);
+      text-transform:uppercase;
+    }
+
+    .nav a{
+      text-decoration:none;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid transparent;
+      background: rgba(255,255,255,.70);
+      transition: .18s ease;
+      box-shadow: 0 6px 14px rgba(15,23,42,.04);
+    }
+
+    .nav a:hover{
+      background: rgba(15,23,42,.03);
+      border-color: rgba(15,23,42,.10);
+      transform: translateY(-1px);
+    }
+
+    .pill{
+      font-size:11px;
+      color:rgba(15,23,42,.70);
+      background: rgba(15,23,42,.03);
+      border:1px solid var(--line);
+      padding:4px 8px;
+      border-radius:999px;
+    }
+
+    .sidebar .meta{
+      margin-top:14px;
+      padding:12px 10px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background: rgba(255,255,255,.78);
+      box-shadow: 0 10px 20px rgba(15,23,42,.05);
+    }
+
+    .meta .row{
+      display:flex; justify-content:space-between;
+      margin:6px 0;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .meta .row strong{color:var(--text); font-weight:800}
+
+    /* ===== Main ===== */
+    .main{
+      padding:18px 20px 28px;
+      overflow:auto;
+    }
+
+    .topbar{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 10px 14px;
+      margin-bottom:12px;
+    }
+
+    .topbar .left{display:flex; gap:10px; align-items:center;}
+
+    .crumb{
+      font-size:12px; color:rgba(15,23,42,.70);
+      padding:6px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background: rgba(255,255,255,.85);
+    }
+
+    .controls{
+      display:flex; gap:10px; align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .select, .search, .btn{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.90);
+      color:var(--text);
+      border-radius:999px;
+      padding:10px 12px;
+      font-size:12px;
+      outline:none;
+      box-shadow: 0 1px 0 rgba(15,23,42,.03);
+    }
+
+    .select:focus, .search:focus{
+      border-color: rgba(59,130,246,.45);
+      box-shadow: 0 0 0 4px rgba(59,130,246,.12);
+    }
+
+    .search{min-width:240px}
+
+    .btn{
+      cursor:pointer;
+      background: linear-gradient(180deg, rgba(59,130,246,.16), rgba(59,130,246,.08));
+      border-color: rgba(59,130,246,.20);
+      border-radius:12px;
+      box-shadow: 0 10px 18px rgba(59,130,246,.10);
+      font-weight:800;
+    }
+
+    .btn.secondary{
+      background: rgba(255,255,255,.90);
+      border-color: var(--line);
+      box-shadow: 0 8px 16px rgba(15,23,42,.06);
+    }
+
+    /* ===== Layout cards ===== */
+    .grid{
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap:14px;
+      align-items:start;
+    }
+
+    .panel{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background: rgba(255,255,255,.90);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .panel .hd{
+      padding:14px 14px 12px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.86));
+    }
+
+    .panel .hd h2{
+      margin:0;
+      font-size:14px;
+      letter-spacing:.01em;
+    }
+
+    .panel .hd .sub{
+      margin:3px 0 0;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .panel .bd{padding:14px}
+
+    .kpi-row{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .kpi{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      background: rgba(255,255,255,.95);
+      box-shadow: 0 6px 14px rgba(15,23,42,.05);
+    }
+
+    .kpi .label{font-size:12px; color:var(--muted)}
+    .kpi .value{font-size:22px; margin-top:6px; font-weight:900}
+    .kpi .hint{font-size:11px; color:rgba(15,23,42,.65); margin-top:6px}
+
+    .badge{
+      font-size:11px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(15,23,42,.03);
+      color:rgba(15,23,42,.72);
+      white-space:nowrap;
+    }
+    .badge.ok{border-color: rgba(34,197,94,.22); background: rgba(34,197,94,.10); color:#166534}
+    .badge.warn{border-color: rgba(245,158,11,.22); background: rgba(245,158,11,.10); color:#92400E}
+    .badge.bad{border-color: rgba(239,68,68,.22); background: rgba(239,68,68,.10); color:#991B1B}
+
+    .split{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+
+    .card{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background: rgba(255,255,255,.95);
+      padding:12px;
+      box-shadow: 0 6px 14px rgba(15,23,42,.05);
+    }
+
+    .card h3{
+      margin:0 0 6px;
+      font-size:13px;
+    }
+
+    .muted{color:var(--muted); font-size:12px; line-height:1.55}
+    .hr{height:1px;background:rgba(15,23,42,.10);margin:12px 0}
+
+    .table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background: rgba(255,255,255,.95);
+      box-shadow: 0 6px 14px rgba(15,23,42,.05);
+    }
+
+    .table th, .table td{
+      padding:10px 10px;
+      font-size:12px;
+      text-align:left;
+      border-bottom:1px solid rgba(15,23,42,.08);
+      vertical-align:top;
+    }
+
+    .table th{
+      color:rgba(15,23,42,.70);
+      background: rgba(15,23,42,.03);
+      font-weight:800;
+    }
+    .table tr:last-child td{border-bottom:none}
+
+    .code{
+      font-family:var(--mono);
+      font-size:12px;
+      background: rgba(15,23,42,.04);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      overflow:auto;
+      color: rgba(15,23,42,.90);
+    }
+
+    .callout{
+      border:1px solid rgba(99,102,241,.18);
+      background: rgba(99,102,241,.08);
+      border-radius:16px;
+      padding:12px;
+    }
+    .callout b{color:#4338CA}
+
+    .tabs{
+      display:flex; gap:8px; flex-wrap:wrap;
+      margin:0 0 12px;
+    }
+
+    .tab{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.90);
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
+      box-shadow: 0 6px 14px rgba(15,23,42,.04);
+    }
+
+    .tab.active{
+      border-color: rgba(59,130,246,.25);
+      background: rgba(59,130,246,.12);
+    }
+
+    section{scroll-margin-top: 18px;}
+
+    .footer-note{
+      margin-top:14px;
+      font-size:12px;
+      color:rgba(15,23,42,.65);
+    }
+
+    .placeholder{
+      border:1px dashed rgba(15,23,42,.20);
+      border-radius:16px;
+      padding:14px;
+      color:rgba(15,23,42,.65);
+      background: rgba(255,255,255,.80);
+    }
+
+    @media (max-width: 980px){
+      .app{grid-template-columns: 1fr}
+      .sidebar{position:relative;height:auto}
+      .grid{grid-template-columns: 1fr}
+      .kpi-row{grid-template-columns: 1fr}
+      .split{grid-template-columns: 1fr}
+      .search{min-width:160px}
+    }
+  
+    /* App navigation dropdown */
+
+    /* App navigation dropdown (link antar-file) */
+    .navdrop{position:relative}
+    .navbtn{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:12px;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .navbtn:hover{filter:brightness(1.08)}
+    .navmenu{
+      position:absolute;
+      right:0;
+      top: calc(100% + 10px);
+      min-width: 260px;
+      padding:10px;
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background: rgba(16,31,58,.92);
+      box-shadow: var(--shadow);
+      display:none;
+      z-index:60;
+      backdrop-filter: blur(10px);
+    }
+    .navdrop:hover .navmenu,
+    .navdrop:focus-within .navmenu{display:block}
+    .navmenu a{
+      display:block;
+      padding:10px 10px;
+      border-radius: 12px;
+      color: var(--text);
+      text-decoration:none;
+      border:1px solid transparent;
+      font-size:13px;
+    }
+    .navmenu a:hover{background: rgba(255,255,255,.06)}
+    .navmenu a.active{
+      border-color: rgba(122,167,255,.25);
+      background: rgba(122,167,255,.12);
+      font-weight:800;
+    }
+    .navsep{height:1px; background: var(--line); margin:8px 0}
+    .navlbl{font-size:11px; color:var(--muted); padding:6px 8px 4px; letter-spacing:.06em; text-transform:uppercase}
+    /* =========================================================
+      APPBAR + DROPDOWN (Pills)
+      Untuk markup:
+      .appbar .tabbar .inner.tabrow nav.menu.menu-right
+      .dd .dd-btn + .dd-menu a
+    ========================================================= */
+
+    .appbar{
+      position: sticky;
+      top: 10px;
+      z-index: 120;            /* pastikan di depan konten */
+      margin: 0 10px 14px;
+    }
+
+    .tabbar{
+      background: rgba(255,255,255,.70);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .tabbar .inner{
+      padding: 10px 12px;
+    }
+
+    .tabrow{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+    }
+
+    .menu{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .menu a,
+    .dd-btn{
+      text-decoration:none;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.85);
+      box-shadow: 0 8px 18px rgba(15,23,42,.08);
+      transition: transform .06s ease, background .2s ease, border-color .2s ease;
+    }
+
+    .menu a:hover,
+    .dd-btn:hover{
+      background: rgba(15,23,42,.03);
+      border-color: rgba(15,23,42,.16);
+    }
+
+    .menu a:active,
+    .dd-btn:active{ transform: scale(.99); }
+
+    .menu a.active,
+    .menu a[aria-current="page"],
+    .dd.active .dd-btn{
+      border-color: rgba(59,130,246,.35);
+      background: rgba(59,130,246,.12);
+      box-shadow: 0 10px 24px rgba(59,130,246,.10), 0 8px 18px rgba(15,23,42,.08);
+    }
+
+    /* Dropdown */
+    .dd{
+      position: relative;
+      display:inline-flex;
+      align-items:center;
+      z-index: 9998;
+    }
+
+    .dd-menu{
+      position:absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      min-width: 240px;
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.96);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+
+      display: none;
+      z-index: 9999;
+    }
+
+    .dd:hover .dd-menu,
+    .dd:focus-within .dd-menu{
+      display:block;
+    }
+
+    .dd-menu a{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+
+      width:100%;
+      border-radius: 12px;
+      padding: 10px 10px;
+
+      border: 1px solid transparent;
+      background: transparent;
+      box-shadow: none;
+
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 850;
+      margin: 6px 0;
+    }
+
+    .dd-menu a:hover{
+      background: rgba(15,23,42,.03);
+      border-color: rgba(15,23,42,.10);
+    }
+
+    .dd-menu a.active{
+      border-color: rgba(59,130,246,.28);
+      background: rgba(59,130,246,.10);
+    }
+
+    .dd-menu::before{
+      content:"";
+      position:absolute;
+      top:-7px;
+      right: 14px;
+      width: 12px;
+      height: 12px;
+      transform: rotate(45deg);
+      background: rgba(255,255,255,.96);
+      border-left: 1px solid var(--line);
+      border-top: 1px solid var(--line);
+    }
+
+    /* Pastikan konten tidak menutupi dropdown */
+    /* .main, .panel, .grid, .sidebar{ position: relative; z-index: 1; } */
+
+  </style>
+
+</head>
+
+<body>
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Impact Assessment</h1>
+          <p>Manual Penilaian Dampak Adaptasi Nasional</p>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Navigasi">
+        <div class="group-title">Impact Dashboard</div>
+        <a href="#p1-overview">P1. Impact Overview <span class="pill">Read-only</span></a>
+        <a href="#p2-outcome">P2. Outcome Detail <span class="pill">Drill-down</span></a>
+        <a href="#p3-indicator">P3. Indicator Explorer <span class="pill">Trend</span></a>
+        <a href="#p4-spatial">P4. Spatial Context <span class="pill">Map</span></a>
+        <a href="#p5-confidence">P5. Confidence & Limits <span class="pill">ETF</span></a>
+        <a href="#p6-export">P6. Export BTR/NC <span class="pill">Export</span></a>
+
+        <div class="group-title">Manual Contents</div>
+        <a href="#s1">Section I — Pendahuluan <span class="pill">Manual</span></a>
+        <a href="#s2">Section II — Ruang Lingkup & Definisi <span class="pill">Manual</span></a>
+        <a href="#s3">Section III — Data Intake & Screening <span class="pill">Manual</span></a>
+        <a href="#s4">Section IV — Metode & Komputasi <span class="pill">Manual</span></a>
+        <a href="#s5">Section V — Sintesis Nasional <span class="pill">Manual</span></a>
+        <a href="#s6">Section VI — Pelaporan & Pemanfaatan <span class="pill">Manual</span></a>
+        <a href="#s7">Section VII — Implementasi & QA <span class="pill">Manual</span></a>
+        <a href="#s8">Section VIII — Keterbatasan & Perbaikan <span class="pill">Manual</span></a>
+
+        <div class="group-title">Annexes</div>
+        <a href="#aA">Annex A — Data Intake Checklist <span class="pill">Tool</span></a>
+        <a href="#aB">Annex B — Worksheet <span class="pill">Tool</span></a>
+        <a href="#aC">Annex C — Avoided Loss Template <span class="pill">Tool</span></a>
+        <a href="#aD">Annex D — Narrative Template <span class="pill">Tool</span></a>
+        <a href="#erd">ERD Sederhana <span class="pill">Tech</span></a>
+        <a href="#mapping">Tabel Mapping Teknis <span class="pill">Tech</span></a>
+      </nav>
+
+      <div class="meta" role="note" aria-label="Status">
+        <div class="row"><span>Mode</span><strong>Final / Locked</strong></div>
+        <div class="row"><span>Data Source</span><strong>Impact Outputs</strong></div>
+        <div class="row"><span>Scope</span><strong>National Synthesis</strong></div>
+        <div class="row"><span>Export</span><strong>BTR / NC</strong></div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <div class="left">
+          <span class="crumb">MoNEv Adaptasi Nasional ▸ Impact Assessment</span>
+          <span class="badge ok">Read-only</span>
+        </div>
+        <div class="controls">
+          <select class="select" aria-label="Periode">
+            <option>Periode: 2025</option>
+            <option>Periode: 2024</option>
+            <option>Periode: 2023</option>
+          </select>
+          <select class="select" aria-label="Run komputasi">
+            <option>Run: Latest Approved</option>
+            <option>Run: Draft</option>
+          </select>
+          <input class="search" placeholder="Cari outcome/indikator/wilayah…" />
+          <button class="btn">Export cepat</button>
+          <button class="btn secondary">Buka Panduan</button>
+          <div class="appbar">
+            <div class="tabbar">
+              <div class="inner tabrow">
+                <nav class="menu menu-right">
+
+                  <a href="index.html">Beranda</a>
+
+                  <div class="dd">
+                    <button class="dd-btn" type="button">Horizontal ▾</button>
+                    <div class="dd-menu">
+                      <a href="horizontal.html">Dashboard Horizontal</a>
+                      <a href="horizontal_guideline.html">Guideline Horizontal</a>
+                    </div>
+                  </div>
+
+                  <div class="dd">
+                    <button class="dd-btn" type="button">Vertikal ▾</button>
+                    <div class="dd-menu">
+                      <a href="vertical.html">Dashboard Vertikal</a>
+                      <a href="vertical_guideline.html">Guideline Vertikal</a>
+                    </div>
+                  </div>
+
+                  <div class="dd active">
+                    <button class="dd-btn" type="button">Impact ▾</button>
+                    <div class="dd-menu">
+                      <a href="impact.html">Dashboard Impact</a>
+                      <a class="active" href="impact_assessment.html">Impact Assessment</a>
+                    </div>
+                  </div>
+
+                  <a href="aksi_pembiayaan.html">Aksi &amp; Pembiayaan</a>
+                  <a href="pelaporan.html">Pelaporan</a>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE 1 -->
+      <section id="p1-overview" class="panel">
+        <div class="hd">
+          <div>
+            <h2>P1. National Adaptation Impact Overview</h2>
+            <div class="sub">Ringkasan nasional dampak adaptasi (hasil komputasi & sintesis).</div>
+          </div>
+          <span class="badge">Output: Impact_k + Confidence</span>
+        </div>
+        <div class="bd">
+          <div class="kpi-row">
+            <div class="kpi">
+              <div class="label">Jumlah Outcome Nasional</div>
+              <div class="value">—</div>
+              <div class="hint">Sumber: outcome master (MPC/NAP).</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Rata-rata Dampak (Impact_k)</div>
+              <div class="value">—</div>
+              <div class="hint">Teragregasi lintas indikator kontributor.</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Distribusi Confidence</div>
+              <div class="value">—</div>
+              <div class="hint">Tinggi / Sedang / Rendah.</div>
+            </div>
+          </div>
+
+          <div class="split">
+            <div class="card">
+              <h3>Daftar Outcome (Cards)</h3>
+              <p class="muted">Klik outcome untuk masuk ke P2 (drill-down). Nilai adalah hasil komputasi (bukan data mentah).</p>
+              <div class="placeholder">
+                Placeholder: Outcome cards (Impact value + confidence badge + sparkline trend).
+              </div>
+            </div>
+            <div class="card">
+              <h3>Ringkasan Data Readiness</h3>
+              <p class="muted">Proporsi indikator berdasarkan rule_applied: baseline-target / before-after / with-without / qualitative-only.</p>
+              <div class="placeholder">
+                Placeholder: donut/bar chart + daftar indikator dengan data gap terbesar.
+              </div>
+            </div>
+          </div>
+
+          <p class="footer-note">
+            Catatan: halaman ini hanya menampilkan output komputasi dampak nasional. Input sektoral & subnasional berada pada UI Horizontal/Vertical.
+          </p>
+        </div>
+      </section>
+
+      <div style="height:14px"></div>
+
+      <!-- PAGE 2 -->
+      <section id="p2-outcome" class="panel">
+        <div class="hd">
+          <div>
+            <h2>P2. Outcome Detail & Aggregation Logic</h2>
+            <div class="sub">Transparansi “how calculated” untuk satu outcome nasional.</div>
+          </div>
+          <span class="badge warn">Drill-down</span>
+        </div>
+        <div class="bd">
+          <div class="tabs" aria-label="Tabs">
+            <div class="tab active">Ringkasan</div>
+            <div class="tab">Kontributor Indikator</div>
+            <div class="tab">How Calculated</div>
+            <div class="tab">Narasi Dampak</div>
+          </div>
+
+          <div class="split">
+            <div class="card">
+              <h3>Outcome: [Nama Outcome]</h3>
+              <p class="muted">
+                Deskripsi outcome nasional diambil dari kerangka nasional (tanpa modifikasi).
+              </p>
+              <div class="hr"></div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <span class="badge ok">Impact_k: —</span>
+                <span class="badge warn">Confidence: —</span>
+                <span class="badge">Aggregation: equal/defined</span>
+              </div>
+              <div class="hr"></div>
+              <div class="placeholder">Placeholder: mini trend (multi-periode), keterbatasan utama, dan link ke P5.</div>
+            </div>
+
+            <div class="card">
+              <h3>Kontributor Indikator</h3>
+              <p class="muted">
+                Daftar indikator yang memetakan outcome ini, berikut progress dan rule_applied.
+              </p>
+              <table class="table" aria-label="Kontributor indikator">
+                <thead>
+                  <tr>
+                    <th>Indikator</th>
+                    <th>Progress_i</th>
+                    <th>Rule</th>
+                    <th>Confidence</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>[Indikator A]</td>
+                    <td>—</td>
+                    <td><span class="badge">baseline-target</span></td>
+                    <td><span class="badge ok">Tinggi</span></td>
+                  </tr>
+                  <tr>
+                    <td>[Indikator B]</td>
+                    <td>—</td>
+                    <td><span class="badge">with-without</span></td>
+                    <td><span class="badge warn">Sedang</span></td>
+                  </tr>
+                  <tr>
+                    <td>[Indikator C]</td>
+                    <td>—</td>
+                    <td><span class="badge">qualitative-only</span></td>
+                    <td><span class="badge bad">Rendah</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="callout">
+            <b>How Calculated (ringkas):</b>
+            <div class="muted">
+              Nilai outcome dihitung dari agregasi Progress_i indikator kontributor (lihat Section 4.6). Tidak ada kalkulasi di front-end.
+            </div>
+            <div class="code" aria-label="Formula">
+              Progress_i = (Realisasi_i - Baseline_i) / (Target_i - Baseline_i)  → dibatasi 0..1
+              \nImpact_k = Σ (w_i * Progress_i)  → bobot setara jika bobot tidak ditetapkan
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div style="height:14px"></div>
+
+      <!-- PAGE 3 -->
+      <section id="p3-indicator" class="panel">
+        <div class="hd">
+          <div>
+            <h2>P3. Indicator Progress Explorer</h2>
+            <div class="sub">Tabel indikator nasional + tren + rule_applied (read-only).</div>
+          </div>
+          <span class="badge">Progress_i</span>
+        </div>
+        <div class="bd">
+          <div class="split">
+            <div class="card">
+              <h3>Daftar Indikator</h3>
+              <p class="muted">
+                Menampilkan indikator, unit, progress, rule, confidence, serta catatan asumsi (expand).
+              </p>
+              <table class="table" aria-label="Tabel indikator">
+                <thead>
+                  <tr>
+                    <th>Indikator</th>
+                    <th>Unit</th>
+                    <th>Progress_i</th>
+                    <th>Rule</th>
+                    <th>Confidence</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>[Indikator 1]</td>
+                    <td>[unit]</td>
+                    <td>—</td>
+                    <td><span class="badge">baseline-target</span></td>
+                    <td><span class="badge ok">Tinggi</span></td>
+                  </tr>
+                  <tr>
+                    <td>[Indikator 2]</td>
+                    <td>[unit]</td>
+                    <td>—</td>
+                    <td><span class="badge">before-after</span></td>
+                    <td><span class="badge warn">Sedang</span></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="footer-note">Klik baris untuk melihat assumption_log dan ringkasan bukti.</div>
+            </div>
+
+            <div class="card">
+              <h3>Tren Antarperiode</h3>
+              <p class="muted">
+                Visualisasi time-series Progress_i per indikator. Jika satu periode, tampilkan “single period”.
+              </p>
+              <div class="placeholder">Placeholder: line chart / sparkline trend.</div>
+              <div class="hr"></div>
+              <div class="muted">
+                <span class="badge">Rule badge</span> menunjukkan metode yang dipakai sesuai logika kondisional Section 4.6.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div style="height:14px"></div>
+
+      <!-- PAGE 4 -->
+      <section id="p4-spatial" class="panel">
+        <div class="hd">
+          <div>
+            <h2>P4. Spatial Context & Validation (Impact Lens)</h2>
+            <div class="sub">Menggunakan data subnasional untuk konteks interpretasi (bukan perhitungan ulang).</div>
+          </div>
+          <span class="badge">Context</span>
+        </div>
+        <div class="bd">
+          <div class="split">
+            <div class="card">
+              <h3>Peta Nasional</h3>
+              <p class="muted">Toggle: Coverage / Confidence shading. Tooltip: konteks kerentanan, catatan implementasi.</p>
+              <div class="placeholder">Placeholder: map canvas (province/district drill-down).</div>
+            </div>
+            <div class="card">
+              <h3>Sidebar Wilayah</h3>
+              <p class="muted">Klik wilayah pada peta untuk melihat ringkasan outcome/indikator terkait (read-only).</p>
+              <div class="placeholder">
+                Placeholder: (1) konteks kerentanan, (2) coverage, (3) daftar aksi terkait, (4) tautan ke outcome detail.
+              </div>
+            </div>
+          </div>
+          <p class="footer-note">
+            Catatan: nilai impact nasional tetap berasal dari output komputasi; peta digunakan untuk konteks interpretasi dan transparansi.
+          </p>
+        </div>
+      </section>
+
+      <div style="height:14px"></div>
+
+      <!-- PAGE 5 -->
+      <section id="p5-confidence" class="panel">
+        <div class="hd">
+          <div>
+            <h2>P5. Confidence & Limitations</h2>
+            <div class="sub">Transparansi ETF: confidence matrix, data gaps, dan keterbatasan.</div>
+          </div>
+          <span class="badge warn">ETF-aligned</span>
+        </div>
+        <div class="bd">
+          <div class="split">
+            <div class="card">
+              <h3>Confidence Matrix</h3>
+              <p class="muted">Matriks Outcome × Periode. Klik sel untuk melihat limitation note.</p>
+              <div class="placeholder">Placeholder: matrix heatmap + legend High/Medium/Low.</div>
+            </div>
+            <div class="card">
+              <h3>Data Gaps & Limitations</h3>
+              <p class="muted">
+                Ringkasan indikator dengan baseline hilang, qualitative-only, dan sumber ketidakpastian utama.
+              </p>
+              <div class="placeholder">Placeholder: list + counters + link ke indikator explorer.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div style="height:14px"></div>
+
+      <!-- PAGE 6 -->
+      <section id="p6-export" class="panel">
+        <div class="hd">
+          <div>
+            <h2>P6. Export for BTR / National Communication</h2>
+            <div class="sub">Generate tabel dan narasi pelaporan resmi dari output komputasi.</div>
+          </div>
+          <span class="badge ok">Export</span>
+        </div>
+        <div class="bd">
+          <div class="split">
+            <div class="card">
+              <h3>Preview Tabel (Format Table 4)</h3>
+              <p class="muted">Outcome, indikator terkait, ringkasan dampak, arah perubahan, confidence, keterbatasan.</p>
+              <div class="placeholder">Placeholder: table preview (scrollable) + “Generate”.</div>
+              <div class="hr"></div>
+              <button class="btn">Generate BTR Table (Excel)</button>
+              <button class="btn secondary">Generate Annex (PDF)</button>
+            </div>
+            <div class="card">
+              <h3>Preview Narasi (Annex D)</h3>
+              <p class="muted">Narasi outcome terstruktur: ringkasan, bukti pendukung, confidence, keterbatasan.</p>
+              <div class="placeholder">Placeholder: narrative preview panel + editor read-only.</div>
+              <div class="hr"></div>
+              <button class="btn">Generate NC Narrative (Word)</button>
+              <button class="btn secondary">Lihat Export Log</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div style="height:18px"></div>
+
+      <!-- MANUAL CONTENTS -->
+      <section id="s1" class="panel">
+        <div class="hd">
+          <div>
+            <h2>Section I — Pendahuluan</h2>
+            <div class="sub">Tujuan, ruang lingkup, dan posisi fungsi penilaian dampak dalam sistem Monev adaptasi.</div>
+          </div>
+          <span class="badge">Manual</span>
+        </div>
+        <div class="bd">
+          <div class="callout">
+            <b>Alignment Lock:</b>
+            <div class="muted">
+              Pedoman sektoral (horizontal) dan subnasional (vertical) menyediakan data & informasi hasil adaptasi. Data tersebut belum menjadi dampak nasional sebelum diproses melalui logika komputasi dan sintesis pada manual ini.
+            </div>
+          </div>
+          <div class="hr"></div>
+          <div class="placeholder">Placeholder: naskah Section I (final text) + rujukan Figure 1.</div>
+        </div>
+      </section>
+
+      <div style="height:14px"></div>
+
+      <section id="s2" class="panel">
+        <div class="hd">
+          <div>
+            <h2>Section II — Ruang Lingkup & Definisi</h2>
+            <div class="sub">Istilah kunci, batasan, dan definisi operasional.</div>
+          </div>
+          <span class="badge">Manual</span>
+        </div>
+        <div class="bd">
+          <div class="placeholder">Placeholder: naskah Section II.</div>
+        </div>
+      </section>
+
+      <div style="height:14px"></div>
+
+      <section id="s3" class="panel">
+        <div class="hd">
+          <div>
+            <h2>Section III — Data Intake & Screening</h2>
+            <div class="sub">Penerimaan data, penyaringan, dan flags tindak lanjut.</div>
+          </div>
+          <span class="badge">Manual</span>
+        </div>
+        <div class="bd">
+          <div class="split">
+            <div class="card">
+              <h3>Table 1</h3>
+              <div class="placeholder">Placeholder: Table 1 (data intake & validation rules).</div>
+            </div>
+            <div class="card">
+              <h3>Box 1 & Box 2</h3>
+              <div class="placeholder">Placeholder: Box 1 & Box 2 (screening flags & follow-up).</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div style="height:14px"></div>
+
+      <section id="s4" class="panel">
+        <div class="hd">
+          <div>
+            <h2>Section IV — Metode Penilaian Dampak</h2>
+            <div class="sub">Metode praktis + logika komputasi nasional (Section 4.6).</div>
+          </div>
+          <span class="badge">Manual</span>
+        </div>
+        <div class="bd">
+          <div class="split">
+            <div class="card">
+              <h3>Table 2</h3>
+              <div class="placeholder">Placeholder: Table 2 (metode & kebutuhan data).</div>
+              <div class="hr"></div>
+              <h3>Box 3</h3>
+              <div class="placeholder">Placeholder: Box 3 (decision rules memilih metode).</div>
+            </div>
+
+            <div class="card">
+              <h3>Section 4.6 — National Impact Computation Logic</h3>
+              <div class="muted">
+                Rumus & logika kondisional yang mengubah input horizontal/vertical menjadi output komputasi nasional.
+              </div>
+              <div class="hr"></div>
+              <div class="code">
+                Progress_i = (Realisasi_i - Baseline_i) / (Target_i - Baseline_i)  → clamp 0..1
+                \nIF baseline & target → progress
+                \nELSE IF baseline only → before-after
+                \nELSE IF comparator → with-without
+                \nELSE → qualitative support
+                \nImpact_k = Σ (w_i * Progress_i)
+              </div>
+              <div class="hr"></div>
+              <div class="placeholder">Placeholder: rujukan diagram alur komputasi dampak (Figure X).</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div style="height:14px"></div>
+
+      <section id="s5" class="panel">
+        <div class="hd">
+          <div>
+            <h2>Section V — Sintesis Dampak Nasional</h2>
+            <div class="sub">Agregasi, ketidakpastian, confidence rating, dan ringkasan nasional.</div>
+          </div>
+          <span class="badge">Manual</span>
+        </div>
+        <div class="bd">
+          <div class="split">
+            <div class="card">
+              <h3>Table 3</h3>
+              <div class="placeholder">Placeholder: Table 3 (aturan agregasi nasional).</div>
+            </div>
+            <div class="card">
+              <h3>Box 4</h3>
+              <div class="placeholder">Placeholder: Box 4 (kriteria confidence rating).</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div style="height:14px"></div>
+
+      <section id="s6" class="panel">
+        <div class="hd">
+          <div>
+            <h2>Section VI — Pelaporan & Pemanfaatan Hasil</h2>
+            <div class="sub">Keluaran pelaporan, kontribusi untuk pelaporan internasional, dan pembelajaran kebijakan.</div>
+          </div>
+          <span class="badge">Manual</span>
+        </div>
+        <div class="bd">
+          <div class="callout">
+            <b>Alignment Lock:</b>
+            <div class="muted">
+              Keluaran pelaporan dampak nasional berasal dari komputasi & sintesis manual ini, bukan kompilasi langsung laporan sektor/daerah.
+            </div>
+          </div>
+          <div class="hr"></div>
+          <div class="card">
+            <h3>Table 4</h3>
+            <div class="placeholder">Placeholder: Table 4 (template ringkasan temuan dampak nasional).</div>
+          </div>
+          <div class="hr"></div>
+          <div class="placeholder">Placeholder: rujukan Figure 3 (flow to reporting) + teks Section VI.</div>
+        </div>
+      </section>
+
+      <div style="height:14px"></div>
+
+      <section id="s7" class="panel">
+        <div class="hd">
+          <div>
+            <h2>Section VII — Implementasi & Penjaminan Mutu</h2>
+            <div class="sub">Peran fungsional, QA procedures, dan dokumentasi proses.</div>
+          </div>
+          <span class="badge">Manual</span>
+        </div>
+        <div class="bd">
+          <div class="split">
+            <div class="card">
+              <h3>Box 5</h3>
+              <div class="placeholder">Placeholder: Box 5 (peran & tanggung jawab).</div>
+            </div>
+            <div class="card">
+              <h3>QA Checklist</h3>
+              <div class="placeholder">Placeholder: daftar prosedur QA internal per siklus penilaian.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div style="height:14px"></div>
+
+      <section id="s8" class="panel">
+        <div class="hd">
+          <div>
+            <h2>Section VIII — Keterbatasan & Peningkatan Berkelanjutan</h2>
+            <div class="sub">Batasan penilaian dampak dan mekanisme perbaikan bertahap.</div>
+          </div>
+          <span class="badge">Manual</span>
+        </div>
+        <div class="bd">
+          <div class="placeholder">Placeholder: naskah Section VIII (final text).</div>
+        </div>
+      </section>
+
+      <div style="height:18px"></div>
+
+      <!-- ANNEXES -->
+      <section id="aA" class="panel">
+        <div class="hd">
+          <div>
+            <h2>Annex A — Impact Data Intake Checklist</h2>
+            <div class="sub">Daftar periksa penerimaan data (tool internal).</div>
+          </div>
+          <span class="badge">Annex</span>
+        </div>
+        <div class="bd">
+          <div class="placeholder">Placeholder: Annex A (checklist).</div>
+        </div>
+      </section>
+
+      <div style="height:14px"></div>
+
+      <section id="aB" class="panel">
+        <div class="hd">
+          <div>
+            <h2>Annex B — Impact Assessment Worksheet</h2>
+            <div class="sub">Lembar kerja standar dokumentasi penilaian dampak.</div>
+          </div>
+          <span class="badge">Annex</span>
+        </div>
+        <div class="bd">
+          <div class="placeholder">Placeholder: Annex B (worksheet).</div>
+        </div>
+      </section>
+
+      <div style="height:14px"></div>
+
+      <section id="aC" class="panel">
+        <div class="hd">
+          <div>
+            <h2>Annex C — Simplified Avoided Loss Estimation</h2>
+            <div class="sub">Template estimasi kerugian yang dihindari (indikatif).</div>
+          </div>
+          <span class="badge">Annex</span>
+        </div>
+        <div class="bd">
+          <div class="placeholder">Placeholder: Annex C (template).</div>
+        </div>
+      </section>
+
+      <div style="height:14px"></div>
+
+      <section id="aD" class="panel">
+        <div class="hd">
+          <div>
+            <h2>Annex D — National Impact Narrative Template</h2>
+            <div class="sub">Template narasi dampak outcome (untuk BTR/NC).</div>
+          </div>
+          <span class="badge">Annex</span>
+        </div>
+        <div class="bd">
+          <div class="placeholder">Placeholder: Annex D (narrative template).</div>
+        </div>
+      </section>
+
+      <div style="height:18px"></div>
+
+      <!-- TECH APPENDICES -->
+      <section id="erd" class="panel">
+        <div class="hd">
+          <div>
+            <h2>Appendix Tech — ERD Sederhana</h2>
+            <div class="sub">Struktur entitas agar jelas: input (H/V) → processing (Impact) → output (Dashboard/ETF).</div>
+          </div>
+          <span class="badge">Tech</span>
+        </div>
+        <div class="bd">
+          <div class="placeholder">Placeholder: ERD teks (final) atau diagram ERD sederhana.</div>
+        </div>
+      </section>
+
+      <div style="height:14px"></div>
+
+      <section id="mapping" class="panel">
+        <div class="hd">
+          <div>
+            <h2>Appendix Tech — Tabel Mapping Teknis</h2>
+            <div class="sub">Horizontal/Vertical fields → variabel komputasi → elemen dashboard → tabel ETF.</div>
+          </div>
+          <span class="badge">Tech</span>
+        </div>
+        <div class="bd">
+          <div class="placeholder">Placeholder: Tabel mapping teknis (final).</div>
+          <div class="footer-note">
+            Implementasi: endpoint API mengambil output komputasi (progress/impact/confidence) untuk divisualisasikan dan diekspor.
+          </div>
+        </div>
+      </section>
+
+      <div style="height:22px"></div>
+      <div class="muted" style="text-align:center">
+        Mock-Up UI/UX — Impact Assessment Manual • Final Locked Version
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Lightweight demo behavior (non-functional mock): tab highlighting only.
+    document.querySelectorAll('.tabs').forEach(tabs => {
+      const items = tabs.querySelectorAll('.tab');
+      items.forEach(it => it.addEventListener('click', () => {
+        items.forEach(x => x.classList.remove('active'));
+        it.classList.add('active');
+      }));
+    });
+  </script>
+</body>
+</html>

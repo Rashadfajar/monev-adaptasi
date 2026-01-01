@@ -1,0 +1,1071 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vertical Guideline — Kewilayahan MoNEv Adaptasi</title>
+  <style>
+    :root{
+      /* ===== Light palette (mirip screenshot) ===== */
+      --bg:#F6F8FC;
+      --panel:#FFFFFF;
+      --panel2:#F7F9FE;
+      --text:#0F172A;
+      --muted:#64748B;
+
+      --line:rgba(15,23,42,.10);
+
+      /* accents */
+      --accent:#3B82F6;
+      --good:#22C55E;
+      --warn:#F59E0B;
+      --bad:#EF4444;
+
+      --chip:#F1F5FF;
+      --btn:#FFFFFF;
+      --btn2:#F3F6FF;
+
+      /* soft shadow */
+      --shadow: 0 10px 30px rgba(15,23,42,.08);
+      --shadow2: 0 8px 18px rgba(15,23,42,.10);
+      --radius:18px;
+      --radius2:22px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:
+        /* radial-gradient(1200px 600px at 20% 0%, rgba(59,130,246,.10), transparent 60%),
+        radial-gradient(900px 500px at 80% 10%, rgba(34,197,94,.06), transparent 65%),
+        radial-gradient(900px 600px at 55% 95%, rgba(99,102,241,.06), transparent 62%), */
+        var(--bg);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      line-height:1.45;
+    }
+
+    a{color:var(--accent); text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    header{
+      /* position:sticky;  */
+      top:0; z-index:50;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      background: rgba(255,255,255,.78);
+      border-bottom:1px solid var(--line);
+    }
+
+    .wrap{max-width:1200px; margin:0 auto; padding:14px 18px}
+
+    .topbar{
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+    }
+
+    .brand{
+      display:flex; gap:10px; align-items:center;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+
+    .logo{
+      width:34px; height:34px; border-radius:12px;
+      background: linear-gradient(135deg, rgba(59,130,246,.95), rgba(99,102,241,.75));
+      box-shadow: 0 10px 18px rgba(59,130,246,.18);
+      border:1px solid rgba(59,130,246,.18);
+    }
+
+    .controls{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+
+    select, input[type="search"]{
+      background: rgba(255,255,255,.90);
+      border:1px solid var(--line);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:999px;
+      outline:none;
+      box-shadow: 0 1px 0 rgba(15,23,42,.03);
+    }
+    select:focus, input[type="search"]:focus{
+      border-color: rgba(59,130,246,.45);
+      box-shadow: 0 0 0 4px rgba(59,130,246,.12);
+    }
+    input[type="search"]{min-width:240px}
+
+    .btn{
+      background: linear-gradient(180deg, var(--btn2), var(--btn));
+      border:1px solid var(--line);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      box-shadow: var(--shadow2);
+      display:inline-flex; gap:8px; align-items:center;
+      user-select:none;
+    }
+    .btn:hover{filter:brightness(1.02)}
+    .btn.small{padding:8px 10px; border-radius:10px; font-size:13px}
+
+    .grid{
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      gap:16px;
+      align-items:start;
+      padding:18px;
+      max-width:1200px;
+      margin:0 auto;
+    }
+
+    /* left nav (guide nav) */
+    nav[aria-label="Navigasi Prototype"]{
+      /* position:sticky;  */
+      top:82px;
+      background: rgba(255,255,255,.86);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .navhead{
+      padding:14px 14px 10px 14px;
+      border-bottom:1px solid var(--line);
+    }
+    .navhead .muted{color:var(--muted); font-size:13px}
+
+    .navlist{padding:8px}
+    .navitem{
+      display:flex; gap:10px; align-items:center;
+      padding:10px 10px;
+      border-radius:14px;
+      color:var(--text);
+      cursor:pointer;
+      border:1px solid transparent;
+    }
+    .navitem:hover{background: rgba(15,23,42,.03)}
+    .navitem.active{
+      background: rgba(59,130,246,.10);
+      border:1px solid rgba(59,130,246,.18);
+    }
+
+    .dot{width:10px; height:10px; border-radius:50%;}
+    .dot.accent{background: var(--accent)}
+    .dot.good{background: var(--good)}
+    .dot.warn{background: var(--warn)}
+    .dot.bad{background: var(--bad)}
+
+    main{display:flex; flex-direction:column; gap:16px;}
+
+    .card{
+      background: rgba(255,255,255,.88);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .card .head{
+      padding:16px 18px;
+      border-bottom:1px solid var(--line);
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.82));
+    }
+
+    .title{font-size:18px; font-weight:800}
+    .subtitle{color:var(--muted); font-size:13px; margin-top:4px}
+    .card .body{padding:16px 18px}
+
+    .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
+    .chip{
+      font-size:12px; color:var(--muted);
+      background: rgba(59,130,246,.08);
+      border:1px solid rgba(59,130,246,.14);
+      padding:6px 10px;
+      border-radius:999px;
+    }
+
+    .two{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+
+    .kpi{
+      background: rgba(255,255,255,.90);
+      border:1px solid var(--line);
+      border-radius: 16px;
+      padding:12px 12px;
+      box-shadow: 0 6px 14px rgba(15,23,42,.06);
+    }
+    .kpi .v{font-size:20px; font-weight:900}
+    .kpi .l{color:var(--muted); font-size:12px}
+
+    .steps{
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap:10px;
+    }
+
+    .step{
+      background: rgba(255,255,255,.90);
+      border:1px solid var(--line);
+      border-radius: 16px;
+      padding:12px;
+      min-height:110px;
+      box-shadow: 0 6px 14px rgba(15,23,42,.05);
+    }
+
+    .step .n{
+      display:inline-flex; align-items:center; justify-content:center;
+      width:28px; height:28px; border-radius:10px;
+      background: rgba(59,130,246,.10);
+      border:1px solid rgba(59,130,246,.18);
+      font-weight:900;
+      margin-bottom:8px;
+      color:#1D4ED8;
+    }
+    .step .h{font-weight:800; margin-bottom:6px}
+    .step .p{color:var(--muted); font-size:12px}
+
+    .row{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      margin-top:10px;
+    }
+
+    .table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 6px 14px rgba(15,23,42,.05);
+    }
+    .table th, .table td{
+      padding:10px 10px;
+      border-bottom:1px solid rgba(15,23,42,.08);
+      font-size:13px;
+      text-align:left;
+      vertical-align:top;
+    }
+    .table th{
+      color:var(--muted);
+      font-weight:800;
+      background: rgba(15,23,42,.03)
+    }
+    .table tr:last-child td{border-bottom:none}
+
+    .badge{
+      display:inline-flex; gap:6px; align-items:center;
+      padding:5px 10px; border-radius:999px; font-size:12px;
+      border:1px solid var(--line);
+      background: rgba(15,23,42,.03);
+      color:var(--muted);
+    }
+    .badge.good{border-color: rgba(34,197,94,.22); background: rgba(34,197,94,.10); color:#166534}
+    .badge.warn{border-color: rgba(245,158,11,.22); background: rgba(245,158,11,.10); color:#92400E}
+    .badge.bad{border-color: rgba(239,68,68,.22); background: rgba(239,68,68,.10); color:#991B1B}
+
+    .split{
+      display:grid; grid-template-columns: 1.2fr .8fr; gap:12px;
+    }
+
+    .panel{
+      background: rgba(255,255,255,.90);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      box-shadow: 0 6px 14px rgba(15,23,42,.05);
+    }
+    .panel h4{margin:0 0 8px 0; font-size:13px; color:var(--muted); font-weight:900; letter-spacing:.2px}
+
+    .field{
+      display:grid; grid-template-columns: 160px 1fr; gap:10px;
+      padding:8px 0;
+      border-bottom:1px solid rgba(15,23,42,.06);
+    }
+    .field:last-child{border-bottom:none}
+    .field .k{color:var(--muted); font-size:12px}
+    .field .v{font-size:13px}
+
+    .foot{
+      color:var(--muted);
+      font-size:12px;
+      padding:16px 18px 28px 18px;
+      max-width:1200px; margin:0 auto;
+    }
+
+    .hide{display:none}
+
+    @media (max-width: 980px){
+      .grid{grid-template-columns: 1fr}
+      nav[aria-label="Navigasi Prototype"]{position:relative; top:0}
+      .steps{grid-template-columns: 1fr}
+      .two{grid-template-columns: 1fr}
+      .split{grid-template-columns: 1fr}
+      input[type="search"]{min-width:160px}
+    }
+
+    /* =========================================================
+      APPBAR + DROPDOWN
+    ========================================================= */
+
+    .appbar{
+      top: 10px;
+      z-index: 60;
+      margin: 10px auto 14px auto;
+      max-width: 1200px;
+      padding: 0 18px;
+    }
+
+    /* ✅ FIX: hilangkan “latar transparan/fog” di belakang menu */
+    .tabbar{
+      /* background: #ffffff;                */
+      /* border:1px solid var(--line); */
+      /* border-radius: var(--radius2); */
+      /* box-shadow: var(--shadow); */
+      backdrop-filter: none;          
+      -webkit-backdrop-filter: none;
+    }
+    .tabbar .inner{
+      padding: 12px 14px;
+    }
+
+    .tabrow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+
+    .menu{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .menu-right{ margin-left:auto; }
+
+    /* links */
+    .menu a{
+      text-decoration:none;
+      color: #000000;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(15,23,42,.02);
+      box-shadow: none;
+      transition: transform .06s ease, background .2s ease, border-color .2s ease;
+    }
+    .menu a:hover{
+      background: rgba(15,23,42,.04);
+      border-color: rgba(15,23,42,.14);
+    }
+    .menu a:active{ transform: scale(.99); }
+
+    .menu a.active,
+    .menu a[aria-current="page"]{
+      color: #0B1220;
+      border-color: rgba(59,130,246,.35);
+      background: rgba(59,130,246,.12);
+      box-shadow: none;
+    }
+
+    /* dropdown */
+    .dd{
+      position: relative;
+      display:inline-flex;
+      align-items:center;
+      z-index: 9998;
+    }
+
+    .dd-btn{
+      appearance:none;
+      border: 1px solid rgba(15,23,42,.10);
+      background: rgba(15,23,42,.02);
+      color: #000000;
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      cursor: pointer;
+      box-shadow: none;
+      transition: transform .06s ease, background .2s ease, border-color .2s ease, color .2s ease;
+    }
+    .dd-btn:hover{
+      background: rgba(15,23,42,.04);
+      border-color: rgba(15,23,42,.14);
+    }
+    .dd-btn:active{ transform: scale(.99); }
+
+    .dd.active .dd-btn,
+    .dd-btn.active{
+      color: #0B1220;
+      border-color: rgba(59,130,246,.35);
+      background: rgba(59,130,246,.12);
+    }
+
+    .dd-menu{
+      position:absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      min-width: 240px;
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      box-shadow: var(--shadow);
+      display: none;
+      transform: translateY(-4px);
+      z-index: 9999;
+    }
+
+    .dd:hover .dd-menu,
+    .dd:focus-within .dd-menu{
+      display:block;
+      transform: translateY(0);
+    }
+
+    .dd-menu a{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      width:100%;
+      border-radius: 12px;
+      padding: 9px 10px;
+      border: 1px solid rgba(15,23,42,.08);
+      background: rgba(15,23,42,.02);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 850;
+      text-decoration:none;
+      margin: 6px 0;
+    }
+    .dd-menu a:hover{
+      background: rgba(59,130,246,.08);
+      border-color: rgba(59,130,246,.18);
+    }
+
+    .dd-menu a.active{
+      border-color: rgba(59,130,246,.35);
+      background: rgba(59,130,246,.12);
+    }
+
+    .dd-menu::before{
+      content:"";
+      position:absolute;
+      top:-7px;
+      right: 14px;
+      width: 12px;
+      height: 12px;
+      transform: rotate(45deg);
+      background: #ffffff;
+      border-left: 1px solid var(--line);
+      border-top: 1px solid var(--line);
+    }
+
+    @media (max-width: 720px){
+      .menu{ gap: 8px; }
+      .dd-menu{ right: 0; left: 0; min-width: unset; }
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <div>Vertical Guideline — Kewilayahan MoNEv Adaptasi</div>
+          <div class="subtitle">Manual-first • Form-based • Desa → Kecamatan → Kab/Kota → Provinsi → Nasional</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <select id="year">
+          <option>2025</option>
+          <option selected>2026</option>
+          <option>2027</option>
+        </select>
+
+        <select id="role">
+          <option value="desa">Peran: Desa/Kelurahan / Pelaksana</option>
+          <option value="kecamatan">Peran: Kecamatan</option>
+          <option value="kabkota" selected>Peran: Kabupaten/Kota (Bappeda/DLH)</option>
+          <option value="prov">Peran: Provinsi (Bappeda/DLH)</option>
+          <option value="klh">Peran: Nasional (KLH)</option>
+        </select>
+
+        <select id="region">
+          <option selected>Wilayah: (pilih)</option>
+          <option>DKI Jakarta</option>
+          <option>Jawa Barat</option>
+          <option>Kalimantan Tengah</option>
+          <option>Papua</option>
+        </select>
+
+        <input id="search" type="search" placeholder="Cari aksi / kode / lokasi…" />
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="appbar">
+  <div class="tabbar">
+    <div class="inner tabrow">
+      <nav class="menu menu-right">
+        <a href="index.html">Beranda</a>
+
+        <div class="dd">
+          <button class="dd-btn" type="button">Horizontal ▾</button>
+          <div class="dd-menu">
+            <a href="horizontal.html">Dashboard Horizontal</a>
+            <a href="horizontal_guideline.html">Guideline Horizontal</a>
+          </div>
+        </div>
+
+        <div class="dd active">
+          <button class="dd-btn active" type="button">Vertikal ▾</button>
+          <div class="dd-menu">
+            <a href="vertical.html">Dashboard Vertikal</a>
+            <a href="vertical_guideline.html" class="active">Guideline Vertikal</a>
+          </div>
+        </div>
+
+        <div class="dd">
+          <button class="dd-btn" type="button">Impact ▾</button>
+          <div class="dd-menu">
+            <a href="impact.html">Dashboard Impact</a>
+            <a href="impact_assessment.html">Impact Assessment</a>
+          </div>
+        </div>
+
+        <a href="aksi_pembiayaan.html">Aksi &amp; Pembiayaan</a>
+        <a href="pelaporan.html">Pelaporan</a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<div class="grid">
+  <nav aria-label="Navigasi Prototype">
+    <div class="navhead">
+      <div class="title" style="font-size:15px">Navigasi Pedoman (Task-based)</div>
+      <div class="muted">Semua menu mengikuti Bagian I–IX + Lampiran A–J</div>
+      <div class="chips">
+        <span class="chip">No new indicators</span>
+        <span class="chip">Single entry–multiple use</span>
+        <span class="chip">No impact scoring at subnational</span>
+      </div>
+    </div>
+    <div class="navlist" id="navlist">
+      <div class="navitem active" data-target="overview"><span class="dot accent"></span>Overview & Quick Start</div>
+      <div class="navitem" data-target="capture"><span class="dot good"></span>Catat Aksi (Lampiran A–C–H)</div>
+      <div class="navitem" data-target="consolidate"><span class="dot accent"></span>Rekap Berjenjang (D–F)</div>
+      <div class="navitem" data-target="cycle"><span class="dot warn"></span>Siklus Tahunan (Bagian VI)</div>
+      <div class="navitem" data-target="report"><span class="dot accent"></span>Pelaporan (Bagian VII + Tabel 7.1)</div>
+      <div class="navitem" data-target="qaqc"><span class="dot warn"></span>Verifikasi QA/QC (Bagian VIII)</div>
+      <div class="navitem" data-target="annex"><span class="dot accent"></span>Lampiran A–J (Toolbox)</div>
+      <div class="navitem" data-target="integration"><span class="dot good"></span>Integrasi Horizontal & MPC</div>
+    </div>
+  </nav>
+  <main>
+    <!-- OVERVIEW -->
+    <section class="card" id="overview">
+      <div class="head">
+        <div>
+          <div class="title">Overview & Quick Start</div>
+          <div class="subtitle">
+            Tujuan: membantu pengguna daerah memulai MoNEv Adaptasi secara prosedural, sesuai Permen LHK 12/2024 dan NAP,
+            dengan alur vertikal yang konsisten untuk konsolidasi nasional.
+          </div>
+          <div class="chips">
+            <span class="chip">Bagian I–III: peran minimum</span>
+            <span class="chip">Bagian IV–V: apa yang dicatat + cara</span>
+            <span class="chip">Bagian VI–VIII: siklus tahunan + pelaporan + QA/QC</span>
+          </div>
+        </div>
+        <div class="row">
+          <span class="badge good"><span class="dot good"></span>Operational Manual</span>
+          <span class="badge"><span class="dot accent"></span>Vertical Layer</span>
+        </div>
+      </div>
+
+      <div class="body">
+        <div class="two">
+          <div class="kpi">
+            <div class="v" id="kpiAksi">12</div>
+            <div class="l">Aksi tercatat (contoh data)</div>
+          </div>
+          <div class="kpi">
+            <div class="v" id="kpiSiap">8</div>
+            <div class="l">Siap konsolidasi / pelaporan</div>
+          </div>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="steps" aria-label="Quick Start Steps">
+          <div class="step">
+            <div class="n">1</div>
+            <div class="h">Pilih Aksi</div>
+            <div class="p">Gunakan menu aksi adaptasi (Lampiran A).</div>
+          </div>
+          <div class="step">
+            <div class="n">2</div>
+            <div class="h">Pilih Indikator</div>
+            <div class="p">Gunakan indikator subnasional (Lampiran B). Tidak membuat indikator baru.</div>
+          </div>
+          <div class="step">
+            <div class="n">3</div>
+            <div class="h">Isi Form Aksi</div>
+            <div class="p">Catat implementasi (Lampiran C) + status.</div>
+          </div>
+          <div class="step">
+            <div class="n">4</div>
+            <div class="h">Lampirkan Bukti</div>
+            <div class="p">Bukti minimum yang diterima (Lampiran H).</div>
+          </div>
+          <div class="step">
+            <div class="n">5</div>
+            <div class="h">Rekap & QA/QC</div>
+            <div class="p">Rekap D–F + checklist verifikasi (Lampiran G/J).</div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:14px">
+          <button class="btn" onclick="goto('capture')">+ Mulai Catat Aksi</button>
+          <button class="btn" onclick="goto('qaqc')">Cek Verifikasi Minimum</button>
+          <button class="btn" onclick="goto('integration')">Lihat Integrasi Horizontal & MPC</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAPTURE -->
+    <section class="card hide" id="capture">
+      <div class="head">
+        <div>
+          <div class="title">Catat Aksi (Lampiran A–C–H)</div>
+          <div class="subtitle">Form-based entry • tidak ada penilaian dampak • status implementasi dapat diperbarui pada entri yang sama.</div>
+          <div class="chips">
+            <span class="chip">Lampiran A: Menu Aksi</span>
+            <span class="chip">Lampiran B: Indikator</span>
+            <span class="chip">Lampiran C: Form Aksi</span>
+            <span class="chip">Lampiran H: Bukti</span>
+          </div>
+        </div>
+        <div class="row">
+          <span class="badge"><span class="dot accent"></span>Data Entry</span>
+          <span class="badge warn"><span class="dot warn"></span>No New Indicator</span>
+        </div>
+      </div>
+      <div class="body">
+        <div class="split">
+          <div class="panel">
+            <h4>STEP-BASED ENTRY (Guideline Mode)</h4>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Step</th><th>Aksi</th><th>Rujukan</th><th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b>1</b></td>
+                  <td>Pilih jenis aksi adaptasi (kode)</td>
+                  <td>Lampiran A</td>
+                  <td><span class="badge good"><span class="dot good"></span>Ready</span></td>
+                </tr>
+                <tr>
+                  <td><b>2</b></td>
+                  <td>Pilih indikator subnasional utama</td>
+                  <td>Lampiran B</td>
+                  <td><span class="badge good"><span class="dot good"></span>Ready</span></td>
+                </tr>
+                <tr>
+                  <td><b>3</b></td>
+                  <td>Isi form aksi (lokasi, pelaksana, status)</td>
+                  <td>Lampiran C</td>
+                  <td><span class="badge warn"><span class="dot warn"></span>In progress</span></td>
+                </tr>
+                <tr>
+                  <td><b>4</b></td>
+                  <td>Unggah bukti minimum</td>
+                  <td>Lampiran H</td>
+                  <td><span class="badge"><span class="dot accent"></span>Optional upload hook</span></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="row" style="margin-top:12px">
+              <button class="btn" onclick="alert('Placeholder: open Form Lampiran C (UI form)')">Buka Form Lampiran C</button>
+              <button class="btn" onclick="alert('Placeholder: open Bukti uploader (Lampiran H rules)')">Unggah Bukti</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h4>Ringkasan Entri (Contoh)</h4>
+            <div class="field"><div class="k">Kode Aksi</div><div class="v">EKO-01</div></div>
+            <div class="field"><div class="k">Nama Aksi</div><div class="v">Rehabilitasi Mangrove Pesisir</div></div>
+            <div class="field"><div class="k">Lokasi</div><div class="v">Desa X, Kec. Y, Kab. Z</div></div>
+            <div class="field"><div class="k">Indikator Utama</div><div class="v">IE-01 (ha direhabilitasi)</div></div>
+            <div class="field"><div class="k">Status</div><div class="v"><span class="badge warn"><span class="dot warn"></span>Berjalan</span></div></div>
+            <div class="field"><div class="k">Bukti</div><div class="v"><span class="badge bad"><span class="dot bad"></span>Belum lengkap</span></div></div>
+
+            <div class="row" style="margin-top:12px">
+              <button class="btn small" onclick="alert('Placeholder: update status on same entry')">Perbarui Status</button>
+              <button class="btn small" onclick="alert('Placeholder: attach evidence')">Tambah Bukti</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONSOLIDATE -->
+    <section class="card hide" id="consolidate">
+      <div class="head">
+        <div>
+          <div class="title">Rekap Berjenjang (Lampiran D–F)</div>
+          <div class="subtitle">Konsolidasi administratif • tidak mengubah substansi data • perbaikan dilakukan di sumber data.</div>
+          <div class="chips">
+            <span class="chip">D: Rekap Kecamatan</span>
+            <span class="chip">E: Rekap Kab/Kota</span>
+            <span class="chip">F: Rekap Provinsi</span>
+          </div>
+        </div>
+        <div class="row">
+          <span class="badge"><span class="dot accent"></span>Pipeline</span>
+          <span class="badge good"><span class="dot good"></span>Traceable</span>
+        </div>
+      </div>
+
+      <div class="body">
+        <table class="table" aria-label="Konsolidasi Table">
+          <thead>
+            <tr>
+              <th>Tingkat</th>
+              <th>Produk</th>
+              <th>Yang Boleh Dilakukan</th>
+              <th>Yang Tidak Boleh Dilakukan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Kecamatan</b></td>
+              <td>Lampiran D</td>
+              <td>Rekap administratif, cek kelengkapan</td>
+              <td>Mengubah nilai indikator / isi form</td>
+            </tr>
+            <tr>
+              <td><b>Kab/Kota</b></td>
+              <td>Lampiran E</td>
+              <td>Konsolidasi lintas kecamatan & OPD, cek duplikasi</td>
+              <td>Penilaian dampak / membuat indikator baru</td>
+            </tr>
+            <tr>
+              <td><b>Provinsi</b></td>
+              <td>Lampiran F</td>
+              <td>Kompilasi lintas kab/kota, cek keseragaman kode</td>
+              <td>Menambah kewajiban pelaporan baru</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="row" style="margin-top:12px">
+          <button class="btn" onclick="alert('Placeholder: open Rekap D/E/F list based on role')">Buka Daftar Rekap</button>
+          <button class="btn" onclick="alert('Placeholder: return to source with notes')">Kembalikan ke Sumber</button>
+          <button class="btn" onclick="alert('Placeholder: forward to next tier')">Teruskan ke Tingkat Berikutnya</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CYCLE -->
+    <section class="card hide" id="cycle">
+      <div class="head">
+        <div>
+          <div class="title">Siklus Tahunan MoNEv (Bagian VI)</div>
+          <div class="subtitle">Monitoring → Review → Pelaporan → Pembelajaran (tanpa penilaian dampak di daerah).</div>
+          <div class="chips">
+            <span class="chip">Box 6.1: Monitoring vs Evaluasi vs Dampak</span>
+          </div>
+        </div>
+        <div class="row">
+          <span class="badge warn"><span class="dot warn"></span>Annual cycle</span>
+        </div>
+      </div>
+      <div class="body">
+        <div class="two">
+          <div class="panel">
+            <h4>Cycle Map</h4>
+            <div class="field"><div class="k">1) Monitoring</div><div class="v">Pencatatan rutin implementasi aksi (Lampiran C).</div></div>
+            <div class="field"><div class="k">2) Review Ringan</div><div class="v">Peninjauan deskriptif atas kemajuan (tanpa metodologi riset).</div></div>
+            <div class="field"><div class="k">3) Pelaporan</div><div class="v">Penyampaian berjenjang sesuai format (Bagian VII).</div></div>
+            <div class="field"><div class="k">4) Pembelajaran</div><div class="v">Perbaikan praktik pada siklus berikutnya (Lampiran J).</div></div>
+          </div>
+          <div class="panel">
+            <h4>Box 6.1 (Ringkas)</h4>
+            <div class="field"><div class="k">Monitoring</div><div class="v">Apa yang dilakukan & statusnya.</div></div>
+            <div class="field"><div class="k">Evaluasi</div><div class="v">Review tahunan ringan (deskriptif).</div></div>
+            <div class="field"><div class="k">Dampak</div><div class="v">Kajian terpisah (bukan siklus tahunan daerah).</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REPORT -->
+    <section class="card hide" id="report">
+      <div class="head">
+        <div>
+          <div class="title">Pelaporan (Bagian VII)</div>
+          <div class="subtitle">Konsisten • tepat waktu • mengikuti formulir wajib (Tabel 7.1) • sinkronisasi tanpa pelaporan ganda.</div>
+          <div class="chips">
+            <span class="chip">Tabel 7.1: Form wajib & penanggung jawab</span>
+            <span class="chip">Box 7.1: SIPD • SRN • AKSARA</span>
+          </div>
+        </div>
+        <div class="row">
+          <span class="badge"><span class="dot accent"></span>Reporting</span>
+          <span class="badge good"><span class="dot good"></span>Single entry</span>
+        </div>
+      </div>
+      <div class="body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Output Pelaporan</th>
+              <th>Isi</th>
+              <th>Format</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Ringkasan Tahunan</b></td>
+              <td>Jumlah aksi, sebaran sektor, status implementasi</td>
+              <td>PDF (placeholder)</td>
+              <td><button class="btn small" onclick="alert('Placeholder: export PDF ringkasan')">Unduh</button></td>
+            </tr>
+            <tr>
+              <td><b>Dataset Pelaporan</b></td>
+              <td>Data terstruktur dari Lampiran C/D/E/F</td>
+              <td>CSV/XLSX (placeholder)</td>
+              <td><button class="btn small" onclick="alert('Placeholder: export dataset')">Unduh</button></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="panel" style="margin-top:12px">
+          <h4>Box 7.1 — Sinkronisasi (Ringkas)</h4>
+          <div class="field"><div class="k">SIPD</div><div class="v">Selaras perencanaan/pelaksanaan; tidak wajib input ulang.</div></div>
+          <div class="field"><div class="k">SRN</div><div class="v">Tautkan sebagai bukti/registrasi aksi iklim (opsional).</div></div>
+          <div class="field"><div class="k">AKSARA</div><div class="v">Kompilasi & analisis nasional; daerah tidak pelaporan ganda.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QAQC -->
+    <section class="card hide" id="qaqc">
+      <div class="head">
+        <div>
+          <div class="title">Verifikasi, QA/QC, dan Penanganan Data (Bagian VIII)</div>
+          <div class="subtitle">Checklist minimum • ambang kelayakan • data tidak lengkap dikembalikan/ditandai (bukan dihapus).</div>
+          <div class="chips">
+            <span class="chip">Tabel 8.1: Checklist Verifikasi</span>
+            <span class="chip">Box 8.1: Ambang Kelayakan</span>
+            <span class="chip">Lampiran J: Penanganan data tidak lengkap</span>
+          </div>
+        </div>
+        <div class="row">
+          <span class="badge warn"><span class="dot warn"></span>QA/QC</span>
+        </div>
+      </div>
+      <div class="body">
+        <div class="split">
+          <div class="panel">
+            <h4>Checklist Minimum (contoh)</h4>
+            <table class="table">
+              <thead><tr><th>Item</th><th>Status</th><th>Tindak Lanjut</th></tr></thead>
+              <tbody>
+                <tr><td>Form lengkap</td><td><span class="badge good"><span class="dot good"></span>✔</span></td><td>-</td></tr>
+                <tr><td>Kode aksi valid</td><td><span class="badge good"><span class="dot good"></span>✔</span></td><td>-</td></tr>
+                <tr><td>Indikator resmi</td><td><span class="badge good"><span class="dot good"></span>✔</span></td><td>-</td></tr>
+                <tr><td>Bukti minimum relevan</td><td><span class="badge bad"><span class="dot bad"></span>✖</span></td><td>Kembalikan ke sumber + catatan</td></tr>
+              </tbody>
+            </table>
+
+            <div class="row" style="margin-top:12px">
+              <button class="btn" onclick="alert('Placeholder: return to source with note, per Lampiran J')">Kembalikan ke Sumber</button>
+              <button class="btn" onclick="alert('Placeholder: mark for next cycle')">Tandai untuk Siklus Berikutnya</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h4>Box 8.1 — Ambang Kelayakan (Ringkas)</h4>
+            <div class="field"><div class="k">Layak diteruskan jika</div><div class="v">Form lengkap + indikator resmi + identitas konsisten + status jelas + satuan jelas + bukti relevan.</div></div>
+            <div class="field"><div class="k">Jika di bawah ambang</div><div class="v">Tidak diteruskan; dikembalikan/ditandai (tidak dihapus).</div></div>
+            <div class="field"><div class="k">Bukan untuk</div><div class="v">Audit / penilaian dampak.</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANNEX -->
+    <section class="card hide" id="annex">
+      <div class="head">
+        <div>
+          <div class="title">Lampiran A–J (Toolbox)</div>
+          <div class="subtitle">Semua menu di bawah adalah “alat kerja” untuk mengoperasionalkan pedoman, bukan format tambahan.</div>
+        </div>
+        <div class="row">
+          <span class="badge"><span class="dot accent"></span>Annex tools</span>
+        </div>
+      </div>
+      <div class="body">
+        <table class="table">
+          <thead>
+            <tr><th>Lampiran</th><th>Fungsi</th><th>Aksi</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><b>A</b> — Menu Aksi (NAP)</td><td>Memilih jenis aksi adaptasi</td><td><button class="btn small" onclick="alert('Placeholder: open Lampiran A')">Buka</button></td></tr>
+            <tr><td><b>B</b> — Indikator Subnasional</td><td>Memilih indikator resmi (tanpa indikator baru)</td><td><button class="btn small" onclick="alert('Placeholder: open Lampiran B')">Buka</button></td></tr>
+            <tr><td><b>C</b> — Form Aksi</td><td>Pencatatan implementasi + status</td><td><button class="btn small" onclick="goto('capture')">Isi</button></td></tr>
+            <tr><td><b>D–F</b> — Rekap Berjenjang</td><td>Konsolidasi administratif</td><td><button class="btn small" onclick="goto('consolidate')">Kelola</button></td></tr>
+            <tr><td><b>G</b> — Checklist Verifikasi</td><td>QA/QC minimum</td><td><button class="btn small" onclick="goto('qaqc')">Cek</button></td></tr>
+            <tr><td><b>H</b> — Bukti Minimum</td><td>Contoh bukti diterima/tidak diterima</td><td><button class="btn small" onclick="alert('Placeholder: open Lampiran H')">Buka</button></td></tr>
+            <tr><td><b>I</b> — Contoh Pengisian</td><td>Standarisasi praktik</td><td><button class="btn small" onclick="alert('Placeholder: open Lampiran I')">Buka</button></td></tr>
+            <tr><td><b>J</b> — Data Tidak Lengkap</td><td>Pengembalian/penandaan</td><td><button class="btn small" onclick="alert('Placeholder: open Lampiran J')">Buka</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- INTEGRATION -->
+    <section class="card hide" id="integration">
+      <div class="head">
+        <div>
+          <div class="title">Integrasi Horizontal & MPC (Connector View)</div>
+          <div class="subtitle">
+            Menunjukkan titik sambung data vertikal ↔ horizontal, dan bagaimana hasil konsolidasi masuk ke MPC dashboard
+            (tanpa duplikasi pelaporan dan tanpa indikator baru).
+          </div>
+          <div class="chips">
+            <span class="chip">Vertical = aksi & indikator subnasional</span>
+            <span class="chip">Horizontal = pelaporan K/L sektoral</span>
+            <span class="chip">MPC = sintesis nasional (goal–outcome–output)</span>
+          </div>
+        </div>
+        <div class="row">
+          <span class="badge good"><span class="dot good"></span>Integration-ready</span>
+        </div>
+      </div>
+
+      <div class="body">
+        <div class="two">
+          <div class="panel">
+            <h4>Hook 1 — Vertical → Horizontal (Sektor)</h4>
+            <div class="field"><div class="k">Apa yang dikirim</div><div class="v">Dataset aksi+indikator dari kab/kota/provinsi (tanpa dampak).</div></div>
+            <div class="field"><div class="k">Untuk apa</div><div class="v">Memperkaya analisis sektoral tanpa menambah beban daerah.</div></div>
+            <div class="row">
+              <button class="btn small" onclick="alert('Placeholder: map to Horizontal sectors')">Map ke Sektor Horizontal</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h4>Hook 2 — Vertical → MPC (Sintesis)</h4>
+            <div class="field"><div class="k">Apa yang masuk MPC</div><div class="v">Rekap provinsi + status implementasi + konsistensi indikator.</div></div>
+            <div class="field"><div class="k">Keluaran MPC</div><div class="v">Ringkasan nasional untuk pembelajaran & pelaporan.</div></div>
+            <div class="row">
+              <button class="btn small" onclick="alert('Placeholder: push dataset to MPC layer')">Kirim ke MPC</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h4>Catatan Implementasi (untuk tim pengembang)</h4>
+          <div class="field"><div class="k">Data model</div><div class="v">Entitas minimum: Action, Indicator, Evidence, Location, Status, Tier.</div></div>
+          <div class="field"><div class="k">Interoperabilitas</div><div class="v">Single entry; sinkronisasi ke SIPD/SRN/AKSARA di tingkat konsolidasi.</div></div>
+          <div class="field"><div class="k">Guardrails</div><div class="v">Validasi: indikator harus dari Lampiran B; bukti sesuai Lampiran H; QA/QC mengikuti Lampiran G/J.</div></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="foot">
+  Prototype ini adalah <b>guideline-first UI</b> untuk menangkap Pedoman Vertikal MoNEv Adaptasi.
+  Tombol “Horizontal” dan “MPC” adalah <i>connector placeholders</i> untuk integrasi lintas layer.
+</div>
+
+<script>
+  // ===== SAFE INIT (biar ga error kalau elemen tidak ada) =====
+  const navItems = Array.from(document.querySelectorAll('.navitem'));
+  const sectionIds = ['overview','capture','consolidate','cycle','report','qaqc','annex','integration'];
+  const sections = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
+
+  function setActive(targetId){
+    navItems.forEach(i => i.classList.toggle('active', i.dataset.target === targetId));
+    sections.forEach(s => s.classList.toggle('hide', s.id !== targetId));
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  navItems.forEach(item => item.addEventListener('click', () => setActive(item.dataset.target)));
+
+  function goto(targetId){ setActive(targetId); }
+  window.goto = goto;
+
+  // Role-based hints (simple)
+  const role = document.getElementById('role');
+  if(role){
+    role.addEventListener('change', () => {
+      const r = role.value;
+      if(r === 'desa'){ setActive('capture'); }
+      else if(r === 'kecamatan'){ setActive('consolidate'); }
+      else if(r === 'kabkota'){ setActive('report'); }
+      else if(r === 'prov'){ setActive('qaqc'); }
+      else { setActive('integration'); }
+    });
+  }
+
+  // Connector placeholders (FIX: jangan error kalau tombolnya tidak ada)
+  const btnHorizontal = document.getElementById('btnHorizontal');
+  if(btnHorizontal){
+    btnHorizontal.addEventListener('click', () => {
+      alert('Connector Placeholder: buka Horizontal Guideline (chat/URL/sistem) atau mapping sektor.');
+    });
+  }
+
+  const btnMPC = document.getElementById('btnMPC');
+  if(btnMPC){
+    btnMPC.addEventListener('click', () => {
+      alert('Connector Placeholder: buka MPC Dashboard atau kirim dataset ke layer sintesis nasional.');
+    });
+  }
+
+  // Search placeholder
+  const search = document.getElementById('search');
+  if(search){
+    search.addEventListener('input', (e) => {
+      const q = e.target.value.trim();
+      if(q.length > 2){
+        const kpiA = document.getElementById('kpiAksi');
+        const kpiS = document.getElementById('kpiSiap');
+        if(kpiA) kpiA.textContent = '12';
+        if(kpiS) kpiS.textContent = '8';
+      }
+    });
+  }
+</script>
+</body>
+</html>
