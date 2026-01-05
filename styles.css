@@ -82,7 +82,27 @@ body{margin:0;font-family:var(--font);color:var(--text);background:var(--bg);lin
   background: rgba(37,99,235,.08);
 }
 
-/* .nav{ display:none; } penting: kalau kamu masih punya .nav lama di HTML, hapus saja */
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+.logo1 {
+  width: 50px;  
+  height: auto;
+  margin-right: 10px;  
+}
+.logo2 {
+  width: 30px;  
+  height: auto;
+  margin-right: 10px;  
+}
+.brand b {
+  font-size: 24px; 
+}
+.logo1:hover, .logo2:hover {
+  opacity: 0.8;
+}
+
 .brand{display:flex;gap:10px;align-items:center}
 .badge{width:34px;height:34px;border-radius:12px;background:linear-gradient(135deg, rgba(37,99,235,.9), rgba(6,182,212,.85));box-shadow:var(--shadow)}
 .brand b{font-size:28px;letter-spacing:.2px}

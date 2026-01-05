@@ -150,6 +150,27 @@
       background: rgba(59,130,246,.10);
       border:1px solid rgba(59,130,246,.18);
     }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+    }
+    .logo1 {
+      width: 50px;  
+      height: auto;
+      margin-right: 10px;  
+    }
+    .logo2 {
+      width: 30px;  
+      height: auto;
+      margin-right: 10px;  
+    }
+    .brand b {
+      font-size: 24px; 
+    }
+    .logo1:hover, .logo2:hover {
+      opacity: 0.8;
+    }
 
     .dot{width:10px; height:10px; border-radius:50%;}
     .dot.accent{background: var(--accent)}
@@ -485,8 +506,10 @@
   <div class="wrap">
     <div class="topbar">
       <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
+        <!-- <div class="badge" aria-hidden="true"></div> -->
+        <div class="logo-container">
+          <img src="assets/Logo_KLH.png" alt="Logo 1" class="logo1">
+          <!-- <img src="assets/UNDP_logo.png" alt="Logo 2" class="logo2 "> -->
           <div>Vertical Guideline — Kewilayahan MoNEv Adaptasi</div>
           <div class="subtitle">Manual-first • Form-based • Desa → Kecamatan → Kab/Kota → Provinsi → Nasional</div>
         </div>
