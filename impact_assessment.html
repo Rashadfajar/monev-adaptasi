@@ -644,8 +644,8 @@
       <!-- TOPBAR -->
       <div class="topbar">
         <div class="left">
-          <span class="crumb">MoNEv Adaptasi Nasional ▸ Impact Assessment</span>
-          <span class="badge ok">Read-only</span>
+          <!-- <span class="crumb">MoNEv Adaptasi Nasional ▸ Impact Assessment</span> -->
+          <!-- <span class="badge ok">Read-only</span> -->
         </div>
         <div class="controls">
           <select class="select" aria-label="Periode">
@@ -664,35 +664,45 @@
             <div class="tabbar">
               <div class="inner tabrow">
                 <nav class="menu menu-right">
-
-                  <a href="index.html">Beranda</a>
-
                   <div class="dd">
+                    <button class="dd-btn" type="button">Dashboard ▾</button>
+                    <div class="dd-menu">
+                      <a href="index.html" class="">Beranda</a>
+                      <a href="horizontal.html" class="">Dashboard Horizontal</a>
+                      <a href="vertical.html" class="">Dashboard Vertikal</a>
+                      <a href="impact.html" class="">Dashboard Impact</a>
+                    </div>
+                  </div>
+                  <a href="horizontal_guideline.html" class="">Horizontal</a>
+                  <a href="vertical_guideline.html" class="">Vertikal</a>
+                  <a href="impact_assessment.html" class="active">Impact</a>
+                  <a href="aksi_pembiayaan.html" class="">Aksi &amp; Pembiayaan</a>
+                  <a href="pelaporan.html" class="">Pelaporan</a>
+                  <!-- <a href="index.html" class="active">Beranda</a> -->
+
+                  <!-- <div class="dd">
                     <button class="dd-btn" type="button">Horizontal ▾</button>
                     <div class="dd-menu">
-                      <a href="horizontal.html">Dashboard Horizontal</a>
-                      <a href="horizontal_guideline.html">Guideline Horizontal</a>
+                      <a href="horizontal.html" class="">Dashboard Horizontal</a>
+                      <a href="horizontal_guideline.html" class="">Guideline Horizontal</a>
                     </div>
                   </div>
 
                   <div class="dd">
                     <button class="dd-btn" type="button">Vertikal ▾</button>
                     <div class="dd-menu">
-                      <a href="vertical.html">Dashboard Vertikal</a>
-                      <a href="vertical_guideline.html">Guideline Vertikal</a>
+                      <a href="vertical.html" class="">Dashboard Vertikal</a>
+                      <a href="vertical_guideline.html" class="">Guideline Vertikal</a>
                     </div>
                   </div>
 
-                  <div class="dd active">
+                  <div class="dd">
                     <button class="dd-btn" type="button">Impact ▾</button>
                     <div class="dd-menu">
-                      <a href="impact.html">Dashboard Impact</a>
-                      <a class="active" href="impact_assessment.html">Impact Assessment</a>
+                      <a href="impact.html" class="">Dashboard Impact</a>
+                      <a href="impact_assessment.html" class="">Impact Assessment</a>
                     </div>
-                  </div>
-
-                  <a href="aksi_pembiayaan.html">Aksi &amp; Pembiayaan</a>
-                  <a href="pelaporan.html">Pelaporan</a>
+                  </div> -->
                 </nav>
               </div>
             </div>
@@ -846,7 +856,7 @@
         <div class="hd">
           <div>
             <h2>P3. Indicator Progress Explorer</h2>
-            <div class="sub">Tabel indikator nasional + tren + rule_applied (read-only).</div>
+            <div class="sub">Tabel indikator nasional + tren + rule_applied.</div>
           </div>
           <span class="badge">Progress_i</span>
         </div>
@@ -922,7 +932,7 @@
             </div>
             <div class="card">
               <h3>Sidebar Wilayah</h3>
-              <p class="muted">Klik wilayah pada peta untuk melihat ringkasan outcome/indikator terkait (read-only).</p>
+              <p class="muted">Klik wilayah pada peta untuk melihat ringkasan outcome/indikator terkait.</p>
               <div class="placeholder">
                 Placeholder: (1) konteks kerentanan, (2) coverage, (3) daftar aksi terkait, (4) tautan ke outcome detail.
               </div>
