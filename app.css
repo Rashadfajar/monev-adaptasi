@@ -229,7 +229,9 @@ select{
 .kpi-n{font-weight:900; font-size:22px}
 .kpi-l{color:var(--muted); font-size:12px; margin-top:4px}
 
-.hidden{display:none}
+.hidden {
+  display: none !important; 
+}
 
 .modal{
   position:fixed; inset:0;
