@@ -23,6 +23,7 @@ body{
   background: radial-gradient(1200px 600px at 20% -20%, rgba(79,156,255,.25), transparent 60%),
               radial-gradient(1200px 600px at 100% 0%, rgba(61,220,151,.18), transparent 60%),
               var(--bg);
+  background-attachment: fixed;
   color:var(--text);
 }
 a{color:inherit; text-decoration:none}
@@ -183,6 +184,27 @@ select{
   .sidebar{width:auto}
   .grid-2{grid-template-columns: 1fr}
 }
+/* Peta styling */
+#mapid {
+  border-radius: 10px;  /* Agar peta lebih rapi dengan sudut membulat */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);  /* Tambahkan bayangan untuk efek visual */
+}
+
+.field {
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+
+/* Peta dan grafik sejajar */
+.panel-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;  /* Memastikan elemen grafik dan peta sejajar */
+}
+
+
 
 .card{
   background: rgba(17,31,56,.78);
@@ -261,3 +283,11 @@ select{
 }
 .modal-title{font-weight:900}
 .modal-body{padding:14px; color:var(--text)}
+
+
+/* SVG Trend Chart (no canvas) */
+#trendWrap { width: 100%; height: 360px; }
+#trendSvg { width: 100%; height: 100%; display:block; }
+
+
+.chart-subtitle{font-size:12px;opacity:.85;}

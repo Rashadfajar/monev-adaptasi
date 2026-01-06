@@ -402,15 +402,327 @@ function computeButtons() {
 
 }
 
-function modal(id, show) {
-  const modalElement = document.getElementById(id);
-  if (show) {
-    modalElement.classList.remove("hidden");
-  } else {
-    modalElement.classList.add("hidden");
+// -------------------------------
+// Global filter state + helpers
+// -------------------------------
+const state = {
+  year: null,
+  subperiod: "",
+  sector: "",
+  location: "",
+  institution: "",
+  typology: ""
+};
+
+function getEl(id){ return document.getElementById(id); }
+
+function readFiltersFromUI() {
+  state.year = getEl("yearSel")?.value || state.year;
+  state.subperiod = getEl("subperiodSel")?.value || state.subperiod;
+  state.sector = getEl("sectorSel")?.value || "";
+  state.location = getEl("locationSel")?.value || "";
+  state.institution = getEl("instSel")?.value || "";
+  state.typology = getEl("typologySel")?.value || "";
+}
+
+function resetFiltersUI() {
+  ["sectorSel","locationSel","instSel","typologySel"].forEach(id => {
+    const el = getEl(id);
+    if (el) el.value = "";
+  });
+  // keep year/subperiod as-is (it is the active reporting period)
+  readFiltersFromUI();
+}
+
+function filterHorizontalRows() {
+  // NOTE: mock.hRows doesn't have typology; keep it as a no-op for now (UI ready).
+  return mock.hRows.filter(r => {
+    if (state.sector && r.sector !== state.sector) return false;
+    if (state.location && r.loc !== state.location) return false;
+    if (state.institution && r.inst !== state.institution) return false;
+    return true;
+  });
+}
+
+// -------------------------------
+// SVG Trend Chart (NO <canvas>)
+// -------------------------------
+const trendLabels = ["Q1 2022","Q2 2022","Q3 2022","Q4 2022","Q1 2023","Q2 2023","Q3 2023","Q4 2023","Q1 2024"];
+// Dummy series by sector (SVG chart; no canvas)
+function getDummySectorSeries(sector) {
+  const s = (sector || "").trim();
+  const key = s === "Ecosystems" ? "Ecosystem" : s; // normalize to dummy switch
+  let data = [];
+  let label = "No Data";
+
+  switch (key) {
+    case "Food":
+      data = [230, 240, 250, 260, 270, 280, 290, 300, 310];
+      label = "Food Sector";
+      break;
+    case "Water":
+      data = [180, 190, 200, 210, 220, 230, 240, 250, 260];
+      label = "Water Sector";
+      break;
+    case "Health":
+      data = [95, 100, 105, 110, 115, 120, 125, 130, 135];
+      label = "Health Sector";
+      break;
+    case "Ecosystem":
+      data = [210, 220, 230, 240, 250, 260, 270, 280, 290];
+      label = "Ecosystem Sector";
+      break;
+    case "DRM":
+      data = [160, 170, 180, 190, 200, 210, 220, 230, 240];
+      label = "DRM Sector";
+      break;
+    case "Coastal":
+      data = [120, 130, 140, 150, 160, 170, 180, 190, 200];
+      label = "Coastal Sector";
+      break;
+    default: {
+      // "All / Seluruh": jumlah total semua sektor per-kuartal (bukan rata-rata)
+      const all = [
+        [230, 240, 250, 260, 270, 280, 290, 300, 310], // Food
+        [180, 190, 200, 210, 220, 230, 240, 250, 260], // Water
+        [95, 100, 105, 110, 115, 120, 125, 130, 135],  // Health
+        [210, 220, 230, 240, 250, 260, 270, 280, 290], // Ecosystem
+        [160, 170, 180, 190, 200, 210, 220, 230, 240], // DRM
+        [120, 130, 140, 150, 160, 170, 180, 190, 200], // Coastal
+      ];
+      data = all[0].map((_, i) => all.reduce((acc, arr) => acc + arr[i], 0));
+      label = "All Sectors (Total)";
+      break;
+    }
+  }
+
+  return { label, data };
+}
+
+
+function seededNoise(seed) {
+  // tiny deterministic pseudo-random (0..1)
+  let x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+function buildTrendValues(filteredRows) {
+  // Build a simple "trend" based on how many actions match filters.
+  // When backend exists, replace with real time-series aggregation.
+  const n = filteredRows.length || 0;
+
+  // If filters are empty and we have sector selected, use mock.mpcRows baseline (#actions).
+  let baseline = n;
+  if (baseline === 0 && state.sector) {
+    const m = mock.mpcRows.find(x => x.sector === state.sector);
+    baseline = m ? m.actions : 0;
+  }
+  if (baseline === 0) baseline = 60; // default visual baseline for empty selections
+
+  // Seed based on filters to keep the line stable per selection
+  const seed =
+    (parseInt(state.year || "2026", 10) * 7) +
+    (state.subperiod === "S2" ? 13 : 5) +
+    (state.sector ? state.sector.length * 17 : 3) +
+    (state.location ? state.location.length * 11 : 2) +
+    (state.institution ? state.institution.length * 19 : 1);
+
+  const vals = trendLabels.map((_, i) => {
+    const t = i / (trendLabels.length - 1);
+    const drift = 0.7 + (t * 0.55);              // gradual uptrend
+    const wiggle = (seededNoise(seed + i * 3) - 0.5) * 0.12; // small variance
+    const v = baseline * (drift + wiggle);
+    return Math.max(0, Math.round(v));
+  });
+
+  return vals;
+}
+
+function renderTrendSvg(svgId, labels, values, seriesLabel = "") {
+  const svg = getEl(svgId);
+  if (!svg) return;
+
+  // keep viewBox in HTML (720x360)
+  const W = 720, H = 360;
+  const pad = { l: 54, r: 18, t: 16, b: 44 };
+  const innerW = W - pad.l - pad.r;
+  const innerH = H - pad.t - pad.b;
+
+  const minV = 0;
+  const maxV = Math.max(...values, 1);
+  const yMax = Math.ceil(maxV * 1.12);
+
+  const x = (i) => pad.l + (i * innerW / Math.max(1, labels.length - 1));
+  const y = (v) => pad.t + (innerH - ((v - minV) / (yMax - minV)) * innerH);
+
+  const pts = values.map((v, i) => `${x(i)},${y(v)}`).join(" ");
+
+  const gridLines = 4;
+  const yTicks = Array.from({length: gridLines + 1}, (_, k) => {
+    const val = Math.round((yMax / gridLines) * k);
+    const yy = y(val);
+    return { val, yy };
+  });
+
+  const titleParts = [];
+  if (state.sector) titleParts.push(`Sector: ${state.sector}`);
+  if (state.location) titleParts.push(`Location: ${state.location}`);
+  if (state.institution) titleParts.push(`Institution: ${state.institution}`);
+  if (state.typology) titleParts.push(`Typology: ${state.typology}`);
+  const title = titleParts.length ? titleParts.join(" • ") : "All data";
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="trendFill" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="rgba(79,156,255,.35)"></stop>
+        <stop offset="100%" stop-color="rgba(79,156,255,0)"></stop>
+      </linearGradient>
+    </defs>
+
+    <!-- frame -->
+    <rect x="0" y="0" width="${W}" height="${H}" rx="14" ry="14" fill="rgba(17,31,56,.35)" stroke="rgba(32,52,87,.75)"></rect>
+
+    <!-- title -->
+    <text x="${pad.l}" y="${pad.t + 10}" fill="rgba(231,238,252,.95)" font-size="12" font-weight="800">${title}</text>
+  
+    <!-- grid -->
+    ${yTicks.map(t => `
+      <line x1="${pad.l}" y1="${t.yy}" x2="${W - pad.r}" y2="${t.yy}" stroke="rgba(32,52,87,.55)" />
+      <text x="${pad.l - 10}" y="${t.yy + 4}" text-anchor="end" fill="rgba(159,176,208,.95)" font-size="11">${t.val}</text>
+    `).join("")}
+
+    <!-- x axis labels (sparse) -->
+    ${labels.map((lab, i) => {
+      if (i % 2 !== 0 && i !== labels.length - 1) return "";
+      const xx = x(i);
+      return `<text x="${xx}" y="${H - 18}" text-anchor="middle" fill="rgba(159,176,208,.95)" font-size="11">${lab}</text>`;
+    }).join("")}
+
+    <!-- area + line -->
+    <polygon points="${pad.l},${pad.t + innerH} ${pts} ${W - pad.r},${pad.t + innerH}" fill="url(#trendFill)"></polygon>
+    <polyline points="${pts}" fill="none" stroke="rgba(79,156,255,1)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+
+    <!-- points -->
+    ${values.map((v,i) => `
+      <circle cx="${x(i)}" cy="${y(v)}" r="3.2" fill="rgba(231,238,252,.95)"></circle>
+    `).join("")}
+  `;
+}
+
+// -------------------------------
+// Leaflet Map (filter-aware markers)
+// -------------------------------
+let map = null;
+let markersLayer = null;
+
+const provinceCoords = {
+  "Prov A": [0.55, 101.5],
+  "Prov B": [-0.5, 104],
+  "Prov C": [1.1, 118]
+};
+
+function initMap() {
+  map = L.map('mapid', { zoomControl: true }).setView([0.7874, 119.9965], 5);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  markersLayer = L.layerGroup().addTo(map);
+  updateMapMarkers();
+  // Ensure proper sizing if container is rendered after layout
+  setTimeout(() => map && map.invalidateSize(), 50);
+}
+
+function updateMapMarkers() {
+  if (!markersLayer) return;
+  markersLayer.clearLayers();
+
+  // ⛔ SEKTOR TIDAK DIANGGAP FILTER PETA
+  const hasMapFilter =
+    state.location || state.institution || state.typology;
+
+  const counts = {};
+
+  // ===============================
+  // MODE NASIONAL (ALL)
+  // ===============================
+  if (!hasMapFilter) {
+    mock.vRows.forEach(r => {
+      counts[r.loc] = r.actions; // AKUMULASI NASIONAL
+    });
+  }
+
+  // ===============================
+  // MODE TERFILTER (NON-SEKTOR)
+  // ===============================
+  else {
+    mock.hRows.forEach(r => {
+      if (state.location && r.loc !== state.location) return;
+      if (state.institution && r.inst !== state.institution) return;
+      // typology belum ada di data → skip
+
+      counts[r.loc] = (counts[r.loc] || 0) + 1;
+    });
+  }
+
+  // ===============================
+  // RENDER MARKER
+  // ===============================
+  Object.entries(counts).forEach(([loc, n]) => {
+    const coords = provinceCoords[loc];
+    if (!coords) return;
+
+    L.circleMarker(coords, {
+      radius: Math.max(6, Math.min(20, 6 + Math.sqrt(n) * 3)),
+      color: '#4f9cff',
+      weight: 2,
+      fillColor: '#4f9cff',
+      fillOpacity: 0.3
+    })
+    .bindPopup(`
+      <b>${loc}</b><br>
+      Jumlah Aksi: <b>${n}</b>
+    `)
+    .addTo(markersLayer);
+  });
+
+  // Zoom jika lokasi dipilih
+  if (state.location && provinceCoords[state.location]) {
+    map.setView(provinceCoords[state.location], 6);
   }
 }
 
+
+// -------------------------------
+// Single source of truth: update visuals
+// -------------------------------
+function updateVisuals() {
+  readFiltersFromUI();
+
+  // Trend chart (dummy series; filtered by Global Filters → Sector)
+  const series = getDummySectorSeries(state.sector);
+  renderTrendSvg("trendSvg", trendLabels, series.data, series.label);
+// Map
+  if (map) updateMapMarkers();
+}
+
+function filtersBehavior() {
+  // change listeners
+  ["yearSel","subperiodSel","sectorSel","locationSel","instSel","typologySel"].forEach(id => {
+    const el = getEl(id);
+    if (!el) return;
+    el.addEventListener("change", updateVisuals);
+  });
+
+  const resetBtn = getEl("resetFilters");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+      resetFiltersUI();
+      updateVisuals();
+    });
+  }
+}
 
 function init() {
   setYears();
@@ -423,6 +735,12 @@ function init() {
   langBehavior();
   computeButtons();
   applyI18n();
+
+  // Filter-aware visuals on Home (map + trend)
+  readFiltersFromUI();
+  filtersBehavior();
+  initMap();
+  updateVisuals();
 }
 
 init();
