@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MoNEv Adaptasi – Impact Engine</title>
-  <link rel="stylesheet" href="app.css" />
+  <link rel="stylesheet" href="app1.css" />
   <style>
-    .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:14px}
+    /* .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:14px}
     @media (max-width: 1100px){ .grid2{grid-template-columns:1fr} }
 
     .grid3{display:grid; grid-template-columns: 1.2fr .8fr; gap:14px}
@@ -98,7 +98,141 @@
 
     .modal .modal-card{width:min(1080px, 94vw)}
     .twoCol{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
+    @media (max-width: 900px){ .twoCol{grid-template-columns:1fr} } */
+    .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:14px}
+    @media (max-width: 1100px){ .grid2{grid-template-columns:1fr} }
+
+    .grid3{display:grid; grid-template-columns: 1.2fr .8fr; gap:14px}
+    @media (max-width: 1100px){ .grid3{grid-template-columns:1fr} }
+
+    /* ===== LIGHT THEME ADAPTATION ===== */
+
+    .input{
+      background:#ffffff;
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      outline:none;
+      min-width:220px;
+    }
+    .input:focus{
+      border-color:#bfdbfe;
+      box-shadow:0 0 0 4px rgba(37,99,235,.12);
+    }
+
+    .pill{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#ffffff;
+      font-weight:800;
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      color:var(--text);
+    }
+    .pill.good{color:var(--good); border-color:#bbf7d0; background:#dcfce7}
+    .pill.warn{color:var(--warn); border-color:#fde68a; background:#fef3c7}
+    .pill.bad{color:var(--bad); border-color:#fecaca; background:#fee2e2}
+
+    .muted2{color:var(--muted); font-weight:800}
+
+    .pipeline{display:grid; gap:10px}
+
+    .step{
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:#ffffff;
+      padding:12px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+      box-shadow: var(--shadow);
+    }
+    .step .left{display:grid; gap:4px}
+    .step .title{font-weight:900; color:var(--text)}
+    .step .desc{color:var(--muted); font-size:12px}
+
+    .badge{
+      font-weight:800;
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#f8fafc;
+      color:var(--muted);
+    }
+
+    .b-idle{color:var(--muted)}
+    .b-ok{color:var(--good); border-color:#bbf7d0; background:#dcfce7}
+    .b-warn{color:var(--warn); border-color:#fde68a; background:#fef3c7}
+    .b-err{color:var(--bad); border-color:#fecaca; background:#fee2e2}
+
+    .kv{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#ffffff;
+    }
+    .kv .k{color:var(--muted); font-weight:800}
+    .kv .v{font-weight:900; color:var(--text)}
+
+    .tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px}
+
+    .tab{
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#ffffff;
+      font-weight:800;
+      color:var(--muted);
+      cursor:pointer;
+    }
+    .tab:hover{background:#f8fafc}
+    .tab.active{
+      color:var(--accent);
+      background:#eff6ff;
+      border-color:#bfdbfe;
+    }
+
+    .logbox{
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:#ffffff;
+      padding:12px;
+      min-height:220px;
+      max-height:320px;
+      overflow:auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      font-size:12px;
+      color:#0f172a;
+      line-height:1.55;
+      white-space:pre-wrap;
+    }
+
+    .rightSticky{position:sticky; top:84px}
+    @media (max-width: 1100px){ .rightSticky{position:static} }
+
+    .note{
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid #bfdbfe;
+      background:#eff6ff;
+      color:#0f172a;
+      font-size:12px;
+      margin-top:10px;
+    }
+
+    .modal .modal-card{width:min(1080px, 94vw)}
+
+    .twoCol{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
     @media (max-width: 900px){ .twoCol{grid-template-columns:1fr} }
+
   </style>
 </head>
 <body>

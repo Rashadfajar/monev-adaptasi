@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MoNEv Adaptasi – Pelaporan & Ekspor</title>
+  <link rel="stylesheet" href="app1.css" />
+  <style>
+    /* .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:14px}
+    @media (max-width: 1100px){ .grid2{grid-template-columns:1fr} }
+
+    .grid3{display:grid; grid-template-columns: 1.2fr .8fr; gap:14px}
+    @media (max-width: 1100px){ .grid3{grid-template-columns:1fr} }
+
+    .input{
+      background: rgba(17,31,56,.9);
+      color: var(--text);
+      border:1px solid rgba(32,52,87,.9);
+      border-radius:12px;
+      padding:10px 12px;
+      outline:none;
+      min-width:220px;
+    }
+
+    .pill{
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(32,52,87,.85);
+      background: rgba(15,26,46,.55);
+      font-weight:900; display:inline-flex; gap:8px; align-items:center;
+    }
+    .pill.good{color:var(--good); border-color: rgba(61,220,151,.45); background: rgba(61,220,151,.12)}
+    .pill.warn{color:var(--warn); border-color: rgba(255,204,102,.45); background: rgba(255,204,102,.12)}
+    .pill.bad{color:var(--bad); border-color: rgba(255,107,107,.45); background: rgba(255,107,107,.12)}
+    .muted2{color:var(--muted); font-weight:800}
+
+    .tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px}
+    .tab{
+      padding:8px 12px; border-radius:999px;
+      border:1px solid rgba(32,52,87,.85);
+      background: rgba(15,26,46,.55);
+      font-weight:900; color:var(--muted);
+      cursor:pointer;
+    }
+    .tab.active{color:var(--text); background: rgba(79,156,255,.18); border-color: rgba(79,156,255,.45)}
+
+    .kv{display:flex; justify-content:space-between; gap:10px; padding:8px 10px; border-radius:12px; border:1px solid rgba(32,52,87,.7); background: rgba(15,26,46,.55)}
+    .kv .k{color:var(--muted); font-weight:800}
+    .kv .v{font-weight:900}
+
+    .logbox{
+      border-radius:16px;
+      border:1px solid rgba(32,52,87,.85);
+      background: rgba(15,26,46,.55);
+      padding:12px;
+      min-height: 140px;
+      max-height: 260px;
+      overflow:auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      font-size:12px;
+      color: rgba(230,240,255,.92);
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    .btn-row{display:flex; gap:8px; flex-wrap:wrap}
+    .smalltag{display:inline-block; font-size:12px; font-weight:900; color: rgba(230,240,255,.92);
+      padding:6px 10px; border-radius:999px; border:1px solid rgba(32,52,87,.85); background: rgba(17,31,56,.75);
+    }
+
+    .note{
+      padding:10px 12px; border-radius:14px;
+      border:1px solid rgba(79,156,255,.35);
+      background: rgba(79,156,255,.10);
+      color: rgba(230,240,255,.94);
+      font-size:12px;
+      margin-top:10px;
+    }
+
+    .modal .modal-card{width:min(1080px, 94vw)}
+    .twoCol{display:grid; grid-template-columns: 1fr 1fr; gap:12px} 
+    @media (max-width: 900px){ .twoCol{grid-template-columns:1fr} } */
+    
+    .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:14px}
+    @media (max-width: 1100px){ .grid2{grid-template-columns:1fr} }
+
+    .grid3{display:grid; grid-template-columns: 1.2fr .8fr; gap:14px}
+    @media (max-width: 1100px){ .grid3{grid-template-columns:1fr} }
+
+    /* ===== LIGHT THEME ADAPTATION ===== */
+
+    .input{
+    background:#ffffff;
+    color:var(--text);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px 12px;
+    outline:none;
+    min-width:220px;
+    }
+    .input:focus{
+    border-color:#bfdbfe;
+    box-shadow:0 0 0 4px rgba(37,99,235,.12);
+    }
+
+    .pill{
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:#ffffff;
+    font-weight:800;
+    display:inline-flex;
+    gap:8px;
+    align-items:center;
+    color:var(--text);
+    }
+    .pill.good{color:var(--good); border-color:#bbf7d0; background:#dcfce7}
+    .pill.warn{color:var(--warn); border-color:#fde68a; background:#fef3c7}
+    .pill.bad{color:var(--bad); border-color:#fecaca; background:#fee2e2}
+
+    .muted2{color:var(--muted); font-weight:800}
+
+    .tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px}
+    .tab{
+    padding:8px 12px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:#ffffff;
+    font-weight:800;
+    color:var(--muted);
+    cursor:pointer;
+    }
+    .tab:hover{background:#f8fafc}
+    .tab.active{
+    color:var(--accent);
+    background:#eff6ff;
+    border-color:#bfdbfe;
+    }
+
+    .kv{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    padding:8px 10px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:#ffffff;
+    }
+    .kv .k{color:var(--muted); font-weight:800}
+    .kv .v{font-weight:900; color:var(--text)}
+
+    .logbox{
+    border-radius:16px;
+    border:1px solid var(--line);
+    background:#ffffff;
+    padding:12px;
+    min-height:140px;
+    max-height:260px;
+    overflow:auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+    font-size:12px;
+    color:var(--text);
+    line-height:1.55;
+    white-space:pre-wrap;
+    }
+
+    .btn-row{display:flex; gap:8px; flex-wrap:wrap}
+
+    .smalltag{
+    display:inline-block;
+    font-size:12px;
+    font-weight:800;
+    color:var(--text);
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:#f8fafc;
+    }
+
+    .note{
+    padding:10px 12px;
+    border-radius:14px;
+    border:1px solid #bfdbfe;
+    background:#eff6ff;
+    color:var(--text);
+    font-size:12px;
+    margin-top:10px;
+    }
+
+    .modal .modal-card{width:min(1080px, 94vw)}
+
+    .twoCol{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
+    @media (max-width: 900px){ .twoCol{grid-template-columns:1fr} }
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo-container">
+          <img src="assets/Logo_KLH.png" alt="Logo" class="logo">
+        </div>
+        <div class="brand-text">
+          <div class="brand-title">MoNEv Adaptasi – MPC</div>
+          <div class="brand-sub">Pelaporan & Ekspor (BTR / National Communication)</div>
+        </div>
+      </div>
+
+      <div class="search">
+        <input id="globalSearch" type="search" placeholder="Cari job / aksi / indikator / wilayah / sektor…" />
+        <select id="searchScope">
+          <option value="all">All</option>
+          <option value="jobs">Jobs</option>
+          <option value="indicator">Indicator outputs</option>
+          <option value="aggregate">Aggregate outputs</option>
+          <option value="help">Help</option>
+        </select>
+        <button id="searchBtn" class="btn">Search</button>
+      </div>
+
+      <div class="top-actions">
+        <button class="chip" id="langToggle">ID</button>
+        <button class="icon-btn" title="Help">?</button>
+        <button class="icon-btn" title="Notifications">🔔</button>
+        <button class="icon-btn" title="User">👤</button>
+      </div>
+    </header>
+
+    <div class="body">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <nav class="nav">
+          <a class="nav-item" href="home.html">Dashboard (Home)</a>
+          <a class="nav-item" href="input.html">Input Data</a>
+          <a class="nav-item" href="review.html">Review & Validasi</a>
+          <a class="nav-item" href="engine.html">Impact Engine</a>
+          <a class="nav-item active" href="reporting.html">Pelaporan & Ekspor</a>
+          <a class="nav-item" href="help.html">Help Center</a>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="small muted">Reporting UI v0.1</div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="main">
+
+        <!-- HEADER + FILTERS -->
+        <section class="panel">
+          <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
+            <div>
+              <div style="font-weight:900; font-size:18px">Pelaporan & Ekspor</div>
+              <div class="muted small">
+                Menyusun keluaran pelaporan adaptasi untuk siklus UNFCCC: <b>BTR</b> & <b>National Communication</b>.
+                Semua ekspor menyertakan <i>job_id</i>, <i>method_version</i>, <i>parameter_set</i> sebagai lineage.
+              </div>
+            </div>
+            <div class="row wrap">
+              <span class="pill" id="dataState"><span>●</span> Ready</span>
+              <button class="btn btn-ghost" id="refreshBtn">Refresh</button>
+            </div>
+          </div>
+
+          <div class="note">
+            <b>Prinsip:</b> Reporting hanya membaca output dari Impact Engine (hasil komputasi backend nantinya).
+            Kalau belum ada job, lakukan <b>Run Job</b> di Impact Engine terlebih dahulu.
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="grid2">
+            <div class="card">
+              <div class="card-title">Filter & Mode Pelaporan</div>
+              <div class="muted small">Pilih job & parameter pelaporan. Default menampilkan job terbaru.</div>
+              <div style="height:10px"></div>
+
+              <div class="grid2">
+                <div>
+                  <div class="muted2 small">Report Mode</div>
+                  <select id="reportMode" class="input">
+                    <option value="BTR">BTR</option>
+                    <option value="NC">National Communication (NC)</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="muted2 small">Period</div>
+                  <select id="period" class="input"></select>
+                </div>
+              </div>
+
+              <div style="height:10px"></div>
+              <div class="grid2">
+                <div>
+                  <div class="muted2 small">Job (default latest)</div>
+                  <select id="jobId" class="input"></select>
+                </div>
+                <div>
+                  <div class="muted2 small">Scope Filter (optional)</div>
+                  <select id="scope" class="input">
+                    <option value="ALL">ALL</option>
+                    <option value="NATIONAL">NATIONAL</option>
+                    <option value="SECTOR">SECTOR</option>
+                    <option value="REGION">REGION</option>
+                    <option value="ACTION">ACTION</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="height:10px"></div>
+              <div class="grid2">
+                <div>
+                  <div class="muted2 small">Agg Key / Scope ID (optional)</div>
+                  <input id="keyFilter" class="input" placeholder="SECTOR: Water | REGION: ID-31 | ACTION: ACT-000123" />
+                </div>
+                <div>
+                  <div class="muted2 small">Eligible only</div>
+                  <select id="eligibleOnly" class="input">
+                    <option value="YES">YES</option>
+                    <option value="NO">NO (include ineligible)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="height:10px"></div>
+              <div class="btn-row">
+                <button class="btn" id="applyBtn">Apply</button>
+                <button class="btn btn-ghost" id="resetBtn">Reset</button>
+                <button class="btn btn-ghost" id="openMetaBtn">View Lineage</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-title">Summary (for narrative)</div>
+              <div class="muted small">Ringkasan yang bisa langsung dipakai untuk narasi BTR/NC.</div>
+              <div style="height:10px"></div>
+
+              <div class="kv"><div class="k">Selected job</div><div class="v" id="kJob">—</div></div>
+              <div class="kv"><div class="k">Method version</div><div class="v" id="kMethod">—</div></div>
+              <div class="kv"><div class="k">Parameter set</div><div class="v" id="kParam">—</div></div>
+              <div class="kv"><div class="k">Period</div><div class="v" id="kPeriod">—</div></div>
+              <div class="kv"><div class="k">Indicator outputs</div><div class="v" id="kCountI">—</div></div>
+              <div class="kv"><div class="k">Aggregate outputs</div><div class="v" id="kCountA">—</div></div>
+              <div class="kv"><div class="k">Headline progress%</div><div class="v" id="kHeadline">—</div></div>
+
+              <div class="note" id="narrativeBox">
+                <b>Narrative stub:</b> —<br/>
+                (akan muncul setelah Apply)
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TABLES + EXPORT -->
+        <section class="grid3">
+          <div class="card">
+            <div class="row" style="justify-content:space-between; gap:10px; flex-wrap:wrap">
+              <div>
+                <div class="card-title">Data Views</div>
+                <div class="muted small">Tabel untuk pelaporan dan ekspor. Gunakan tab untuk pindah view.</div>
+              </div>
+              <div class="row wrap">
+                <span class="smalltag" id="tagMode">MODE: BTR</span>
+                <span class="smalltag" id="tagEligible">ELIGIBLE: YES</span>
+              </div>
+            </div>
+
+            <div style="height:10px"></div>
+            <div class="tabs">
+              <div class="tab active" data-tab="btr">BTR View</div>
+              <div class="tab" data-tab="nc">NC View</div>
+              <div class="tab" data-tab="raw">Raw Outputs</div>
+            </div>
+
+            <!-- BTR view -->
+            <div class="table-wrap" id="tab-btr">
+              <table class="table" id="tblBTR">
+                <thead>
+                  <tr>
+                    <th>Period</th>
+                    <th>Level</th>
+                    <th>Key</th>
+                    <th>Progress%</th>
+                    <th>N Eligible</th>
+                    <th>Job ID</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <!-- NC view -->
+            <div class="table-wrap hidden" id="tab-nc">
+              <table class="table" id="tblNC">
+                <thead>
+                  <tr>
+                    <th>Period</th>
+                    <th>Sector/Region</th>
+                    <th>Progress%</th>
+                    <th>N Actions</th>
+                    <th>N Eligible</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <!-- Raw -->
+            <div class="table-wrap hidden" id="tab-raw">
+              <table class="table" id="tblRaw">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Job</th>
+                    <th>Key</th>
+                    <th>Indicator/Level</th>
+                    <th>Progress%</th>
+                    <th>Eligible</th>
+                    <th>Quality</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+          </div>
+
+          <div class="card">
+            <div class="card-title">Export Center</div>
+            <div class="muted small">Ekspor untuk lampiran BTR/NC dan audit.</div>
+            <div style="height:10px"></div>
+
+            <div class="btn-row">
+              <button class="btn" id="exportCsvBtn">Export CSV</button>
+              <button class="btn btn-ghost" id="exportJsonBtn">Export JSON</button>
+              <button class="btn btn-ghost" id="copyNarrativeBtn">Copy Narrative</button>
+            </div>
+
+            <div style="height:10px"></div>
+            <div class="muted2 small">Export Logs</div>
+            <div style="height:8px"></div>
+            <div class="logbox" id="exportLog"></div>
+
+            <div class="note">
+              <b>Tip:</b> CSV cocok untuk lampiran tabular. JSON cocok untuk API atau integrasi SRN/portal.
+            </div>
+          </div>
+        </section>
+
+        <!-- Search Modal -->
+        <div class="modal hidden" id="searchModal" role="dialog" aria-modal="true">
+          <div class="modal-card">
+            <div class="modal-head">
+              <div class="modal-title" id="searchTitle">Search Results</div>
+              <button class="icon-btn" id="closeSearch">✕</button>
+            </div>
+            <div class="modal-body" id="searchBody"></div>
+          </div>
+        </div>
+
+        <!-- Meta/Lineage Modal -->
+        <div class="modal hidden" id="metaModal" role="dialog" aria-modal="true">
+          <div class="modal-card">
+            <div class="modal-head">
+              <div class="modal-title">Lineage / Metadata</div>
+              <button class="icon-btn" id="closeMeta">✕</button>
+            </div>
+            <div class="modal-body">
+              <div class="twoCol">
+                <div>
+                  <div style="font-weight:900; margin-bottom:6px">Selected Job</div>
+                  <pre class="logbox" style="max-height:260px" id="metaJob"></pre>
+                </div>
+                <div>
+                  <div style="font-weight:900; margin-bottom:6px">Export Manifest</div>
+                  <pre class="logbox" style="max-height:260px" id="metaManifest"></pre>
+                </div>
+              </div>
+              <div style="height:12px"></div>
+              <div style="font-weight:900; margin-bottom:6px">Notes</div>
+              <div class="muted small">
+                Manifest ini bisa disimpan bersama file ekspor sebagai jejak audit: job_id, method_version,
+                parameter_set, period, filter, dan waktu ekspor.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="reporting.js"></script>
+</body>
+</html>

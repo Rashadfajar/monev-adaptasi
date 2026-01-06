@@ -4,10 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MoNEv Adaptasi – Input Wizard</title>
-  <link rel="stylesheet" href="app.css" />
+  <link rel="stylesheet" href="app1.css" />
   <style>
     /* small page-specific additions */
-    .wizard-header{display:flex; gap:12px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap}
+    /* .wizard-header{display:flex; gap:12px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap}
     .wizard-title{font-weight:900; font-size:18px}
     .wizard-sub{color:var(--muted); font-size:12px; margin-top:4px}
     .seg{display:flex; gap:8px; flex-wrap:wrap}
@@ -48,6 +48,186 @@
     .toast{position:fixed; right:16px; bottom:16px; padding:10px 12px; border-radius:12px; background: rgba(17,31,56,.95); border:1px solid rgba(32,52,87,.9); box-shadow: var(--shadow); display:none; max-width: 420px}
     .toast.show{display:block}
     .toast b{display:block; margin-bottom:4px}
+     */
+    /* small page-specific additions (LIGHT THEME) */
+    .wizard-header{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      justify-content:space-between;
+      flex-wrap:wrap
+    }
+
+    .wizard-title{
+      font-weight:900;
+      font-size:18px;
+      color:var(--text)
+    }
+
+    .wizard-sub{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:4px
+    }
+
+    .seg{display:flex; gap:8px; flex-wrap:wrap}
+    .seg button{border-radius:999px}
+
+    .progress{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px
+    }
+
+    /* wizard steps */
+    .step{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#ffffff;
+      color:var(--muted);
+      font-weight:800;
+      cursor:pointer;
+    }
+    .step.active{
+      color:var(--accent);
+      border-color:#bfdbfe;
+      background:#eff6ff;
+    }
+    .step.done{
+      color:var(--good);
+      border-color:#bbf7d0;
+      background:#dcfce7;
+    }
+
+    /* form layout */
+    .form-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px
+    }
+    @media (max-width: 900px){
+      .form-grid{grid-template-columns:1fr}
+    }
+
+    /* inputs */
+    .input,
+    textarea{
+      width:100%;
+      background:#ffffff;
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      outline:none;
+    }
+
+    .input:focus,
+    textarea:focus{
+      border-color:#bfdbfe;
+      box-shadow:0 0 0 4px rgba(37,99,235,.12);
+    }
+
+    textarea{
+      min-height:110px;
+      resize:vertical
+    }
+
+    .hint{
+      font-size:12px;
+      color:var(--muted)
+    }
+
+    /* pills */
+    .pill{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#ffffff;
+      font-weight:800;
+      color:var(--text)
+    }
+    .pill.good{
+      border-color:#bbf7d0;
+      background:#dcfce7;
+      color:var(--good)
+    }
+    .pill.warn{
+      border-color:#fde68a;
+      background:#fef3c7;
+      color:var(--warn)
+    }
+    .pill.bad{
+      border-color:#fecaca;
+      background:#fee2e2;
+      color:var(--bad)
+    }
+
+    /* footer actions */
+    .footer-actions{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px
+    }
+
+    .btn-danger{
+      background:#fee2e2;
+      border-color:#fecaca;
+      color:var(--bad)
+    }
+
+    /* file upload */
+    .filebox{
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px dashed var(--line);
+      background:#f8fafc
+    }
+
+    .filelist{
+      list-style:none;
+      padding:0;
+      margin:10px 0 0;
+      display:grid;
+      gap:8px
+    }
+
+    .filelist li{
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#ffffff;
+      font-size:13px;
+      box-shadow:var(--shadow)
+    }
+
+    /* toast notification */
+    .toast{
+      position:fixed;
+      right:16px;
+      bottom:16px;
+      padding:10px 12px;
+      border-radius:12px;
+      background:#ffffff;
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      display:none;
+      max-width:420px;
+      color:var(--text)
+    }
+    .toast.show{display:block}
+    .toast b{
+      display:block;
+      margin-bottom:4px
+    }
+
   </style>
 </head>
 

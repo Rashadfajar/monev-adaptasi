@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MoNEv Adaptasi – MPC Dashboard</title>
-  <link rel="stylesheet" href="app.css" />
+  <link rel="stylesheet" href="app1.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
@@ -95,11 +95,11 @@
             <div class="field grow">
               <label data-i18n="quickActions">Quick Actions</label>
               <div class="row wrap">
-                <a class="btn" href="input.html#horizontal" data-i18n="qaInputH">Input Horizontal</a>
-                <a class="btn" href="input.html#vertical" data-i18n="qaInputV">Input Vertical</a>
-                <a class="btn" href="review.html" data-i18n="qaInbox">Review Inbox</a>
-                <button class="btn" id="runComputeBtn" data-i18n="qaRunCompute">Run Computation</button>
-                <a class="btn" href="reporting.html" data-i18n="qaExport">Export Report</a>
+                <a class="btn" href="input.html#horizontal" data-i18n="qaInputH">Sektor</a>
+                <a class="btn" href="input.html#vertical" data-i18n="qaInputV">Daerah</a>
+                <a class="btn" href="review.html" data-i18n="qaInbox">Validasi</a>
+                <a class="btn" href="engine.html" data-i18n="qaRunCompute">Evaluasi</a>
+                <a class="btn" href="reporting.html" data-i18n="qaExport">Report</a>
               </div>
             </div>
           </div>
@@ -190,13 +190,13 @@
           <div class="panel-row" style="display: flex; justify-content: space-between; align-items: stretch; gap: 20px;">
             <!-- Peta -->
             <div class="field" style="flex: 1; padding: 10px;">
-              <h3 style="color: white; margin:0 0 8px 0;">Wilayah Terlapor</h3>
+              <h3 style="color: rgb(0, 0, 0); margin:0 0 8px 0;">Wilayah Terlapor</h3>
               <div id="mapid" style="height: 300px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);"></div>
             </div>
 
             <!-- Grafik Tren Aksi Adaptasi -->
             <div class="field" style="flex: 1; padding: 10px;">
-              <h3 style="color: white; margin:0 0 8px 0;">Tren Aksi Adaptasi</h3>
+              <h3 style="color: rgb(0, 0, 0); margin:0 0 8px 0;">Tren Aksi Adaptasi</h3>
               <!-- <div class="muted small" style="margin-bottom:8px;">Grafik mengikuti Global Filters (Sector/Location/Institution/Typology) & Periode.</div> -->
               <div id="trendWrap" style="width:100%; height: 300px;">
                 <svg id="trendSvg" viewBox="0 0 720 360" preserveAspectRatio="none" role="img" aria-label="Trend chart"></svg>

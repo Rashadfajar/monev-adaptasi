@@ -60,11 +60,11 @@ const i18n = {
     periodStatus: "Status Periode",
     lockPeriod: "Lock Period",
     quickActions: "Quick Actions",
-    qaInputH: "Input Horizontal",
-    qaInputV: "Input Vertical",
-    qaInbox: "Review Inbox",
-    qaRunCompute: "Run Computation",
-    qaExport: "Export Report",
+    qaInputH: "Sektor",
+    qaInputV: "Daerah",
+    qaInbox: "Validasi",
+    qaRunCompute: "Evaluasi",
+    qaExport: "Report",
     globalFilters: "Global Filters",
     reset: "Reset",
     cardH: "Horizontal Input",
@@ -385,22 +385,22 @@ function langBehavior() {
   });
 }
 
-function computeButtons() {
-  const run = () => showInfo("Run Computation (Mock)", `
-    <p>Computation will be executed in <b>Impact Engine</b> module.</p>
-    <p class="muted">Backend will schedule jobs later. For now this is a UI stub.</p>
-  `);
-  document.getElementById("runComputeBtn").addEventListener("click", run);
-  document.getElementById("runComputeBtn2").addEventListener("click", run);
-  document.getElementById("briefBtn").addEventListener("click", () => showInfo("Briefing Note (Mock)", `
-    <p><b>Briefing draft</b> will be generated from computed outputs + narratives later.</p>
-  `));
-  document.getElementById("closeInfo").addEventListener("click", () => {
-    console.log("Modal close clicked"); // Cek apakah event listener dipicu
-    modal("infoModal", false); // Menutup modal
-    });
+// function computeButtons() {
+//   const run = () => showInfo("Run Computation (Mock)", `
+//     <p>Computation will be executed in <b>Impact Engine</b> module.</p>
+//     <p class="muted">Backend will schedule jobs later. For now this is a UI stub.</p>
+//   `);
+//   document.getElementById("runComputeBtn").addEventListener("click", run);
+//   document.getElementById("runComputeBtn2").addEventListener("click", run);
+//   document.getElementById("briefBtn").addEventListener("click", () => showInfo("Briefing Note (Mock)", `
+//     <p><b>Briefing draft</b> will be generated from computed outputs + narratives later.</p>
+//   `));
+//   document.getElementById("closeInfo").addEventListener("click", () => {
+//     console.log("Modal close clicked"); // Cek apakah event listener dipicu
+//     modal("infoModal", false); // Menutup modal
+//     });
 
-}
+// }
 
 // -------------------------------
 // Global filter state + helpers
@@ -538,13 +538,83 @@ function buildTrendValues(filteredRows) {
   return vals;
 }
 
+// function renderTrendSvg(svgId, labels, values, seriesLabel = "") {
+//   const svg = getEl(svgId);
+//   if (!svg) return;
+
+//   // keep viewBox in HTML (720x360)
+//   const W = 720, H = 360;
+//   const pad = { l: 54, r: 18, t: 16, b: 44 };
+//   const innerW = W - pad.l - pad.r;
+//   const innerH = H - pad.t - pad.b;
+
+//   const minV = 0;
+//   const maxV = Math.max(...values, 1);
+//   const yMax = Math.ceil(maxV * 1.12);
+
+//   const x = (i) => pad.l + (i * innerW / Math.max(1, labels.length - 1));
+//   const y = (v) => pad.t + (innerH - ((v - minV) / (yMax - minV)) * innerH);
+
+//   const pts = values.map((v, i) => `${x(i)},${y(v)}`).join(" ");
+
+//   const gridLines = 4;
+//   const yTicks = Array.from({length: gridLines + 1}, (_, k) => {
+//     const val = Math.round((yMax / gridLines) * k);
+//     const yy = y(val);
+//     return { val, yy };
+//   });
+
+//   const titleParts = [];
+//   if (state.sector) titleParts.push(`Sector: ${state.sector}`);
+//   if (state.location) titleParts.push(`Location: ${state.location}`);
+//   if (state.institution) titleParts.push(`Institution: ${state.institution}`);
+//   if (state.typology) titleParts.push(`Typology: ${state.typology}`);
+//   const title = titleParts.length ? titleParts.join(" • ") : "All data";
+
+//   svg.innerHTML = `
+//     <defs>
+//       <linearGradient id="trendFill" x1="0" x2="0" y1="0" y2="1">
+//         <stop offset="0%" stop-color="rgba(79,156,255,.35)"></stop>
+//         <stop offset="100%" stop-color="rgba(79,156,255,0)"></stop>
+//       </linearGradient>
+//     </defs>
+
+//     <!-- frame -->
+//     <rect x="0" y="0" width="${W}" height="${H}" rx="14" ry="14" fill="rgba(17,31,56,.35)" stroke="rgba(32,52,87,.75)"></rect>
+
+//     <!-- title -->
+//     <text x="${pad.l}" y="${pad.t + 10}" fill="rgba(231,238,252,.95)" font-size="12" font-weight="800">${title}</text>
+  
+//     <!-- grid -->
+//     ${yTicks.map(t => `
+//       <line x1="${pad.l}" y1="${t.yy}" x2="${W - pad.r}" y2="${t.yy}" stroke="rgba(32,52,87,.55)" />
+//       <text x="${pad.l - 10}" y="${t.yy + 4}" text-anchor="end" fill="rgba(159,176,208,.95)" font-size="11">${t.val}</text>
+//     `).join("")}
+
+//     <!-- x axis labels (sparse) -->
+//     ${labels.map((lab, i) => {
+//       if (i % 2 !== 0 && i !== labels.length - 1) return "";
+//       const xx = x(i);
+//       return `<text x="${xx}" y="${H - 18}" text-anchor="middle" fill="rgba(159,176,208,.95)" font-size="11">${lab}</text>`;
+//     }).join("")}
+
+//     <!-- area + line -->
+//     <polygon points="${pad.l},${pad.t + innerH} ${pts} ${W - pad.r},${pad.t + innerH}" fill="url(#trendFill)"></polygon>
+//     <polyline points="${pts}" fill="none" stroke="rgba(79,156,255,1)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+
+//     <!-- points -->
+//     ${values.map((v,i) => `
+//       <circle cx="${x(i)}" cy="${y(v)}" r="3.2" fill="rgba(231,238,252,.95)"></circle>
+//     `).join("")}
+//   `;
+// }
+
 function renderTrendSvg(svgId, labels, values, seriesLabel = "") {
   const svg = getEl(svgId);
   if (!svg) return;
 
-  // keep viewBox in HTML (720x360)
   const W = 720, H = 360;
-  const pad = { l: 54, r: 18, t: 16, b: 44 };
+  const pad = { l: 54, r: 18, t: 20, b: 44 };
   const innerW = W - pad.l - pad.r;
   const innerH = H - pad.t - pad.b;
 
@@ -553,15 +623,15 @@ function renderTrendSvg(svgId, labels, values, seriesLabel = "") {
   const yMax = Math.ceil(maxV * 1.12);
 
   const x = (i) => pad.l + (i * innerW / Math.max(1, labels.length - 1));
-  const y = (v) => pad.t + (innerH - ((v - minV) / (yMax - minV)) * innerH);
+  const y = (v) =>
+    pad.t + (innerH - ((v - minV) / (yMax - minV)) * innerH);
 
   const pts = values.map((v, i) => `${x(i)},${y(v)}`).join(" ");
 
   const gridLines = 4;
-  const yTicks = Array.from({length: gridLines + 1}, (_, k) => {
+  const yTicks = Array.from({ length: gridLines + 1 }, (_, k) => {
     const val = Math.round((yMax / gridLines) * k);
-    const yy = y(val);
-    return { val, yy };
+    return { val, yy: y(val) };
   });
 
   const titleParts = [];
@@ -574,40 +644,74 @@ function renderTrendSvg(svgId, labels, values, seriesLabel = "") {
   svg.innerHTML = `
     <defs>
       <linearGradient id="trendFill" x1="0" x2="0" y1="0" y2="1">
-        <stop offset="0%" stop-color="rgba(79,156,255,.35)"></stop>
-        <stop offset="100%" stop-color="rgba(79,156,255,0)"></stop>
+        <stop offset="0%" stop-color="rgba(37,99,235,0.25)"/>
+        <stop offset="100%" stop-color="rgba(37,99,235,0)"/>
       </linearGradient>
     </defs>
 
     <!-- frame -->
-    <rect x="0" y="0" width="${W}" height="${H}" rx="14" ry="14" fill="rgba(17,31,56,.35)" stroke="rgba(32,52,87,.75)"></rect>
+    <rect x="0" y="0" width="${W}" height="${H}"
+      rx="14" ry="14"
+      fill="#ffffff"
+      stroke="#e5e7eb" />
 
     <!-- title -->
-    <text x="${pad.l}" y="${pad.t + 10}" fill="rgba(231,238,252,.95)" font-size="12" font-weight="800">${title}</text>
-  
-    <!-- grid -->
+    <text x="${pad.l}" y="${pad.t - 6}"
+      fill="#0f172a"
+      font-size="12"
+      font-weight="700">
+      ${title}
+    </text>
+
+    <!-- grid + y labels -->
     ${yTicks.map(t => `
-      <line x1="${pad.l}" y1="${t.yy}" x2="${W - pad.r}" y2="${t.yy}" stroke="rgba(32,52,87,.55)" />
-      <text x="${pad.l - 10}" y="${t.yy + 4}" text-anchor="end" fill="rgba(159,176,208,.95)" font-size="11">${t.val}</text>
+      <line x1="${pad.l}" y1="${t.yy}"
+            x2="${W - pad.r}" y2="${t.yy}"
+            stroke="#e5e7eb" />
+      <text x="${pad.l - 10}" y="${t.yy + 4}"
+            text-anchor="end"
+            fill="#64748b"
+            font-size="11">
+        ${t.val}
+      </text>
     `).join("")}
 
-    <!-- x axis labels (sparse) -->
+    <!-- x axis labels -->
     ${labels.map((lab, i) => {
       if (i % 2 !== 0 && i !== labels.length - 1) return "";
-      const xx = x(i);
-      return `<text x="${xx}" y="${H - 18}" text-anchor="middle" fill="rgba(159,176,208,.95)" font-size="11">${lab}</text>`;
+      return `
+        <text x="${x(i)}" y="${H - 18}"
+              text-anchor="middle"
+              fill="#64748b"
+              font-size="11">
+          ${lab}
+        </text>`;
     }).join("")}
 
-    <!-- area + line -->
-    <polygon points="${pad.l},${pad.t + innerH} ${pts} ${W - pad.r},${pad.t + innerH}" fill="url(#trendFill)"></polygon>
-    <polyline points="${pts}" fill="none" stroke="rgba(79,156,255,1)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+    <!-- area -->
+    <polygon
+      points="${pad.l},${pad.t + innerH} ${pts} ${W - pad.r},${pad.t + innerH}"
+      fill="url(#trendFill)" />
+
+    <!-- line -->
+    <polyline
+      points="${pts}"
+      fill="none"
+      stroke="#2563eb"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round" />
 
     <!-- points -->
-    ${values.map((v,i) => `
-      <circle cx="${x(i)}" cy="${y(v)}" r="3.2" fill="rgba(231,238,252,.95)"></circle>
+    ${values.map((v, i) => `
+      <circle cx="${x(i)}" cy="${y(v)}" r="3"
+              fill="#2563eb"
+              stroke="#ffffff"
+              stroke-width="1.5" />
     `).join("")}
   `;
 }
+
 
 // -------------------------------
 // Leaflet Map (filter-aware markers)
@@ -733,7 +837,7 @@ function init() {
   searchBehavior();
   lockBehavior();
   langBehavior();
-  computeButtons();
+  // computeButtons();
   applyI18n();
 
   // Filter-aware visuals on Home (map + trend)

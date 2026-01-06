@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MoNEv Adaptasi – Review Inbox</title>
-  <link rel="stylesheet" href="app.css" />
+  <link rel="stylesheet" href="app1.css" />
   <style>
-    .layout{display:grid; grid-template-columns: 1.25fr .9fr; gap:14px}
+    /* .layout{display:grid; grid-template-columns: 1.25fr .9fr; gap:14px}
     @media (max-width: 1100px){ .layout{grid-template-columns: 1fr} }
     .filters{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
     .input{
@@ -76,7 +76,143 @@
     .pill{padding:6px 10px; border-radius:999px; border:1px solid rgba(32,52,87,.85); background: rgba(15,26,46,.55); font-weight:900}
     .pill.good{color:var(--good); border-color: rgba(61,220,151,.45); background: rgba(61,220,151,.12)}
     .pill.warn{color:var(--warn); border-color: rgba(255,204,102,.45); background: rgba(255,204,102,.12)}
-    .pill.bad{color:var(--bad); border-color: rgba(255,107,107,.45); background: rgba(255,107,107,.12)}
+    .pill.bad{color:var(--bad); border-color: rgba(255,107,107,.45); background: rgba(255,107,107,.12)} */
+
+    .layout{display:grid; grid-template-columns: 1.25fr .9fr; gap:14px}
+    @media (max-width: 1100px){ .layout{grid-template-columns: 1fr} }
+
+    .filters{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+
+    /* inputs */
+    .input{
+      background:#ffffff;
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      outline:none;
+      min-width:220px;
+    }
+    .input:focus{
+      border-color:#bfdbfe;
+      box-shadow:0 0 0 4px rgba(37,99,235,.12);
+    }
+
+    /* chips */
+    .chip2{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#ffffff;
+      font-weight:800;
+      color:var(--muted);
+    }
+    .chip2 b{color:var(--text)}
+
+    /* status pills */
+    .status{
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:800;
+      font-size:12px;
+      border:1px solid var(--line);
+      display:inline-block;
+      background:#ffffff;
+    }
+
+    .st-pending{color:var(--warn); border-color:#fde68a; background:#fef3c7}
+    .st-returned{color:var(--bad); border-color:#fecaca; background:#fee2e2}
+    .st-approved{color:var(--good); border-color:#bbf7d0; background:#dcfce7}
+    .st-submitted{color:var(--accent); border-color:#bfdbfe; background:#eff6ff}
+
+    /* right preview panel */
+    .peek{
+      position:sticky;
+      top:84px;
+      border-radius:var(--radius2);
+      background:#ffffff;
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      padding:14px;
+      min-height:420px;
+    }
+    .peek h3{margin:0 0 6px; font-size:16px; color:var(--text)}
+    .peek .meta{display:grid; gap:6px; margin:10px 0}
+
+    /* key-value rows */
+    .kv{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#ffffff;
+    }
+    .kv .k{color:var(--muted); font-weight:800}
+    .kv .v{font-weight:900; color:var(--text)}
+
+    .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+
+    .divider{
+      height:1px;
+      background:var(--line);
+      margin:12px 0;
+    }
+
+    /* checklist */
+    .checklist{display:grid; gap:8px}
+
+    .check{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#ffffff;
+      box-shadow:var(--shadow);
+    }
+    .check input{margin-top:3px}
+
+    /* textarea */
+    .textarea{
+      width:100%;
+      background:#ffffff;
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      outline:none;
+      min-height:90px;
+      resize:vertical;
+    }
+    .textarea:focus{
+      border-color:#bfdbfe;
+      box-shadow:0 0 0 4px rgba(37,99,235,.12);
+    }
+
+    .modal .modal-card{width:min(980px, 94vw)}
+
+    .two-col{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
+    @media (max-width: 900px){ .two-col{grid-template-columns: 1fr} }
+
+    /* general pills */
+    .pill{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#ffffff;
+      font-weight:800;
+      color:var(--text);
+    }
+    .pill.good{color:var(--good); border-color:#bbf7d0; background:#dcfce7}
+    .pill.warn{color:var(--warn); border-color:#fde68a; background:#fef3c7}
+    .pill.bad{color:var(--bad); border-color:#fecaca; background:#fee2e2}
+
   </style>
 </head>
 <body>

@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MoNEv Adaptasi – Help Center</title>
+  <link rel="stylesheet" href="app1.css" />
+  <style>
+    /* .grid2{display:grid; grid-template-columns: 1.1fr .9fr; gap:14px}
+    @media (max-width: 1100px){ .grid2{grid-template-columns:1fr} }
+
+    .input{
+      background: rgba(17,31,56,.9);
+      color: var(--text);
+      border:1px solid rgba(32,52,87,.9);
+      border-radius:12px;
+      padding:10px 12px;
+      outline:none;
+      width: 100%;
+    }
+
+    .pill{
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(32,52,87,.85);
+      background: rgba(15,26,46,.55);
+      font-weight:900; display:inline-flex; gap:8px; align-items:center;
+    }
+    .pill.good{color:var(--good); border-color: rgba(61,220,151,.45); background: rgba(61,220,151,.12)}
+    .pill.warn{color:var(--warn); border-color: rgba(255,204,102,.45); background: rgba(255,204,102,.12)}
+    .muted2{color:var(--muted); font-weight:800}
+
+    .tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px}
+    .tab{
+      padding:8px 12px; border-radius:999px;
+      border:1px solid rgba(32,52,87,.85);
+      background: rgba(15,26,46,.55);
+      font-weight:900; color:var(--muted);
+      cursor:pointer;
+    }
+    .tab.active{color:var(--text); background: rgba(79,156,255,.18); border-color: rgba(79,156,255,.45)}
+
+    .article{
+      border-radius:16px;
+      border:1px solid rgba(32,52,87,.85);
+      background: rgba(15,26,46,.55);
+      padding:12px;
+      cursor:pointer;
+    }
+    .article:hover{border-color: rgba(79,156,255,.45)}
+    .article .title{font-weight:900}
+    .article .meta{color:var(--muted); font-size:12px; margin-top:3px}
+    .article .snippet{color: rgba(230,240,255,.9); font-size:12px; margin-top:8px}
+
+    .content{
+      border-radius:16px;
+      border:1px solid rgba(32,52,87,.85);
+      background: rgba(15,26,46,.55);
+      padding:12px;
+      min-height: 420px;
+    }
+
+    .callout{
+      border-radius:14px;
+      border:1px solid rgba(79,156,255,.35);
+      background: rgba(79,156,255,.10);
+      padding:10px 12px;
+      color: rgba(230,240,255,.94);
+      font-size:12px;
+      margin-top:10px;
+    }
+
+    .kbd{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      font-weight:900; font-size:12px; padding:2px 6px; border-radius:8px;
+      border:1px solid rgba(32,52,87,.85); background: rgba(17,31,56,.75);
+    }
+
+    .list{display:grid; gap:10px; max-height: 520px; overflow:auto; padding-right:4px}
+    .rightSticky{position:sticky; top:84px}
+    @media (max-width: 1100px){ .rightSticky{position:static} }
+
+    .modal .modal-card{width:min(1080px, 94vw)}
+    .logbox{
+      border-radius:16px;
+      border:1px solid rgba(32,52,87,.85);
+      background: rgba(15,26,46,.55);
+      padding:12px;
+      max-height: 360px;
+      overflow:auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      font-size:12px;
+      color: rgba(230,240,255,.92);
+      line-height: 1.55;
+      white-space: pre-wrap;
+    } */
+      .grid2{display:grid; grid-template-columns: 1.1fr .9fr; gap:14px}
+    @media (max-width: 1100px){ .grid2{grid-template-columns:1fr} }
+
+    /* ===== LIGHT THEME ADAPTATION ===== */
+
+    .input{
+    background:#ffffff;
+    color:var(--text);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px 12px;
+    outline:none;
+    width:100%;
+    }
+    .input:focus{
+    border-color:#bfdbfe;
+    box-shadow:0 0 0 4px rgba(37,99,235,.12);
+    }
+
+    .pill{
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:#ffffff;
+    font-weight:800;
+    display:inline-flex;
+    gap:8px;
+    align-items:center;
+    color:var(--text);
+    }
+    .pill.good{color:var(--good); border-color:#bbf7d0; background:#dcfce7}
+    .pill.warn{color:var(--warn); border-color:#fde68a; background:#fef3c7}
+
+    .muted2{color:var(--muted); font-weight:800}
+
+    .tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px}
+    .tab{
+    padding:8px 12px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:#ffffff;
+    font-weight:800;
+    color:var(--muted);
+    cursor:pointer;
+    }
+    .tab:hover{background:#f8fafc}
+    .tab.active{
+    color:var(--accent);
+    background:#eff6ff;
+    border-color:#bfdbfe;
+    }
+
+    /* list item / article card */
+    .article{
+    border-radius:16px;
+    border:1px solid var(--line);
+    background:#ffffff;
+    padding:12px;
+    cursor:pointer;
+    box-shadow:var(--shadow);
+    }
+    .article:hover{
+    border-color:#bfdbfe;
+    }
+    .article .title{font-weight:900; color:var(--text)}
+    .article .meta{color:var(--muted); font-size:12px; margin-top:3px}
+    .article .snippet{color:var(--text); font-size:12px; margin-top:8px; opacity:.85}
+
+    /* content panel */
+    .content{
+    border-radius:16px;
+    border:1px solid var(--line);
+    background:#ffffff;
+    padding:12px;
+    min-height:420px;
+    box-shadow:var(--shadow);
+    }
+
+    /* info callout */
+    .callout{
+    border-radius:14px;
+    border:1px solid #bfdbfe;
+    background:#eff6ff;
+    padding:10px 12px;
+    color:var(--text);
+    font-size:12px;
+    margin-top:10px;
+    }
+
+    /* keyboard hint */
+    .kbd{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+    font-weight:800;
+    font-size:12px;
+    padding:2px 6px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:#f8fafc;
+    color:var(--text);
+    }
+
+    .list{
+    display:grid;
+    gap:10px;
+    max-height:520px;
+    overflow:auto;
+    padding-right:4px;
+    }
+
+    .rightSticky{position:sticky; top:84px}
+    @media (max-width: 1100px){ .rightSticky{position:static} }
+
+    .modal .modal-card{width:min(1080px, 94vw)}
+
+    /* logbox (light) */
+    .logbox{
+    border-radius:16px;
+    border:1px solid var(--line);
+    background:#ffffff;
+    padding:12px;
+    max-height:360px;
+    overflow:auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+    font-size:12px;
+    color:var(--text);
+    line-height:1.55;
+    white-space:pre-wrap;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo-container">
+          <img src="assets/Logo_KLH.png" alt="Logo" class="logo">
+        </div>
+        <div class="brand-text">
+          <div class="brand-title">MoNEv Adaptasi – MPC</div>
+          <div class="brand-sub">Help Center & Global Search</div>
+        </div>
+      </div>
+
+      <div class="search">
+        <input id="q" type="search" placeholder="Cari bantuan / istilah / job / aksi / indikator…" />
+        <select id="scope">
+          <option value="all">All</option>
+          <option value="help">Help Articles</option>
+          <option value="glossary">Glossary</option>
+          <option value="jobs">Jobs</option>
+          <option value="outputs">Outputs</option>
+        </select>
+        <button id="searchBtn" class="btn">Search</button>
+      </div>
+
+      <div class="top-actions">
+        <button class="chip" id="langToggle">ID</button>
+        <button class="icon-btn" title="Help">?</button>
+        <button class="icon-btn" title="Notifications">🔔</button>
+        <button class="icon-btn" title="User">👤</button>
+      </div>
+    </header>
+
+    <div class="body">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <nav class="nav">
+          <a class="nav-item" href="home.html">Dashboard (Home)</a>
+          <a class="nav-item" href="input.html">Input Data</a>
+          <a class="nav-item" href="review.html">Review & Validasi</a>
+          <a class="nav-item" href="engine.html">Impact Engine</a>
+          <a class="nav-item" href="reporting.html">Pelaporan & Ekspor</a>
+          <a class="nav-item active" href="help.html">Help Center</a>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="small muted">Help Center v0.1</div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="main">
+        <section class="panel">
+          <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
+            <div>
+              <div style="font-weight:900; font-size:18px">Help Center</div>
+              <div class="muted small">
+                Satu pintu bantuan: FAQ, walkthrough, glosarium, dan pencarian global lintas data.
+              </div>
+            </div>
+            <div class="row wrap">
+              <span class="pill good" id="state"><span>●</span> Ready</span>
+              <button class="btn btn-ghost" id="reindexBtn">Re-index</button>
+            </div>
+          </div>
+
+          <div class="callout">
+            <b>Shortcut:</b> tekan <span class="kbd">Enter</span> untuk mencari.  
+            Gunakan scope <b>Jobs</b>/<b>Outputs</b> untuk audit cepat lineage.
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="grid2">
+            <div class="card">
+              <div class="card-title">Topics</div>
+              <div class="muted small">Pilih tab untuk memfilter artikel.</div>
+              <div style="height:10px"></div>
+
+              <div class="tabs">
+                <div class="tab active" data-tab="help">FAQ</div>
+                <div class="tab" data-tab="walk">Walkthrough</div>
+                <div class="tab" data-tab="gloss">Glossary</div>
+                <div class="tab" data-tab="audit">Audit / Lineage</div>
+              </div>
+
+              <div class="list" id="list"></div>
+            </div>
+
+            <div class="content rightSticky">
+              <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:flex-start">
+                <div>
+                  <div class="muted2 small">Selected</div>
+                  <div style="font-weight:900; font-size:16px" id="title">—</div>
+                  <div class="muted small" id="meta">—</div>
+                </div>
+                <div class="row wrap">
+                  <button class="btn btn-ghost" id="copyBtn">Copy</button>
+                  <button class="btn btn-ghost" id="openAuditBtn">Open Audit</button>
+                </div>
+              </div>
+
+              <div style="height:12px"></div>
+              <div id="bodyText" class="muted" style="line-height:1.7"></div>
+
+              <div class="callout" id="tipBox" style="display:none"></div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Audit Modal -->
+        <div class="modal hidden" id="auditModal" role="dialog" aria-modal="true">
+          <div class="modal-card">
+            <div class="modal-head">
+              <div class="modal-title">Audit / Lineage Quick View</div>
+              <button class="icon-btn" id="closeAudit">✕</button>
+            </div>
+            <div class="modal-body">
+              <div class="muted small" style="margin-bottom:8px">
+                Ringkasan jobs terbaru dan output agregasi (untuk cek cepat sebelum ekspor).
+              </div>
+              <pre class="logbox" id="auditBox"></pre>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="help.js"></script>
+</body>
+</html>
