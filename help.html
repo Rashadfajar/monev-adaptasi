@@ -3,96 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MoNEv Adaptasi – Help Center</title>
+  <title>MoNEv Adaptasi – Pusat Bantuan</title>
   <link rel="stylesheet" href="app1.css" />
   <style>
-    /* .grid2{display:grid; grid-template-columns: 1.1fr .9fr; gap:14px}
-    @media (max-width: 1100px){ .grid2{grid-template-columns:1fr} }
-
-    .input{
-      background: rgba(17,31,56,.9);
-      color: var(--text);
-      border:1px solid rgba(32,52,87,.9);
-      border-radius:12px;
-      padding:10px 12px;
-      outline:none;
-      width: 100%;
-    }
-
-    .pill{
-      padding:6px 10px; border-radius:999px;
-      border:1px solid rgba(32,52,87,.85);
-      background: rgba(15,26,46,.55);
-      font-weight:900; display:inline-flex; gap:8px; align-items:center;
-    }
-    .pill.good{color:var(--good); border-color: rgba(61,220,151,.45); background: rgba(61,220,151,.12)}
-    .pill.warn{color:var(--warn); border-color: rgba(255,204,102,.45); background: rgba(255,204,102,.12)}
-    .muted2{color:var(--muted); font-weight:800}
-
-    .tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px}
-    .tab{
-      padding:8px 12px; border-radius:999px;
-      border:1px solid rgba(32,52,87,.85);
-      background: rgba(15,26,46,.55);
-      font-weight:900; color:var(--muted);
-      cursor:pointer;
-    }
-    .tab.active{color:var(--text); background: rgba(79,156,255,.18); border-color: rgba(79,156,255,.45)}
-
-    .article{
-      border-radius:16px;
-      border:1px solid rgba(32,52,87,.85);
-      background: rgba(15,26,46,.55);
-      padding:12px;
-      cursor:pointer;
-    }
-    .article:hover{border-color: rgba(79,156,255,.45)}
-    .article .title{font-weight:900}
-    .article .meta{color:var(--muted); font-size:12px; margin-top:3px}
-    .article .snippet{color: rgba(230,240,255,.9); font-size:12px; margin-top:8px}
-
-    .content{
-      border-radius:16px;
-      border:1px solid rgba(32,52,87,.85);
-      background: rgba(15,26,46,.55);
-      padding:12px;
-      min-height: 420px;
-    }
-
-    .callout{
-      border-radius:14px;
-      border:1px solid rgba(79,156,255,.35);
-      background: rgba(79,156,255,.10);
-      padding:10px 12px;
-      color: rgba(230,240,255,.94);
-      font-size:12px;
-      margin-top:10px;
-    }
-
-    .kbd{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-      font-weight:900; font-size:12px; padding:2px 6px; border-radius:8px;
-      border:1px solid rgba(32,52,87,.85); background: rgba(17,31,56,.75);
-    }
-
-    .list{display:grid; gap:10px; max-height: 520px; overflow:auto; padding-right:4px}
-    .rightSticky{position:sticky; top:84px}
-    @media (max-width: 1100px){ .rightSticky{position:static} }
-
-    .modal .modal-card{width:min(1080px, 94vw)}
-    .logbox{
-      border-radius:16px;
-      border:1px solid rgba(32,52,87,.85);
-      background: rgba(15,26,46,.55);
-      padding:12px;
-      max-height: 360px;
-      overflow:auto;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-      font-size:12px;
-      color: rgba(230,240,255,.92);
-      line-height: 1.55;
-      white-space: pre-wrap;
-    } */
-      .grid2{display:grid; grid-template-columns: 1.1fr .9fr; gap:14px}
+    .grid2{display:grid; grid-template-columns: 1.1fr .9fr; gap:14px}
     @media (max-width: 1100px){ .grid2{grid-template-columns:1fr} }
 
     /* ===== LIGHT THEME ADAPTATION ===== */
@@ -228,85 +142,96 @@
     <!-- TOP BAR -->
     <header class="topbar">
       <div class="brand">
+        <button id="burgerBtn"
+          class="icon-btn burger-btn"
+          type="button"
+          aria-label="Buka menu"
+          aria-expanded="false"
+          aria-controls="sidebar">
+          ☰
+        </button>
         <div class="logo-container">
           <img src="assets/Logo_KLH.png" alt="Logo" class="logo">
         </div>
         <div class="brand-text">
           <div class="brand-title">MoNEv Adaptasi – MPC</div>
-          <div class="brand-sub">Help Center & Global Search</div>
+          <div class="brand-sub">Pusat Bantuan & Pencarian Global</div>
         </div>
       </div>
 
       <div class="search">
         <input id="q" type="search" placeholder="Cari bantuan / istilah / job / aksi / indikator…" />
         <select id="scope">
-          <option value="all">All</option>
-          <option value="help">Help Articles</option>
-          <option value="glossary">Glossary</option>
-          <option value="jobs">Jobs</option>
-          <option value="outputs">Outputs</option>
+          <option value="all">Semua</option>
+          <option value="help">Artikel Bantuan</option>
+          <option value="glossary">Glosarium</option>
+          <option value="jobs">Job</option>
+          <option value="outputs">Keluaran</option>
         </select>
-        <button id="searchBtn" class="btn">Search</button>
+        <button id="searchBtn" class="btn">Cari</button>
       </div>
 
       <div class="top-actions">
         <button class="chip" id="langToggle">ID</button>
-        <button class="icon-btn" title="Help">?</button>
-        <button class="icon-btn" title="Notifications">🔔</button>
-        <button class="icon-btn" title="User">👤</button>
+        <button class="icon-btn" title="Bantuan">?</button>
+        <button class="icon-btn" title="Notifikasi">🔔</button>
+        <button class="icon-btn" title="Pengguna">👤</button>
       </div>
     </header>
 
     <div class="body">
       <!-- SIDEBAR -->
-      <aside class="sidebar">
+      <aside class="sidebar" id="sidebar">
         <nav class="nav">
-          <a class="nav-item" href="home.html">Dashboard (Home)</a>
+          <a class="nav-item" href="home.html">Dashboard (Beranda)</a>
           <a class="nav-item" href="input.html">Input Data</a>
-          <a class="nav-item" href="review.html">Review & Validasi</a>
-          <a class="nav-item" href="engine.html">Impact Engine</a>
+          <a class="nav-item" href="review.html">Verifikasi & Validasi</a>
+          <a class="nav-item" href="engine.html">Komputasi</a>
           <a class="nav-item" href="reporting.html">Pelaporan & Ekspor</a>
-          <a class="nav-item active" href="help.html">Help Center</a>
+          <a class="nav-item active" href="help.html">Pusat Bantuan</a>
         </nav>
         <div class="sidebar-footer">
-          <div class="small muted">Help Center v0.1</div>
+          <!-- <div class="small muted">Input Wizard v0.1</div> -->
         </div>
       </aside>
+
+      <!-- OVERLAY (klik untuk menutup) -->
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
       <!-- MAIN -->
       <main class="main">
         <section class="panel">
           <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
             <div>
-              <div style="font-weight:900; font-size:18px">Help Center</div>
+              <div style="font-weight:900; font-size:18px">Pusat Bantuan</div>
               <div class="muted small">
-                Satu pintu bantuan: FAQ, walkthrough, glosarium, dan pencarian global lintas data.
+                Satu pintu bantuan: FAQ, panduan, glosarium, dan pencarian global lintas data.
               </div>
             </div>
             <div class="row wrap">
-              <span class="pill good" id="state"><span>●</span> Ready</span>
-              <button class="btn btn-ghost" id="reindexBtn">Re-index</button>
+              <span class="pill good" id="state"><span>●</span> Siap</span>
+              <button class="btn btn-ghost" id="reindexBtn">Indeks Ulang</button>
             </div>
           </div>
 
           <div class="callout">
-            <b>Shortcut:</b> tekan <span class="kbd">Enter</span> untuk mencari.  
-            Gunakan scope <b>Jobs</b>/<b>Outputs</b> untuk audit cepat lineage.
+            <b>Pintasan:</b> tekan <span class="kbd">Enter</span> untuk mencari.  
+            Gunakan cakupan <b>Job</b>/<b>Keluaran</b> untuk audit cepat lineage.
           </div>
 
           <div style="height:12px"></div>
 
           <div class="grid2">
             <div class="card">
-              <div class="card-title">Topics</div>
+              <div class="card-title">Topik</div>
               <div class="muted small">Pilih tab untuk memfilter artikel.</div>
               <div style="height:10px"></div>
 
               <div class="tabs">
                 <div class="tab active" data-tab="help">FAQ</div>
-                <div class="tab" data-tab="walk">Walkthrough</div>
-                <div class="tab" data-tab="gloss">Glossary</div>
-                <div class="tab" data-tab="audit">Audit / Lineage</div>
+                <div class="tab" data-tab="walk">Panduan</div>
+                <div class="tab" data-tab="gloss">Glosarium</div>
+                <div class="tab" data-tab="audit">Audit / Jejak Audit</div>
               </div>
 
               <div class="list" id="list"></div>
@@ -315,13 +240,13 @@
             <div class="content rightSticky">
               <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:flex-start">
                 <div>
-                  <div class="muted2 small">Selected</div>
+                  <!-- <div class="muted2 small">Dipilih</div> -->
                   <div style="font-weight:900; font-size:16px" id="title">—</div>
                   <div class="muted small" id="meta">—</div>
                 </div>
                 <div class="row wrap">
-                  <button class="btn btn-ghost" id="copyBtn">Copy</button>
-                  <button class="btn btn-ghost" id="openAuditBtn">Open Audit</button>
+                  <button class="btn btn-ghost" id="copyBtn">Salin</button>
+                  <button class="btn btn-ghost" id="openAuditBtn">Buka Audit</button>
                 </div>
               </div>
 
@@ -338,12 +263,12 @@
         <div class="modal hidden" id="auditModal" role="dialog" aria-modal="true">
           <div class="modal-card">
             <div class="modal-head">
-              <div class="modal-title">Audit / Lineage Quick View</div>
+              <div class="modal-title">Audit / Jejak Audit (Ringkas)</div>
               <button class="icon-btn" id="closeAudit">✕</button>
             </div>
             <div class="modal-body">
               <div class="muted small" style="margin-bottom:8px">
-                Ringkasan jobs terbaru dan output agregasi (untuk cek cepat sebelum ekspor).
+                Ringkasan job terbaru dan keluaran agregasi (untuk cek cepat sebelum ekspor).
               </div>
               <pre class="logbox" id="auditBox"></pre>
             </div>

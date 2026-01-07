@@ -3,52 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MoNEv Adaptasi – Input Wizard</title>
+  <title>MoNEv Adaptasi – Input Data</title>
   <link rel="stylesheet" href="app1.css" />
   <style>
-    /* small page-specific additions */
-    /* .wizard-header{display:flex; gap:12px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap}
-    .wizard-title{font-weight:900; font-size:18px}
-    .wizard-sub{color:var(--muted); font-size:12px; margin-top:4px}
-    .seg{display:flex; gap:8px; flex-wrap:wrap}
-    .seg button{border-radius:999px}
-    .progress{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
-    .step{
-      padding:8px 10px; border-radius:999px;
-      border:1px solid rgba(32,52,87,.85);
-      background: rgba(21,40,74,.55);
-      color: var(--muted);
-      font-weight:800;
-      cursor:pointer;
-    }
-    .step.active{color:var(--text); border-color: rgba(79,156,255,.55); background: rgba(79,156,255,.18)}
-    .step.done{color:var(--good); border-color: rgba(61,220,151,.45); background: rgba(61,220,151,.12)}
-    .form-grid{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
-    @media (max-width: 900px){ .form-grid{grid-template-columns:1fr} }
-    .input, textarea{
-      width:100%;
-      background: rgba(17,31,56,.9);
-      color: var(--text);
-      border:1px solid rgba(32,52,87,.9);
-      border-radius:12px;
-      padding:10px 12px;
-      outline:none;
-    }
-    textarea{min-height:110px; resize:vertical}
-    .hint{font-size:12px; color:var(--muted)}
-    .pill{display:inline-flex; gap:8px; align-items:center; padding:6px 10px; border-radius:999px; border:1px solid rgba(32,52,87,.85); background: rgba(15,26,46,.55); font-weight:800}
-    .pill.good{border-color: rgba(61,220,151,.45); color: var(--good)}
-    .pill.warn{border-color: rgba(255,204,102,.45); color: var(--warn)}
-    .pill.bad{border-color: rgba(255,107,107,.45); color: var(--bad)}
-    .footer-actions{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:12px}
-    .btn-danger{background: rgba(255,107,107,.18); border-color: rgba(255,107,107,.35)}
-    .filebox{padding:10px 12px; border-radius:12px; border:1px dashed rgba(32,52,87,.85); background: rgba(15,26,46,.35)}
-    .filelist{list-style:none; padding:0; margin:10px 0 0; display:grid; gap:8px}
-    .filelist li{padding:8px 10px; border-radius:12px; border:1px solid rgba(32,52,87,.75); background: rgba(15,26,46,.55); font-size:13px}
-    .toast{position:fixed; right:16px; bottom:16px; padding:10px 12px; border-radius:12px; background: rgba(17,31,56,.95); border:1px solid rgba(32,52,87,.9); box-shadow: var(--shadow); display:none; max-width: 420px}
-    .toast.show{display:block}
-    .toast b{display:block; margin-bottom:4px}
-     */
     /* small page-specific additions (LIGHT THEME) */
     .wizard-header{
       display:flex;
@@ -228,6 +185,27 @@
       margin-bottom:4px
     }
 
+    /* Mode toggle (Sektoral/Kewilayahan) */
+    .seg .btn.btn-ghost{
+      border-radius:999px;
+    }
+
+    /* default (tidak aktif) */
+    .seg .btn.btn-ghost:not(.active){
+      background:#ffffff;
+      border:1px solid var(--line);
+      color:var(--muted);
+    }
+
+    /* aktif */
+    .seg .btn.btn-ghost.active{
+      background:#eff6ff;
+      border:1px solid #bfdbfe;
+      color:var(--accent);
+      /* box-shadow:0 0 0 4px rgba(37,99,235,.10); */
+    }
+
+
   </style>
 </head>
 
@@ -236,52 +214,63 @@
     <!-- TOP BAR -->
     <header class="topbar">
       <div class="brand">
+        <button id="burgerBtn"
+          class="icon-btn burger-btn"
+          type="button"
+          aria-label="Buka menu"
+          aria-expanded="false"
+          aria-controls="sidebar">
+          ☰
+        </button>
         <div class="logo-container">
           <img src="assets/Logo_KLH.png" alt="Logo" class="logo">
         </div>
         <div class="brand-text">
-          <div class="brand-title">MoNEv Adaptasi – MPC</div>
-          <div class="brand-sub">Input Data – Wizard</div>
+          <div class="brand-title">MoNEv Adaptasi</div>
+          <div class="brand-sub">Input Data</div>
         </div>
       </div>
 
       <div class="search">
         <input id="globalSearch" type="search" placeholder="Cari aksi / indikator / lokasi / K/L / OPD / periode…" />
         <select id="searchScope">
-          <option value="all">All</option>
-          <option value="actions">Actions</option>
-          <option value="indicators">Indicators</option>
-          <option value="locations">Locations</option>
-          <option value="institutions">Institutions</option>
-          <option value="reports">Reports</option>
-          <option value="help">Help</option>
+          <option value="all">Semua</option>
+          <option value="actions">Aksi</option>
+          <option value="indicators">Indikator</option>
+          <option value="locations">Lokasi</option>
+          <option value="institutions">Instansi</option>
+          <option value="reports">Laporan</option>
+          <option value="help">Bantuan</option>
         </select>
-        <button id="searchBtn" class="btn">Search</button>
+        <button id="searchBtn" class="btn">Cari</button>
       </div>
 
       <div class="top-actions">
         <button id="langToggle" class="chip" title="Toggle ID/EN">ID</button>
-        <button class="icon-btn" title="Help">?</button>
-        <button class="icon-btn" title="Notifications">🔔</button>
-        <button class="icon-btn" title="User">👤</button>
+        <button class="icon-btn" title="Bantuan">?</button>
+        <button class="icon-btn" title="Notifikasi">🔔</button>
+        <button class="icon-btn" title="Pengguna">👤</button>
       </div>
     </header>
 
     <div class="body">
       <!-- SIDEBAR -->
-      <aside class="sidebar">
+      <aside class="sidebar" id="sidebar">
         <nav class="nav">
-          <a class="nav-item" href="home.html">Dashboard (Home)</a>
+          <a class="nav-item" href="home.html">Dashboard (Beranda)</a>
           <a class="nav-item active" href="input.html">Input Data</a>
-          <a class="nav-item" href="review.html">Review & Validasi</a>
-          <a class="nav-item" href="engine.html">Impact Engine</a>
+          <a class="nav-item" href="review.html">Verifikasi & Validasi</a>
+          <a class="nav-item" href="engine.html">Komputasi</a>
           <a class="nav-item" href="reporting.html">Pelaporan & Ekspor</a>
-          <a class="nav-item" href="help.html">Help Center</a>
+          <a class="nav-item" href="help.html">Pusat Bantuan</a>
         </nav>
         <div class="sidebar-footer">
-          <div class="small muted">Input Wizard v0.1</div>
+          <!-- <div class="small muted">Input Wizard v0.1</div> -->
         </div>
       </aside>
+
+      <!-- OVERLAY (klik untuk menutup) -->
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
       <!-- MAIN -->
       <main class="main">
@@ -289,19 +278,19 @@
         <section class="panel">
           <div class="wizard-header">
             <div>
-              <div class="wizard-title" id="wizTitle">Input Data – Horizontal</div>
+              <div class="wizard-title" id="wizTitle">Input Data – Sektoral</div>
               <div class="wizard-sub" id="wizSub">
-                Isi data minimum (Lampiran) + bukti. Draft tersimpan otomatis di browser.
+                Isi data minimum (Lampiran) + bukti. Draf tersimpan otomatis di browser.
               </div>
 
               <div class="progress" id="stepper"></div>
             </div>
 
             <div class="seg">
-              <button class="btn btn-ghost" id="modeH">Horizontal</button>
-              <button class="btn btn-ghost" id="modeV">Vertical</button>
-              <span class="pill" id="readinessPill">Readiness: 0%</span>
-              <button class="btn btn-danger" id="clearDraftBtn">Clear Draft</button>
+              <button class="btn btn-ghost" id="modeH">Sektoral</button>
+              <button class="btn btn-ghost" id="modeV">Kewilayahan</button>
+              <span class="pill" id="readinessPill">Kesiapan: 0%</span>
+              <button class="btn btn-danger" id="clearDraftBtn">Hapus Draf</button>
             </div>
           </div>
         </section>
@@ -320,25 +309,25 @@
 
               <div>
                 <label>Status Implementasi *</label>
-                <select id="implStatus">
+                <select id="implStatus" class="input">
                   <option value="">Pilih…</option>
-                  <option value="Planned">Planned</option>
-                  <option value="Ongoing">Ongoing</option>
-                  <option value="Completed">Completed</option>
+                  <option value="Planned">Direncanakan</option>
+                  <option value="Ongoing">Berjalan</option>
+                  <option value="Completed">Selesai</option>
                 </select>
                 <div class="hint">Wajib. Dipakai untuk agregasi MPC.</div>
               </div>
 
               <div>
                 <label>Instansi (K/L atau OPD) *</label>
-                <select id="institution">
+                <select id="institution" class="input">
                   <option value="">Pilih…</option>
                   <option value="KLH">KLH</option>
                   <option value="KemenPU">KemenPU</option>
                   <option value="Prov A – OPD">Prov A – OPD</option>
                   <option value="Kab B – OPD">Kab B – OPD</option>
                 </select>
-                <div class="hint">Wajib. Untuk Vertical biasanya OPD.</div>
+                <div class="hint">Wajib. Untuk kewilayahan biasanya OPD.</div>
               </div>
 
               <div>
@@ -360,7 +349,7 @@
             <div class="form-grid">
               <div>
                 <label>Provinsi *</label>
-                <select id="prov">
+                <select id="prov" class="input">
                   <option value="">Pilih…</option>
                   <option value="Prov A">Prov A</option>
                   <option value="Prov B">Prov B</option>
@@ -396,33 +385,33 @@
             <div class="form-grid">
               <div>
                 <label>Sektor Prioritas *</label>
-                <select id="sector">
+                <select id="sector" class="input">
                   <option value="">Pilih…</option>
-                  <option value="Food">Food & Agriculture</option>
-                  <option value="Water">Water Resources</option>
-                  <option value="Health">Health</option>
-                  <option value="Ecosystems">Ecosystems & Landscape</option>
-                  <option value="DRM">Disaster Risk Management</option>
-                  <option value="Coastal">Coastal & Small Islands</option>
+                  <option value="Food">Pangan</option>
+                  <option value="Water">Air</option>
+                  <option value="Health">Kesehatan</option>
+                  <option value="Ecosystems">Ekosistem & Lanskap</option>
+                  <option value="DRM">Kebencanaan</option>
+                  <option value="Coastal">Pesisir & Pulau Kecil</option>
                 </select>
               </div>
 
               <div>
                 <label>Tipologi Aksi *</label>
-                <select id="typology">
+                <select id="typology" class="input">
                   <option value="">Pilih…</option>
-                  <option value="Infrastructure">Infrastructure</option>
-                  <option value="EbA">Ecosystem-based Adaptation (EbA)</option>
-                  <option value="Capacity">Capacity Building</option>
-                  <option value="Governance">Institutional/Governance</option>
-                  <option value="EWS">Early Warning & Preparedness</option>
+                  <option value="Infrastructure">Infrastruktur</option>
+                  <option value="EbA">Adaptasi Berbasis Ekosistem (EbA)</option>
+                  <option value="Capacity">Peningkatan Kapasitas</option>
+                  <option value="Governance">Tata Kelola/Kelembagaan</option>
+                  <option value="EWS">Peringatan Dini & Kesiapsiagaan</option>
                 </select>
               </div>
 
               <div style="grid-column:1/-1">
-                <label>Mapping NAP (ringkas)</label>
+                <label>Pemetaan NAP (ringkas)</label>
                 <textarea id="napMap" placeholder="Contoh: Pilar Sosial & Mata Pencaharian – kesehatan; aksi prioritas: penguatan layanan kesehatan tahan iklim."></textarea>
-                <div class="hint">Opsional saat ini (bisa diwajibkan saat NAP mapping sudah final).</div>
+                <div class="hint">Opsional saat ini (bisa diwajibkan saat pemetaan NAP sudah final).</div>
               </div>
             </div>
           </div>
@@ -434,16 +423,16 @@
             <div class="form-grid" style="margin-top:10px">
               <div>
                 <label>Indikator *</label>
-                <select id="indicator">
+                <select id="indicator" class="input">
                   <option value="">Pilih…</option>
-                  <option value="IND-01">IND-01 – Coverage of Adaptation Actions</option>
-                  <option value="IND-03">IND-03 – Ecosystem Restoration Area</option>
-                  <option value="IND-07">IND-07 – Access to Safe Water</option>
+                  <option value="IND-01">IND-01 – Cakupan Aksi Adaptasi</option>
+                  <option value="IND-03">IND-03 – Luas Restorasi Ekosistem</option>
+                  <option value="IND-07">IND-07 – Akses Air Bersih Aman</option>
                 </select>
               </div>
               <div>
                 <label>Satuan *</label>
-                <select id="unit">
+                <select id="unit" class="input">
                   <option value="">Pilih…</option>
                   <option value="%">%</option>
                   <option value="ha">ha</option>
@@ -479,7 +468,7 @@
               </div>
               <div>
                 <label>Periode Pelaporan *</label>
-                <select id="period">
+                <select id="period" class="input">
                   <option value="">Pilih…</option>
                   <option value="2026-S1">2026 – S1</option>
                   <option value="2026-S2">2026 – S2</option>
@@ -496,7 +485,7 @@
 
           <!-- Step 6 -->
           <div class="step-page hidden" data-step="6">
-            <div class="card-title">6) Evidence (Bukti)</div>
+            <div class="card-title">6) Bukti (Evidence)</div>
             <div class="hint">Unggah dokumen/foto/dataset atau masukkan tautan. Ini stub frontend: file belum dikirim ke server.</div>
 
             <div class="form-grid" style="margin-top:10px">
@@ -507,12 +496,12 @@
               </div>
 
               <div style="grid-column:1/-1">
-                <label>Tautan Evidence (opsional)</label>
+                <label>Tautan Bukti (opsional)</label>
                 <input class="input" id="evidenceLink" placeholder="https://..." />
               </div>
 
               <div style="grid-column:1/-1">
-                <label>Deskripsi Evidence</label>
+                <label>Deskripsi Bukti</label>
                 <textarea id="evidenceDesc" placeholder="Apa yang dibuktikan file/tautan ini? Periode? Lokasi?"></textarea>
               </div>
             </div>
@@ -520,16 +509,16 @@
 
           <!-- Step 7 -->
           <div class="step-page hidden" data-step="7">
-            <div class="card-title">7) Ringkasan & Submit</div>
+            <div class="card-title">7) Ringkasan & Ajukan</div>
 
             <div class="panel" style="margin-top:10px">
               <div class="row wrap" style="justify-content:space-between">
                 <div>
-                  <div class="muted">Summary</div>
+                  <div class="muted">Ringkasan</div>
                   <div style="font-weight:900" id="summaryTitle">—</div>
                   <div class="hint" id="summaryMeta">—</div>
                 </div>
-                <span class="pill" id="readinessPill2">Readiness: 0%</span>
+                <span class="pill" id="readinessPill2">Kesiapan: 0%</span>
               </div>
 
               <div style="margin-top:12px" class="table-wrap">
@@ -544,19 +533,19 @@
               </div>
 
               <div class="hint" style="margin-top:10px">
-                Tombol submit akan aktif jika item wajib minimal terpenuhi.
+                Tombol ajukan akan aktif jika item wajib minimal terpenuhi.
               </div>
             </div>
 
             <div class="footer-actions">
               <div class="row wrap">
-                <button class="btn btn-ghost" id="saveDraftBtn">Save Draft</button>
-                <button class="btn btn-ghost" id="exportDraftBtn">Export Draft (JSON)</button>
+                <button class="btn btn-ghost" id="saveDraftBtn">Simpan Draf</button>
+                <button class="btn btn-ghost" id="exportDraftBtn">Ekspor Draf (JSON)</button>
               </div>
 
               <div class="row wrap">
-                <button class="btn btn-ghost" id="backBtn">Back</button>
-                <button class="btn" id="submitBtn" disabled>Submit for Review</button>
+                <button class="btn btn-ghost" id="backBtn">Kembali</button>
+                <button class="btn" id="submitBtn" disabled>Ajukan untuk Verifikasi</button>
               </div>
             </div>
           </div>
@@ -567,15 +556,15 @@
               <span class="hint" id="stepHint">Step 1 of 7</span>
             </div>
             <div class="row wrap">
-              <button class="btn btn-ghost" id="prevBtn">Back</button>
-              <button class="btn" id="nextBtn">Next</button>
+              <button class="btn btn-ghost" id="prevBtn">Kembali</button>
+              <button class="btn" id="nextBtn">Lanjut</button>
             </div>
           </div>
         </section>
 
         <div class="toast" id="toast">
-          <b id="toastTitle">Saved</b>
-          <div id="toastMsg" class="muted">Draft saved locally.</div>
+          <b id="toastTitle">Tersimpan</b>
+          <div id="toastMsg" class="muted">Draf tersimpan di browser.</div>
         </div>
       </main>
     </div>

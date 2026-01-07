@@ -3,81 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MoNEv Adaptasi – Review Inbox</title>
+  <title>MoNEv Adaptasi – Inbox Review</title>
   <link rel="stylesheet" href="app1.css" />
   <style>
-    /* .layout{display:grid; grid-template-columns: 1.25fr .9fr; gap:14px}
-    @media (max-width: 1100px){ .layout{grid-template-columns: 1fr} }
-    .filters{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-    .input{
-      background: rgba(17,31,56,.9);
-      color: var(--text);
-      border:1px solid rgba(32,52,87,.9);
-      border-radius:12px;
-      padding:10px 12px;
-      outline:none;
-      min-width:220px;
-    }
-    .chip2{
-      display:inline-flex; gap:8px; align-items:center;
-      padding:7px 10px; border-radius:999px;
-      border:1px solid rgba(32,52,87,.85);
-      background: rgba(15,26,46,.55);
-      font-weight:800; color:var(--muted);
-    }
-    .chip2 b{color:var(--text)}
-    .status{
-      padding:6px 10px; border-radius:999px; font-weight:900; font-size:12px;
-      border:1px solid rgba(32,52,87,.85);
-      display:inline-block;
-    }
-    .st-pending{color:var(--warn); border-color:rgba(255,204,102,.45); background:rgba(255,204,102,.12)}
-    .st-returned{color:var(--bad); border-color:rgba(255,107,107,.45); background:rgba(255,107,107,.12)}
-    .st-approved{color:var(--good); border-color:rgba(61,220,151,.45); background:rgba(61,220,151,.12)}
-    .st-submitted{color:var(--accent); border-color:rgba(79,156,255,.45); background:rgba(79,156,255,.12)}
-    .peek{
-      position:sticky; top:84px;
-      border-radius: var(--radius2);
-      background: rgba(17,31,56,.78);
-      border:1px solid rgba(32,52,87,.85);
-      box-shadow: var(--shadow);
-      padding:14px;
-      min-height: 420px;
-    }
-    .peek h3{margin:0 0 6px; font-size:16px}
-    .peek .meta{display:grid; gap:6px; margin:10px 0}
-    .kv{display:flex; justify-content:space-between; gap:10px; padding:8px 10px; border-radius:12px; border:1px solid rgba(32,52,87,.7); background: rgba(15,26,46,.55)}
-    .kv .k{color:var(--muted); font-weight:800}
-    .kv .v{font-weight:900}
-    .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
-    .divider{height:1px; background:rgba(32,52,87,.85); margin:12px 0}
-    .checklist{display:grid; gap:8px}
-    .check{
-      display:flex; gap:10px; align-items:flex-start;
-      padding:10px 12px; border-radius:12px;
-      border:1px solid rgba(32,52,87,.75);
-      background: rgba(15,26,46,.55);
-    }
-    .check input{margin-top:3px}
-    .textarea{
-      width:100%;
-      background: rgba(17,31,56,.9);
-      color: var(--text);
-      border:1px solid rgba(32,52,87,.9);
-      border-radius:12px;
-      padding:10px 12px;
-      outline:none;
-      min-height: 90px;
-      resize: vertical;
-    }
-    .modal .modal-card{width:min(980px, 94vw)}
-    .two-col{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
-    @media (max-width: 900px){ .two-col{grid-template-columns: 1fr} }
-    .pill{padding:6px 10px; border-radius:999px; border:1px solid rgba(32,52,87,.85); background: rgba(15,26,46,.55); font-weight:900}
-    .pill.good{color:var(--good); border-color: rgba(61,220,151,.45); background: rgba(61,220,151,.12)}
-    .pill.warn{color:var(--warn); border-color: rgba(255,204,102,.45); background: rgba(255,204,102,.12)}
-    .pill.bad{color:var(--bad); border-color: rgba(255,107,107,.45); background: rgba(255,107,107,.12)} */
-
     .layout{display:grid; grid-template-columns: 1.25fr .9fr; gap:14px}
     @media (max-width: 1100px){ .layout{grid-template-columns: 1fr} }
 
@@ -212,60 +140,69 @@
     .pill.good{color:var(--good); border-color:#bbf7d0; background:#dcfce7}
     .pill.warn{color:var(--warn); border-color:#fde68a; background:#fef3c7}
     .pill.bad{color:var(--bad); border-color:#fecaca; background:#fee2e2}
-
   </style>
 </head>
+
 <body>
   <div class="app">
     <!-- TOP BAR -->
     <header class="topbar">
       <div class="brand">
+        <button id="burgerBtn"
+          class="icon-btn burger-btn"
+          type="button"
+          aria-label="Buka menu"
+          aria-expanded="false"
+          aria-controls="sidebar">
+          ☰
+        </button>
         <div class="logo-container">
           <img src="assets/Logo_KLH.png" alt="Logo" class="logo">
         </div>
         <div class="brand-text">
           <div class="brand-title">MoNEv Adaptasi – MPC</div>
-          <div class="brand-sub">Review & Validasi – Inbox Universal</div>
+          <div class="brand-sub">Verifikasi & Validasi – Inbox Universal</div>
         </div>
       </div>
 
       <div class="search">
         <input id="globalSearch" type="search" placeholder="Cari aksi / indikator / lokasi / K/L / OPD / periode…" />
         <select id="searchScope">
-          <option value="all">All</option>
-          <option value="actions">Actions</option>
-          <option value="indicators">Indicators</option>
-          <option value="locations">Locations</option>
-          <option value="institutions">Institutions</option>
-          <option value="reports">Reports</option>
-          <option value="help">Help</option>
+          <option value="all">Semua</option>
+          <option value="actions">Aksi</option>
+          <option value="indicators">Indikator</option>
+          <option value="locations">Lokasi</option>
+          <option value="institutions">Instansi</option>
+          <option value="reports">Laporan</option>
+          <option value="help">Bantuan</option>
         </select>
-        <button id="searchBtn" class="btn">Search</button>
+        <button id="searchBtn" class="btn">Cari</button>
       </div>
 
       <div class="top-actions">
         <button class="chip" id="langToggle">ID</button>
-        <button class="icon-btn" title="Help">?</button>
-        <button class="icon-btn" title="Notifications">🔔</button>
-        <button class="icon-btn" title="User">👤</button>
+        <button class="icon-btn" title="Bantuan">?</button>
+        <button class="icon-btn" title="Notifikasi">🔔</button>
+        <button class="icon-btn" title="Pengguna">👤</button>
       </div>
     </header>
 
     <div class="body">
       <!-- SIDEBAR -->
-      <aside class="sidebar">
+      <aside class="sidebar" id="sidebar">
         <nav class="nav">
-          <a class="nav-item" href="home.html">Dashboard (Home)</a>
+          <a class="nav-item" href="home.html">Dashboard (Beranda)</a>
           <a class="nav-item" href="input.html">Input Data</a>
-          <a class="nav-item active" href="review.html">Review & Validasi</a>
-          <a class="nav-item" href="engine.html">Impact Engine</a>
+          <a class="nav-item active" href="review.html">Verifikasi & Validasi</a>
+          <a class="nav-item" href="engine.html">Komputasi</a>
           <a class="nav-item" href="reporting.html">Pelaporan & Ekspor</a>
-          <a class="nav-item" href="help.html">Help Center</a>
+          <a class="nav-item" href="help.html">Pusat Bantuan</a>
         </nav>
-        <div class="sidebar-footer">
-          <div class="small muted">Inbox Universal v0.1</div>
-        </div>
+        <div class="sidebar-footer"></div>
       </aside>
+
+      <!-- OVERLAY (klik untuk menutup) -->
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
       <!-- MAIN -->
       <main class="main">
@@ -274,14 +211,14 @@
           <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
             <div>
               <div style="font-weight:900; font-size:18px">Inbox Universal</div>
-              <div class="muted small">Satu inbox untuk Horizontal & Vertical. Aksi: quick peek → full review → return/approve.</div>
+              <!-- <div class="muted small">Satu kotak masuk untuk Horizontal & Vertical. Aksi: ringkasan cepat → tinjau lengkap → kembalikan/setujui.</div> -->
             </div>
 
             <div class="filters">
               <span class="chip2">Total: <b id="kpiTotal">0</b></span>
-              <span class="chip2">Pending: <b id="kpiPending">0</b></span>
-              <span class="chip2">Returned: <b id="kpiReturned">0</b></span>
-              <span class="chip2">Approved: <b id="kpiApproved">0</b></span>
+              <span class="chip2">Menunggu: <b id="kpiPending">0</b></span>
+              <span class="chip2">Dikembalikan: <b id="kpiReturned">0</b></span>
+              <span class="chip2">Disetujui: <b id="kpiApproved">0</b></span>
             </div>
           </div>
 
@@ -289,46 +226,46 @@
 
           <div class="filters">
             <select id="fSource" class="input">
-              <option value="">Source (All)</option>
-              <option value="HORIZONTAL">Horizontal</option>
-              <option value="VERTICAL">Vertical</option>
+              <option value="">Sumber (Semua)</option>
+              <option value="HORIZONTAL">Sektoral</option>
+              <option value="VERTICAL">Kewilayahan</option>
             </select>
 
             <select id="fStatus" class="input">
-              <option value="">Status (All)</option>
-              <option value="SUBMITTED">SUBMITTED</option>
-              <option value="PENDING">PENDING</option>
-              <option value="RETURNED">RETURNED</option>
-              <option value="APPROVED">APPROVED</option>
+              <option value="">Status (Semua)</option>
+              <option value="SUBMITTED">DIKIRIM</option>
+              <option value="PENDING">MENUNGGU</option>
+              <option value="RETURNED">DIKEMBALIKAN</option>
+              <option value="APPROVED">DISETUJUI</option>
             </select>
 
             <select id="fPeriod" class="input">
-              <option value="">Period (All)</option>
+              <option value="">Periode (Semua)</option>
               <option value="2026-S1">2026-S1</option>
               <option value="2026-S2">2026-S2</option>
               <option value="2027-S1">2027-S1</option>
             </select>
 
             <select id="fSector" class="input">
-              <option value="">Sector (All)</option>
-              <option value="Food">Food</option>
-              <option value="Water">Water</option>
-              <option value="Health">Health</option>
-              <option value="Ecosystems">Ecosystems</option>
-              <option value="DRM">DRM</option>
-              <option value="Coastal">Coastal</option>
+              <option value="">Sektor (Semua)</option>
+              <option value="Food">Pangan</option>
+              <option value="Water">Air</option>
+              <option value="Health">Kesehatan</option>
+              <option value="Ecosystems">Ekosistem</option>
+              <option value="DRM">Kebencanaan</option>
+              <option value="Coastal">Pesisir</option>
             </select>
 
             <select id="fLocation" class="input">
-              <option value="">Location (All)</option>
+              <option value="">Lokasi (Semua)</option>
               <option value="Prov A">Prov A</option>
               <option value="Prov B">Prov B</option>
               <option value="Prov C">Prov C</option>
             </select>
 
-            <input id="fText" class="input" placeholder="Search in inbox (action / institution / indicator)..." />
+            <input id="fText" class="input" placeholder="Cari di inbox (aksi / instansi / indikator)..." />
 
-            <button id="resetFilters" class="btn btn-ghost">Reset</button>
+            <button id="resetFilters" class="btn btn-ghost">reset</button>
           </div>
         </section>
 
@@ -338,8 +275,8 @@
             <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
               <div class="card-title">Daftar Item</div>
               <div class="row wrap">
-                <button id="batchApprove" class="btn btn-ghost">Approve Selected</button>
-                <button id="batchReturn" class="btn btn-ghost">Return Selected</button>
+                <button id="batchApprove" class="btn btn-ghost">Setujui Terpilih</button>
+                <button id="batchReturn" class="btn btn-ghost">Kembalikan Terpilih</button>
               </div>
             </div>
 
@@ -348,15 +285,15 @@
                 <thead>
                   <tr>
                     <th style="width:44px"><input type="checkbox" id="checkAll" /></th>
-                    <th>Source</th>
-                    <th>Action</th>
-                    <th>Institution</th>
-                    <th>Sector</th>
-                    <th>Location</th>
-                    <th>Indicator</th>
-                    <th>Readiness</th>
+                    <th>Sumber</th>
+                    <th>Aksi</th>
+                    <th>Instansi</th>
+                    <th>Sektor</th>
+                    <th>Lokasi</th>
+                    <th>Indikator</th>
+                    <th>Kesiapan</th>
                     <th>Status</th>
-                    <th>Updated</th>
+                    <th>Pembaruan</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -364,26 +301,26 @@
             </div>
 
             <div class="muted small" style="margin-top:10px">
-              Klik baris untuk Quick Peek. Tombol Full Review membuka checklist + komentar + keputusan.
+              Klik baris untuk ringkasan cepat. Tombol “Tinjau Lengkap” membuka checklist + komentar + keputusan.
             </div>
           </div>
 
           <!-- Quick Peek -->
           <div class="peek">
-            <h3 id="peekTitle">Quick Peek</h3>
+            <h3 id="peekTitle">Ringkasan Cepat</h3>
             <div class="muted small" id="peekSub">Pilih item dari inbox untuk melihat ringkasan.</div>
 
             <div class="meta" id="peekMeta" style="margin-top:12px"></div>
 
             <div class="actions">
-              <button id="openFullReview" class="btn" disabled>Full Review</button>
-              <button id="peekApprove" class="btn btn-ghost" disabled>Approve</button>
-              <button id="peekReturn" class="btn btn-ghost" disabled>Return</button>
+              <button id="openFullReview" class="btn" disabled>Tinjau Lengkap</button>
+              <button id="peekApprove" class="btn btn-ghost" disabled>Setujui</button>
+              <button id="peekReturn" class="btn btn-ghost" disabled>Kembalikan</button>
             </div>
 
             <div class="divider"></div>
 
-            <div class="muted small" style="font-weight:900; margin-bottom:8px">Audit trail (latest)</div>
+            <div class="muted small" style="font-weight:900; margin-bottom:8px">Jejak audit (terbaru)</div>
             <ul class="list" id="peekLogs"></ul>
           </div>
         </section>
@@ -392,8 +329,8 @@
         <div class="modal hidden" id="reviewModal" role="dialog" aria-modal="true">
           <div class="modal-card">
             <div class="modal-head">
-              <div class="modal-title" id="modalTitle">Full Review</div>
-              <button class="icon-btn" id="closeModal">✕</button>
+              <div class="modal-title" id="modalTitle">Tinjau Lengkap</div>
+              <button class="icon-btn" id="closeModal" aria-label="Tutup">✕</button>
             </div>
             <div class="modal-body">
               <div class="two-col">
@@ -406,22 +343,24 @@
                   </div>
 
                   <div class="divider"></div>
-                  <label style="display:block; margin-bottom:8px; color:var(--muted); font-weight:800">Komentar Reviewer (wajib jika RETURN)</label>
-                  <textarea class="textarea" id="reviewComment" placeholder="Catatan perbaikan: indikator/unit, evidence, lokasi, periode, dll."></textarea>
+                  <label style="display:block; margin-bottom:8px; color:var(--muted); font-weight:800">
+                    Komentar Penelaah (wajib jika KEMBALIKAN)
+                  </label>
+                  <textarea class="textarea" id="reviewComment" placeholder="Catatan perbaikan: indikator/satuan, bukti, lokasi, periode, dll."></textarea>
 
                   <div class="actions" style="margin-top:12px">
-                    <button id="btnApprove" class="btn">Approve</button>
-                    <button id="btnReturn" class="btn btn-ghost">Return</button>
-                    <button id="btnReject" class="btn btn-ghost">Reject</button>
+                    <button id="btnApprove" class="btn">Setujui</button>
+                    <button id="btnReturn" class="btn btn-ghost">Kembalikan</button>
+                    <button id="btnReject" class="btn btn-ghost">Tolak</button>
                   </div>
                 </div>
 
                 <div>
-                  <div style="font-weight:900; margin-bottom:8px">Record Details</div>
+                  <div style="font-weight:900; margin-bottom:8px">Detail Record</div>
                   <div id="modalDetails"></div>
 
                   <div class="divider"></div>
-                  <div style="font-weight:900; margin-bottom:8px">Audit trail (record)</div>
+                  <div style="font-weight:900; margin-bottom:8px">Jejak audit (record)</div>
                   <ul class="list" id="modalLogs"></ul>
                 </div>
               </div>
@@ -433,8 +372,8 @@
         <div class="modal hidden" id="searchModal" role="dialog" aria-modal="true">
           <div class="modal-card">
             <div class="modal-head">
-              <div class="modal-title" id="searchTitle">Search Results</div>
-              <button class="icon-btn" id="closeSearch">✕</button>
+              <div class="modal-title" id="searchTitle">Hasil Pencarian</div>
+              <button class="icon-btn" id="closeSearch" aria-label="Tutup">✕</button>
             </div>
             <div class="modal-body" id="searchBody"></div>
           </div>

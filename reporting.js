@@ -1,11 +1,11 @@
 // Reporting & Export UI (frontend-only)
-// Reads Impact Engine results from localStorage:
+// Membaca hasil Impact Engine dari localStorage:
 // - impact_jobs
 // - impact_output_indicator
 // - impact_output_aggregate
 //
-// Provides BTR view, NC view, raw outputs, and exports (CSV/JSON)
-// with lineage metadata (job_id, method_version, parameter_set_id, period_id, filters).
+// Menyediakan tampilan BTR, NC, keluaran mentah, dan ekspor (CSV/JSON)
+// dengan metadata jejak audit (job_id, method_version, parameter_set_id, period_id, filters).
 
 const $ = (id) => document.getElementById(id);
 
@@ -65,7 +65,7 @@ const els = {
   metaJob: $("metaJob"),
   metaManifest: $("metaManifest"),
 
-  // meta open
+  // lang toggle
   langToggle: $("langToggle"),
 };
 
@@ -117,12 +117,14 @@ function hydrateSelectors(){
   const periods = unique(jobs.map(j => j.period_id)).filter(Boolean);
 
   // period options (fallback if empty)
-  els.period.innerHTML = (periods.length ? periods : ["2026-S1"]).map(p => `<option value="${p}">${p}</option>`).join("");
+  els.period.innerHTML = (periods.length ? periods : ["2026-S1"])
+    .map(p => `<option value="${p}">${p}</option>`)
+    .join("");
 
   // jobs selector
   els.jobId.innerHTML = jobs.length
     ? jobs.map(j => `<option value="${j.job_id}">${j.job_id} • ${j.status} • ${j.period_id}</option>`).join("")
-    : `<option value="">— No jobs (run Impact Engine) —</option>`;
+    : `<option value="">— Belum ada pekerjaan (jalankan Komputasi/Impact Engine) —</option>`;
 
   // auto-select latest
   const latest = getLatestJob(jobs);
@@ -145,8 +147,10 @@ function currentFilters(){
 
 function applyFilters(){
   const f = currentFilters();
-  els.tagMode.textContent = `MODE: ${f.mode}`;
-  els.tagEligible.textContent = `ELIGIBLE: ${f.eligibleOnly ? "YES" : "NO"}`;
+
+  // tampil di tag (UI)
+  els.tagMode.textContent = `MODUS: ${f.mode}`;
+  els.tagEligible.textContent = `LAYAK: ${f.eligibleOnly ? "YA" : "TIDAK"}`;
 
   const jobs = readJSON(STORAGE.jobs, []);
   const outsI = readJSON(STORAGE.outIndicator, []);
@@ -154,9 +158,8 @@ function applyFilters(){
 
   const job = jobs.find(j => j.job_id === f.job_id) || getLatestJob(jobs);
 
-  // if user has no job selected, set state
   if (!job){
-    setState("No jobs", "warn");
+    setState("Belum ada pekerjaan", "warn");
     renderEmptyTables();
     fillSummary(null, [], [], f);
     return;
@@ -169,20 +172,20 @@ function applyFilters(){
   // eligible filter
   if (f.eligibleOnly){
     fi = fi.filter(o => !!o.eligibility_flag);
-    // aggregate rows already represent eligible in many cases, but keep as-is
+    // aggregate rows sudah banyak yang mewakili eligible, biarkan apa adanya
   }
 
-  // scope filter (applies mostly to aggregate rows)
+  // scope filter (utamanya untuk agregat)
   if (f.scope !== "ALL"){
-    // For this UI stub, we treat agg_type as scope
+    // UI stub: agg_type dianggap scope
     fa = fa.filter(a => (a.agg_type || "").toUpperCase() === f.scope.toUpperCase());
   }
 
-  // key filter (agg_key contains sector/location/action code)
+  // key filter
   if (f.key){
     const q = f.key.toLowerCase();
     fa = fa.filter(a => (`${a.agg_key}`.toLowerCase()).includes(q));
-    fi = fi.filter(o => (`${o.action_id} ${o.indicator_id}`.toLowerCase()).includes(q)); // helpful
+    fi = fi.filter(o => (`${o.action_id} ${o.indicator_id}`.toLowerCase()).includes(q));
   }
 
   setState("Ready", "good");
@@ -196,13 +199,13 @@ function setState(text, cls){
 }
 
 function renderEmptyTables(){
-  els.tblBTR.querySelector("tbody").innerHTML = `<tr><td colspan="6" class="muted">No data.</td></tr>`;
-  els.tblNC.querySelector("tbody").innerHTML = `<tr><td colspan="6" class="muted">No data.</td></tr>`;
-  els.tblRaw.querySelector("tbody").innerHTML = `<tr><td colspan="7" class="muted">No data.</td></tr>`;
+  els.tblBTR.querySelector("tbody").innerHTML = `<tr><td colspan="6" class="muted">Tidak ada data.</td></tr>`;
+  els.tblNC.querySelector("tbody").innerHTML = `<tr><td colspan="6" class="muted">Tidak ada data.</td></tr>`;
+  els.tblRaw.querySelector("tbody").innerHTML = `<tr><td colspan="7" class="muted">Tidak ada data.</td></tr>`;
 }
 
 function headlineFromAggregates(fa){
-  // pick NATIONAL if exists, else first row
+  // pilih NATIONAL jika ada, kalau tidak ambil baris pertama
   const nat = fa.find(a => (a.agg_key || "").toUpperCase() === "NATIONAL");
   const row = nat || fa[0];
   if (!row) return null;
@@ -220,44 +223,48 @@ function fillSummary(job, fi, fa, f){
   const headline = headlineFromAggregates(fa);
   els.kHeadline.textContent = (headline == null) ? "—" : `${headline}%`;
 
-  // narrative (mode-specific)
   const narrative = buildNarrative(job, fi, fa, f);
   els.narrativeBox.innerHTML = narrative;
 }
 
 function buildNarrative(job, fi, fa, f){
   if (!job){
-    return `<b>Narrative:</b> Belum ada job Impact Engine. Jalankan Impact Engine terlebih dahulu.`;
+    return `<b>Draf narasi:</b> Belum ada pekerjaan Impact Engine. Jalankan Komputasi terlebih dahulu.`;
   }
 
   const headline = headlineFromAggregates(fa);
   const period = f.period_id;
-  const eligibleText = f.eligibleOnly ? "eligible-only" : "including ineligible";
-  const scopeText = (f.scope === "ALL") ? "all scopes" : `scope ${f.scope}`;
+
+  const eligibleText = f.eligibleOnly ? "hanya yang layak" : "termasuk yang tidak layak";
+  const scopeText = (f.scope === "ALL") ? "semua cakupan" : `cakupan ${escapeHtml(f.scope)}`;
 
   if (f.mode === "BTR"){
     return `
-      <b>Narrative (BTR-ready):</b><br/>
-      Pada periode <b>${escapeHtml(period)}</b>, sistem MoNEv Adaptasi menyajikan ringkasan kemajuan adaptasi berbasis keluaran komputasi (job <b>${escapeHtml(job.job_id)}</b>) dengan lineage metode <b>${escapeHtml(job.method_version)}</b> dan parameter <b>${escapeHtml(job.parameter_set_id)}</b>.
-      Keluaran mencakup <b>${fi.length}</b> baris indikator ( ${eligibleText} ) dan <b>${fa.length}</b> baris agregasi (${scopeText}). 
-      Headline progress tercatat <b>${headline == null ? "—" : headline + "%"}</b> (berdasarkan agregasi nasional jika tersedia).<br/>
-      <span class="muted">Catatan: angka ini merupakan progress/tracking berdasarkan data yang lolos validasi, bukan klaim atribusi kausal penuh.</span>
+      <b>Draf narasi (BTR):</b><br/>
+      Pada periode <b>${escapeHtml(period)}</b>, sistem MoNEv Adaptasi menyajikan ringkasan kemajuan adaptasi
+      berbasis keluaran komputasi (pekerjaan <b>${escapeHtml(job.job_id)}</b>) dengan jejak audit metode
+      <b>${escapeHtml(job.method_version)}</b> dan parameter <b>${escapeHtml(job.parameter_set_id)}</b>.
+      Keluaran mencakup <b>${fi.length}</b> baris indikator (${eligibleText}) dan <b>${fa.length}</b> baris agregasi (${scopeText}).
+      Kemajuan utama tercatat <b>${headline == null ? "—" : headline + "%"}</b> (berdasarkan agregasi nasional jika tersedia).<br/>
+      <span class="muted">Catatan: angka ini adalah indikator kemajuan berbasis data tervalidasi, bukan klaim atribusi kausal penuh.</span>
     `;
   }
 
-  // NC mode
   return `
-    <b>Narrative (NC-ready):</b><br/>
-    Untuk pelaporan National Communication pada periode <b>${escapeHtml(period)}</b>, ringkasan kemajuan adaptasi dihimpun dari keluaran Impact Engine (job <b>${escapeHtml(job.job_id)}</b>) yang terdokumentasi dengan versi metode <b>${escapeHtml(job.method_version)}</b> dan set parameter <b>${escapeHtml(job.parameter_set_id)}</b>.
-    Analisis mencakup <b>${fi.length}</b> indikator output ( ${eligibleText} ) dan <b>${fa.length}</b> agregasi sektor/wilayah untuk mendukung narasi capaian, pembelajaran, dan kebutuhan tindak lanjut.
-    Headline progress yang dapat digunakan sebagai ringkasan nasional adalah <b>${headline == null ? "—" : headline + "%"}</b> (jika agregasi nasional tersedia).<br/>
+    <b>Draf narasi (Komunikasi Nasional/NC):</b><br/>
+    Untuk pelaporan Komunikasi Nasional pada periode <b>${escapeHtml(period)}</b>, ringkasan kemajuan adaptasi dihimpun
+    dari keluaran Impact Engine (pekerjaan <b>${escapeHtml(job.job_id)}</b>) yang terdokumentasi dengan versi metode
+    <b>${escapeHtml(job.method_version)}</b> dan set parameter <b>${escapeHtml(job.parameter_set_id)}</b>.
+    Analisis mencakup <b>${fi.length}</b> keluaran indikator (${eligibleText}) dan <b>${fa.length}</b> agregasi sektor/wilayah
+    untuk mendukung narasi capaian, pembelajaran, dan kebutuhan tindak lanjut.
+    Kemajuan utama yang dapat dipakai sebagai ringkasan nasional adalah <b>${headline == null ? "—" : headline + "%"}</b>
+    (jika agregasi nasional tersedia).<br/>
     <span class="muted">Catatan: hasil agregasi disajikan untuk transparansi dan konsistensi pelaporan lintas periode.</span>
   `;
 }
 
 function renderTables(job, fi, fa, f){
   // --- BTR view table ---
-  // For BTR: emphasize national headline + minimal rows; show agg first
   const btrRows = fa.length ? fa : [{
     job_id: job.job_id, period_id: f.period_id, agg_type: "NATIONAL", agg_key: "NATIONAL",
     progress_pct: "—", n_eligible: fi.length
@@ -276,7 +283,6 @@ function renderTables(job, fi, fa, f){
   `).join("");
 
   // --- NC view table ---
-  // For NC: show sector/region detail; prefer non-national rows if available
   const ncRows = fa.filter(a => (a.agg_key || "").toUpperCase() !== "NATIONAL");
   const useNc = ncRows.length ? ncRows : fa;
 
@@ -290,12 +296,12 @@ function renderTables(job, fi, fa, f){
       <td>${escapeHtml(r.n_eligible ?? "—")}</td>
       <td class="muted">${escapeHtml(r.notes || "")}</td>
     </tr>
-  `).join("") : `<tr><td colspan="6" class="muted">No aggregate data for NC view.</td></tr>`;
+  `).join("") : `<tr><td colspan="6" class="muted">Tidak ada data agregat untuk tampilan NC.</td></tr>`;
 
-  // --- Raw outputs (combine indicator + aggregate) ---
+  // --- Raw outputs ---
   const raw = [];
   fa.forEach(a => raw.push({
-    type: "AGG",
+    type: "AGREGAT",
     job_id: a.job_id,
     key: `${a.agg_type}:${a.agg_key}`,
     level: a.period_id,
@@ -303,20 +309,21 @@ function renderTables(job, fi, fa, f){
     eligible: "—",
     quality: "—"
   }));
+
   fi.slice(0, 200).forEach(o => raw.push({
-    type: "IND",
+    type: "INDIKATOR",
     job_id: o.job_id,
     key: `${o.action_id}`,
     level: o.indicator_id,
     progress: o.progress_pct,
-    eligible: o.eligibility_flag ? "YES" : "NO",
+    eligible: o.eligibility_flag ? "YA" : "TIDAK",
     quality: o.quality_flag || "—"
   }));
 
   const rawBody = els.tblRaw.querySelector("tbody");
   rawBody.innerHTML = raw.length ? raw.map(r => `
     <tr>
-      <td>${r.type}</td>
+      <td>${escapeHtml(r.type)}</td>
       <td>${escapeHtml(r.job_id)}</td>
       <td><b>${escapeHtml(r.key)}</b></td>
       <td>${escapeHtml(r.level)}</td>
@@ -324,7 +331,7 @@ function renderTables(job, fi, fa, f){
       <td>${escapeHtml(r.eligible)}</td>
       <td>${escapeHtml(r.quality)}</td>
     </tr>
-  `).join("") : `<tr><td colspan="7" class="muted">No raw outputs.</td></tr>`;
+  `).join("") : `<tr><td colspan="7" class="muted">Tidak ada rincian output.</td></tr>`;
 }
 
 function exportDataset(){
@@ -341,6 +348,7 @@ function exportDataset(){
 
   if (f.eligibleOnly) fi = fi.filter(o => !!o.eligibility_flag);
   if (f.scope !== "ALL") fa = fa.filter(a => (a.agg_type || "").toUpperCase() === f.scope.toUpperCase());
+
   if (f.key){
     const q = f.key.toLowerCase();
     fa = fa.filter(a => (`${a.agg_key}`.toLowerCase()).includes(q));
@@ -388,16 +396,13 @@ function toCSV(rows, cols){
 function exportCSV(){
   const pack = exportDataset();
   if (!pack.manifest){
-    logExport("No job selected. Run Impact Engine first.");
+    logExport("Tidak ada pekerjaan terpilih. Jalankan Komputasi/Impact Engine terlebih dahulu.");
     return;
   }
 
   const { manifest, data } = pack;
-  // Flatten export:
-  // - Aggregate sheet & Indicator sheet are separate files for simplicity (no Excel here)
   const baseName = `MoNEv_${manifest.report_mode}_${manifest.lineage.period_id}_${manifest.lineage.job_id}`;
 
-  // indicator csv
   const indCols = [
     "job_id","action_id","indicator_id","period_id","method_used",
     "readiness_score","eligibility_flag","progress_value","progress_pct","quality_flag"
@@ -405,38 +410,36 @@ function exportCSV(){
   const indCsv = toCSV(data.indicator, indCols);
   downloadText(`${baseName}_indicator.csv`, indCsv, "text/csv");
 
-  // aggregate csv
   const aggCols = [
     "job_id","agg_type","agg_key","period_id","n_actions","n_eligible","progress_value","progress_pct","notes"
   ];
   const aggCsv = toCSV(data.aggregate, aggCols);
   downloadText(`${baseName}_aggregate.csv`, aggCsv, "text/csv");
 
-  // manifest
   downloadText(`${baseName}_manifest.json`, JSON.stringify(manifest, null, 2), "application/json");
 
-  logExport(`Export CSV done: ${baseName}_indicator.csv, ${baseName}_aggregate.csv + manifest.json`);
+  logExport(`Ekspor CSV selesai: ${baseName}_indicator.csv, ${baseName}_aggregate.csv + manifest.json`);
 }
 
 function exportJSON(){
   const pack = exportDataset();
   if (!pack.manifest){
-    logExport("No job selected. Run Impact Engine first.");
+    logExport("Tidak ada pekerjaan terpilih. Jalankan Komputasi/Impact Engine terlebih dahulu.");
     return;
   }
   const { manifest, data } = pack;
   const baseName = `MoNEv_${manifest.report_mode}_${manifest.lineage.period_id}_${manifest.lineage.job_id}`;
   const payload = { manifest, data };
   downloadText(`${baseName}.json`, JSON.stringify(payload, null, 2), "application/json");
-  logExport(`Export JSON done: ${baseName}.json`);
+  logExport(`Ekspor JSON selesai: ${baseName}.json`);
 }
 
 function copyNarrative(){
   const txt = els.narrativeBox.innerText || "";
   navigator.clipboard.writeText(txt).then(()=>{
-    logExport("Narrative copied to clipboard.");
+    logExport("Narasi berhasil disalin ke clipboard.");
   }).catch(()=>{
-    logExport("Copy failed (browser permission). You can copy manually.");
+    logExport("Gagal menyalin (izin browser). Silakan salin secara manual.");
   });
 }
 
@@ -450,7 +453,7 @@ function logExport(line){
 function openMeta(){
   const pack = exportDataset();
   if (!pack.manifest){
-    els.metaJob.textContent = "No job selected.";
+    els.metaJob.textContent = "Tidak ada pekerjaan terpilih.";
     els.metaManifest.textContent = "—";
     modal(els.metaModal, true);
     return;
@@ -476,26 +479,26 @@ function runSearch(){
 
   if (scope === "all" || scope === "jobs"){
     const hit = jobs.filter(j => (`${j.job_id} ${j.scope} ${j.period_id} ${j.method_version} ${j.parameter_set_id}`.toLowerCase()).includes(q));
-    res.push(section("Jobs", hit.map(h => `${h.job_id} • ${h.status} • ${h.period_id}`)));
+    res.push(section("Pekerjaan", hit.map(h => `${h.job_id} • ${h.status} • ${h.period_id}`)));
   }
   if (scope === "all" || scope === "indicator"){
     const hit = outsI.filter(o => (`${o.job_id} ${o.action_id} ${o.indicator_id} ${o.period_id}`.toLowerCase()).includes(q));
-    res.push(section("Indicator outputs", hit.slice(0,15).map(x => `${x.action_id} • ${x.indicator_id} • ${x.progress_pct}% • eligible=${x.eligibility_flag}`)));
+    res.push(section("Keluaran indikator", hit.slice(0,15).map(x => `${x.action_id} • ${x.indicator_id} • ${x.progress_pct}% • layak=${x.eligibility_flag}`)));
   }
   if (scope === "all" || scope === "aggregate"){
     const hit = outsA.filter(a => (`${a.job_id} ${a.agg_type} ${a.agg_key} ${a.period_id}`.toLowerCase()).includes(q));
-    res.push(section("Aggregate outputs", hit.slice(0,15).map(x => `${x.agg_type}:${x.agg_key} • ${x.progress_pct}%`)));
+    res.push(section("Keluaran agregat", hit.slice(0,15).map(x => `${x.agg_type}:${x.agg_key} • ${x.progress_pct}%`)));
   }
   if (scope === "all" || scope === "help"){
-    res.push(section("Help", [
-      "BTR View: menonjolkan headline nasional + ringkasan agregasi.",
-      "NC View: menonjolkan rincian sektor/wilayah untuk narasi evaluatif & pembelajaran.",
-      "Export selalu menghasilkan manifest.json untuk audit lineage."
+    res.push(section("Bantuan", [
+      "Tampilan BTR: menonjolkan kemajuan utama nasional + ringkasan agregasi.",
+      "Tampilan NC: menonjolkan rincian sektor/wilayah untuk narasi evaluatif & pembelajaran.",
+      "Ekspor selalu menghasilkan manifest.json untuk jejak audit."
     ].filter(x => x.toLowerCase().includes(q) || q.length < 3)));
   }
 
-  els.searchTitle.textContent = `Search Results: "${els.globalSearch.value}"`;
-  els.searchBody.innerHTML = res.join("") || `<div class="muted">No results.</div>`;
+  els.searchTitle.textContent = `Hasil Pencarian: "${els.globalSearch.value}"`;
+  els.searchBody.innerHTML = res.join("") || `<div class="muted">Tidak ada hasil.</div>`;
   modal(els.searchModal, true);
 }
 
@@ -504,9 +507,69 @@ function section(title, items){
   return `
     <div style="margin-bottom:12px">
       <div style="font-weight:900; margin-bottom:6px">${title} (${arr.length})</div>
-      ${arr.length ? `<ul>${arr.map(i => `<li>${escapeHtml(i)}</li>`).join("")}</ul>` : `<div class="muted">No results</div>`}
+      ${arr.length ? `<ul>${arr.map(i => `<li>${escapeHtml(i)}</li>`).join("")}</ul>` : `<div class="muted">Tidak ada hasil.</div>`}
     </div>
   `;
+}
+
+
+// ---------- Sidebar toggle (opsional; aman walau elemennya belum ada) ----------
+function sidebarBehavior() {
+  const btn = document.getElementById("burgerBtn");
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+
+  if (!btn || !sidebar) return;
+
+  const isMobile = () => window.matchMedia("(max-width: 980px)").matches;
+
+  const saved = localStorage.getItem("sidebar_state"); // "open" | "closed"
+  if (saved === "closed") document.body.classList.add("sidebar-closed");
+
+  const setAria = () => {
+    const isClosed = document.body.classList.contains("sidebar-closed");
+    btn.setAttribute("aria-expanded", String(!isClosed));
+    btn.setAttribute("aria-label", isClosed ? "Buka menu" : "Tutup menu");
+  };
+
+  const closeMobileDrawer = () => document.body.classList.remove("sidebar-open");
+
+  const toggleDesktop = () => {
+    const willClose = !document.body.classList.contains("sidebar-closed");
+    document.body.classList.toggle("sidebar-closed", willClose);
+    if (willClose) closeMobileDrawer();
+    localStorage.setItem("sidebar_state", willClose ? "closed" : "open");
+    setAria();
+  };
+
+  btn.addEventListener("click", () => {
+    if (isMobile()) {
+      if (document.body.classList.contains("sidebar-closed")) {
+        document.body.classList.remove("sidebar-closed");
+        localStorage.setItem("sidebar_state", "open");
+      }
+      document.body.classList.add("sidebar-open");
+      setAria();
+      return;
+    }
+    toggleDesktop();
+  });
+
+  if (overlay) overlay.addEventListener("click", closeMobileDrawer);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMobileDrawer();
+  });
+
+  sidebar.querySelectorAll("a").forEach(a => {
+    a.addEventListener("click", () => { if (isMobile()) closeMobileDrawer(); });
+  });
+
+  window.addEventListener("resize", () => {
+    if (!isMobile()) closeMobileDrawer();
+  });
+
+  setAria();
 }
 
 function init(){
@@ -514,13 +577,12 @@ function init(){
   els.tabs.forEach(t => t.addEventListener("click", ()=> setActiveTab(t.dataset.tab)));
   setActiveTab("btr");
 
-  // selectors + defaults
   hydrateSelectors();
+  sidebarBehavior();
 
-  // default mode
+  // mode (UI-only)
   els.reportMode.addEventListener("change", ()=> {
-    els.tagMode.textContent = `MODE: ${els.reportMode.value}`;
-    // keep current selection
+    els.tagMode.textContent = `MODUS: ${els.reportMode.value}`;
   });
 
   // actions
@@ -537,13 +599,13 @@ function init(){
       els.jobId.value = latest.job_id;
     }
     applyFilters();
-    logExport("Reset filters.");
+    logExport("Filter diatur ulang.");
   });
 
   els.refreshBtn.addEventListener("click", ()=>{
     hydrateSelectors();
     applyFilters();
-    logExport("Refreshed data from localStorage.");
+    logExport("Data dimuat ulang dari localStorage.");
   });
 
   els.exportCsvBtn.addEventListener("click", exportCSV);
@@ -558,7 +620,7 @@ function init(){
   els.globalSearch.addEventListener("keydown", (e)=>{ if(e.key==="Enter") runSearch(); });
   els.closeSearch.addEventListener("click", ()=> modal(els.searchModal, false));
 
-  // lang toggle (UI-only placeholder)
+  // lang toggle (placeholder)
   els.langToggle.addEventListener("click", ()=>{
     els.langToggle.textContent = (els.langToggle.textContent === "ID") ? "EN" : "ID";
   });

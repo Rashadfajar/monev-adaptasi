@@ -3,70 +3,90 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MoNEv Adaptasi – MPC Dashboard</title>
+  <title>MoNEv Adaptasi – Dashboard</title>
+
   <link rel="stylesheet" href="app1.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
+  <style>
+    /* Status cards 2x2 */
+    .grid-status{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+      padding-top: 10px;
+    }
+
+    /* Responsive: jadi 1 kolom di layar kecil */
+    @media (max-width: 900px){
+      .grid-status{ grid-template-columns:1fr; }
+    }
+  </style>
 </head>
+
 <body>
   <div class="app">
     <!-- TOP BAR -->
     <header class="topbar">
       <div class="brand">
+        <button id="burgerBtn"
+          class="icon-btn burger-btn"
+          type="button"
+          aria-label="Buka menu"
+          aria-expanded="false"
+          aria-controls="sidebar">
+          ☰
+        </button>
         <div class="logo-container">
           <img src="assets/Logo_KLH.png" alt="Logo" class="logo">
         </div>
         <div class="brand-text">
-          <div class="brand-title" data-i18n="appTitle">MoNEv Adaptasi – MPC</div>
-          <div class="brand-sub" data-i18n="appSub">Dashboard / Control Tower</div>
+          <div class="brand-title" data-i18n="appTitle">MoNEv Adaptasi</div>
+          <div class="brand-sub" data-i18n="appSub">Dashboard / Pusat Kendali</div>
         </div>
-        <!-- <div class="logo">MoNEv</div>
-        <div class="brand-text">
-          <div class="brand-title" data-i18n="appTitle">MoNEv Adaptasi – MPC</div>
-          <div class="brand-sub" data-i18n="appSub">Dashboard / Control Tower</div>
-        </div> -->
       </div>
 
       <div class="search">
-        <input id="globalSearch" type="search" placeholder="Cari aksi / indikator / lokasi / K/L / OPD / periode…" />
-        <select id="searchScope">
-          <option value="all">All</option>
-          <option value="actions">Actions</option>
-          <option value="indicators">Indicators</option>
-          <option value="locations">Locations</option>
-          <option value="institutions">Institutions</option>
-          <option value="reports">Reports</option>
-          <option value="help">Help</option>
+        <input id="globalSearch" type="search" placeholder="Cari aksi / indikator / wilayah / K/L / OPD / periode…" />
+        <select id="searchScope" aria-label="Ruang lingkup pencarian">
+          <option value="all">Semua</option>
+          <option value="actions">Aksi</option>
+          <option value="indicators">Indikator</option>
+          <option value="locations">Wilayah</option>
+          <option value="institutions">Instansi</option>
+          <option value="reports">Laporan</option>
+          <option value="help">Bantuan</option>
         </select>
-        <button id="searchBtn" class="btn">Search</button>
+        <button id="searchBtn" class="btn">Cari</button>
       </div>
 
       <div class="top-actions">
-        <button id="langToggle" class="chip" title="Toggle ID/EN">ID</button>
-        <button class="icon-btn" title="Help">?</button>
-        <button class="icon-btn" title="Notifications">🔔<span id="notifBadge" class="badge">3</span></button>
-        <button class="icon-btn" title="User">👤</button>
+        <button id="langToggle" class="chip" title="Ganti ID/EN">ID</button>
+        <button class="icon-btn" title="Bantuan">?</button>
+        <button class="icon-btn" title="Notifikasi">🔔<span id="notifBadge" class="badge">3</span></button>
+        <button class="icon-btn" title="Pengguna">👤</button>
       </div>
     </header>
 
     <!-- BODY -->
     <div class="body">
       <!-- SIDEBAR -->
-      <aside class="sidebar">
+      <aside class="sidebar" id="sidebar">
         <nav class="nav">
-          <a class="nav-item active" href="#" data-i18n="navDashboard">Dashboard (Home)</a>
+          <a class="nav-item active" href="#" data-i18n="navDashboard">Dashboard (Beranda)</a>
           <a class="nav-item" href="input.html" data-i18n="navInput">Input Data</a>
-          <a class="nav-item" href="review.html" data-i18n="navReview">Review & Validasi</a>
+          <a class="nav-item" href="review.html" data-i18n="navReview">Verifikasi & Validasi</a>
           <a class="nav-item" href="engine.html" data-i18n="navEngine">Impact Engine</a>
           <a class="nav-item" href="reporting.html" data-i18n="navReporting">Pelaporan & Ekspor</a>
-          <a class="nav-item" href="help.html" data-i18n="navHelp">Help Center</a>
+          <a class="nav-item" href="help.html" data-i18n="navHelp">Pusat Bantuan</a>
         </nav>
 
-        <div class="sidebar-footer">
-          <!-- <div class="small muted">v0.1 (frontend only)</div> -->
-        </div>
+        <div class="sidebar-footer"></div>
       </aside>
+
+      <!-- OVERLAY (klik untuk menutup) -->
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
       <!-- MAIN -->
       <main class="main">
@@ -77,7 +97,7 @@
               <label data-i18n="periodActive">Periode Aktif</label>
               <div class="row">
                 <select id="yearSel"></select>
-                <select id="subperiodSel">
+                <select id="subperiodSel" aria-label="Sub-periode">
                   <option value="S1">Semester 1</option>
                   <option value="S2">Semester 2</option>
                 </select>
@@ -87,161 +107,181 @@
             <div class="field">
               <label data-i18n="periodStatus">Status Periode</label>
               <div class="row">
-                <span id="periodStatus" class="status-pill open">OPEN</span>
-                <button id="lockBtn" class="btn btn-ghost" data-i18n="lockPeriod">Lock Period</button>
+                <!-- Catatan: teks ini akan di-toggle oleh JS; sesuaikan juga di lockBehavior() -->
+                <span id="periodStatus" class="status-pill open">TERBUKA</span>
+                <button id="lockBtn" class="btn btn-ghost" data-i18n="lockPeriod">Kunci Periode</button>
               </div>
             </div>
 
             <div class="field grow">
-              <label data-i18n="quickActions">Quick Actions</label>
+              <label data-i18n="quickActions">Aksi Cepat</label>
               <div class="row wrap">
-                <a class="btn" href="input.html#horizontal" data-i18n="qaInputH">Sektor</a>
-                <a class="btn" href="input.html#vertical" data-i18n="qaInputV">Daerah</a>
-                <a class="btn" href="review.html" data-i18n="qaInbox">Validasi</a>
-                <a class="btn" href="engine.html" data-i18n="qaRunCompute">Evaluasi</a>
-                <a class="btn" href="reporting.html" data-i18n="qaExport">Report</a>
+                <a class="btn" href="input.html#horizontal" data-i18n="qaInputH">Sektoral</a>
+                <a class="btn" href="input.html#vertical" data-i18n="qaInputV">Kewilayahan</a>
+                <a class="btn" href="review.html" data-i18n="qaInbox">Verifikasi</a>
+                <a class="btn" href="engine.html" data-i18n="qaRunCompute">Analisis Dampak</a>
+                <a class="btn" href="reporting.html" data-i18n="qaExport">Laporan</a>
               </div>
             </div>
           </div>
 
           <div class="panel-row">
             <div class="field grow">
-              <label data-i18n="globalFilters">Global Filters</label>
+              <label data-i18n="globalFilters">Filter Global</label>
               <div class="row wrap">
-                <select id="sectorSel">
-                  <option value="">Sector (All)</option>
-                  <option value="Food">Food</option>
-                  <option value="Water">Water</option>
-                  <option value="Health">Health</option>
-                  <option value="Ecosystems">Ecosystems</option>
-                  <option value="DRM">DRM</option>
-                  <option value="Coastal">Coastal</option>
+                <!-- value tetap EN agar logic JS tetap jalan; label tampil Indonesia -->
+                <select id="sectorSel" aria-label="Sektor">
+                  <option value="">Sektor</option>
+                  <option value="Food">Pangan</option>
+                  <option value="Water">Air</option>
+                  <option value="Health">Kesehatan</option>
+                  <option value="Ecosystems">Ekosistem</option>
+                  <option value="DRM">Kebencanaan</option>
+                  <option value="Coastal">Pesisir</option>
                 </select>
-                <select id="locationSel">
-                  <option value="">Location (All)</option>
+
+                <select id="locationSel" aria-label="Wilayah">
+                  <option value="">Wilayah</option>
                   <option value="Prov A">Prov A</option>
                   <option value="Prov B">Prov B</option>
                   <option value="Prov C">Prov C</option>
                 </select>
-                <select id="instSel">
-                  <option value="">Institution (All)</option>
+
+                <select id="instSel" aria-label="Instansi">
+                  <option value="">Instansi</option>
                   <option value="KLH">KLH</option>
                   <option value="KemenPU">KemenPU</option>
                   <option value="Prov A – OPD">Prov A – OPD</option>
                 </select>
-                <select id="typologySel">
-                  <option value="">Typology (All)</option>
-                  <option value="Infrastructure">Infrastructure</option>
+
+                <!-- value tetap EN; label Indonesia -->
+                <select id="typologySel" aria-label="Tipologi">
+                  <option value="">Tipologi</option>
+                  <option value="Infrastructure">Infrastruktur</option>
                   <option value="EbA">EbA</option>
-                  <option value="Capacity">Capacity</option>
-                  <option value="Governance">Governance</option>
-                  <option value="EWS">EWS</option>
+                  <option value="Capacity">Peningkatan Kapasitas</option>
+                  <option value="Governance">Tata Kelola</option>
+                  <option value="EWS">EWS (Peringatan Dini)</option>
                 </select>
-                <button id="resetFilters" class="btn btn-ghost" data-i18n="reset">Reset</button>
+
+                <button id="resetFilters" class="btn btn-ghost" data-i18n="reset">Atur Ulang</button>
               </div>
             </div>
-          </div>
-        </section>
-
-        <!-- STATUS CARDS -->
-        <section class="grid-4">
-          <div class="card">
-            <div class="card-title" data-i18n="cardH">Horizontal Input</div>
-            <div class="kpi"><span id="hSub">145</span> <span class="muted" data-i18n="submissions">submissions</span></div>
-            <div class="meta">
-              <div><span class="muted" data-i18n="pending">Pending</span>: <b id="hPend">18</b></div>
-              <div><span class="muted" data-i18n="approved">Approved</span>: <b id="hAppr">90%</b></div>
-            </div>
-            <a class="link" href="input.html#horizontal" data-i18n="goInput">Go to Input →</a>
-          </div>
-
-          <div class="card">
-            <div class="card-title" data-i18n="cardV">Vertical Input</div>
-            <div class="kpi"><span id="vSub">322</span> <span class="muted" data-i18n="submissions">submissions</span></div>
-            <div class="meta">
-              <div><span class="muted" data-i18n="pending">Pending</span>: <b id="vPend">41</b></div>
-              <div><span class="muted" data-i18n="coverage">Coverage</span>: <b id="vCov">76%</b></div>
-            </div>
-            <a class="link" href="input.html#vertical" data-i18n="goInput">Go to Input →</a>
-          </div>
-
-          <div class="card">
-            <div class="card-title" data-i18n="cardQA">QA/QC Workflow</div>
-            <div class="kpi"><span id="qaInbox">12</span> <span class="muted" data-i18n="inboxItems">inbox items</span></div>
-            <div class="meta">
-              <div><span class="muted" data-i18n="returned">Returned</span>: <b id="qaRet">5</b></div>
-              <div><span class="muted" data-i18n="avgReview">Avg review</span>: <b id="qaAvg">3d</b></div>
-            </div>
-            <a class="link" href="review.html" data-i18n="openInbox">Open Inbox →</a>
-          </div>
-
-          <div class="card">
-            <div class="card-title" data-i18n="cardEngine">Impact Engine</div>
-            <div class="kpi"><span id="engReady">85%</span> <span class="muted" data-i18n="readiness">readiness</span></div>
-            <div class="meta">
-              <div><span class="muted" data-i18n="lastRun">Last run</span>: <b id="engLast">2026-03-14 10:12</b></div>
-              <div><span class="muted" data-i18n="errors">Errors</span>: <b id="engErr">2</b></div>
-            </div>
-            <a class="link" href="engine.html" data-i18n="openEngine">Open Engine →</a>
           </div>
         </section>
 
         <section class="panel">
-          <div class="panel-row" style="display: flex; justify-content: space-between; align-items: stretch; gap: 20px;">
+          <div class="panel-row" style="display:flex; justify-content:space-between; align-items:stretch; gap:20px;">
             <!-- Peta -->
-            <div class="field" style="flex: 1; padding: 10px;">
-              <h3 style="color: rgb(0, 0, 0); margin:0 0 8px 0;">Wilayah Terlapor</h3>
-              <div id="mapid" style="height: 300px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);"></div>
+            <div class="field" style="flex:1; padding:10px;">
+              <h3 style="color:#000; margin:0 0 8px 0;">Sebaran Aksi</h3>
+              <div id="mapid" style="height:300px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,.2);"></div>
             </div>
 
-            <!-- Grafik Tren Aksi Adaptasi -->
-            <div class="field" style="flex: 1; padding: 10px;">
-              <h3 style="color: rgb(0, 0, 0); margin:0 0 8px 0;">Tren Aksi Adaptasi</h3>
-              <!-- <div class="muted small" style="margin-bottom:8px;">Grafik mengikuti Global Filters (Sector/Location/Institution/Typology) & Periode.</div> -->
-              <div id="trendWrap" style="width:100%; height: 300px;">
-                <svg id="trendSvg" viewBox="0 0 720 360" preserveAspectRatio="none" role="img" aria-label="Trend chart"></svg>
+            <!-- Grafik Tren -->
+            <div class="field" style="flex:1; padding:10px;">
+              <h3 style="color:#000; margin:0 0 8px 0;">Tren Aksi Adaptasi</h3>
+              <div id="trendWrap" style="width:100%; height:300px;">
+                <svg id="trendSvg" viewBox="0 0 720 360" preserveAspectRatio="none" role="img" aria-label="Grafik tren"></svg>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- TASKS/ALERTS/LOGS + RESULTS TABS -->
+        <!-- TASKS / STATUS (LEFT) + RESULTS (RIGHT) -->
         <section class="grid-2">
-          <!-- Tasks/Alerts/Logs -->
-          <div class="card">
-            <div class="tabs">
-              <button class="tab active" data-tab="tasks" data-i18n="tasks">Tasks</button>
-              <button class="tab" data-tab="alerts" data-i18n="alerts">Alerts</button>
-              <button class="tab" data-tab="logs" data-i18n="logs">Computation Logs</button>
+          <!-- ================= LEFT COLUMN ================= -->
+          <div class="left-stack">
+            <div class="card">
+              <div class="tabs">
+                <button class="tab active" data-tab="tasks" data-i18n="tasks">Tugas</button>
+                <button class="tab" data-tab="alerts" data-i18n="alerts">Peringatan</button>
+                <button class="tab" data-tab="logs" data-i18n="logs">Log Komputasi</button>
+              </div>
+
+              <div class="tab-panel" id="tab-tasks">
+                <ul class="list" id="tasksList"></ul>
+              </div>
+
+              <div class="tab-panel hidden" id="tab-alerts">
+                <ul class="list" id="alertsList"></ul>
+              </div>
+
+              <div class="tab-panel hidden" id="tab-logs">
+                <ul class="list" id="logsList"></ul>
+              </div>
             </div>
 
-            <div class="tab-panel" id="tab-tasks">
-              <ul class="list" id="tasksList"></ul>
-            </div>
+            <!-- Status Cards (2x2) -->
+            <section class="grid-status">
+              <div class="card">
+                <div class="card-title" data-i18n="cardH">Input Sektoral</div>
+                <div class="kpi">
+                  <span id="hSub">145</span>
+                  <span class="muted" data-i18n="submissions">entri</span>
+                </div>
+                <div class="meta">
+                  <div><span class="muted" data-i18n="pending">Menunggu</span>: <b id="hPend">18</b></div>
+                  <div><span class="muted" data-i18n="approved">Disetujui</span>: <b id="hAppr">90%</b></div>
+                </div>
+                <a class="link" href="input.html#horizontal" data-i18n="goInput">Buka Input →</a>
+              </div>
 
-            <div class="tab-panel hidden" id="tab-alerts">
-              <ul class="list" id="alertsList"></ul>
-            </div>
+              <div class="card">
+                <div class="card-title" data-i18n="cardV">Input Kewilayahan</div>
+                <div class="kpi">
+                  <span id="vSub">322</span>
+                  <span class="muted" data-i18n="submissions">entri</span>
+                </div>
+                <div class="meta">
+                  <div><span class="muted" data-i18n="pending">Menunggu</span>: <b id="vPend">41</b></div>
+                  <div><span class="muted" data-i18n="coverage">Cakupan</span>: <b id="vCov">76%</b></div>
+                </div>
+                <a class="link" href="input.html#vertical" data-i18n="goInput">Buka Input →</a>
+              </div>
 
-            <div class="tab-panel hidden" id="tab-logs">
-              <ul class="list" id="logsList"></ul>
-            </div>
+              <div class="card">
+                <div class="card-title" data-i18n="cardQA">Verifikasi & Validasi</div>
+                <div class="kpi">
+                  <span id="qaInbox">12</span>
+                  <span class="muted" data-i18n="inboxItems">item</span>
+                </div>
+                <div class="meta">
+                  <div><span class="muted" data-i18n="returned">Perlu Perbaikan</span>: <b id="qaRet">5</b></div>
+                  <div><span class="muted" data-i18n="avgReview">Rata-rata proses</span>: <b id="qaAvg">3 hari</b></div>
+                </div>
+                <a class="link" href="review.html" data-i18n="openInbox">Buka Kotak Masuk →</a>
+              </div>
+
+              <div class="card">
+                <div class="card-title" data-i18n="cardEngine">Impact Engine</div>
+                <div class="kpi">
+                  <span id="engReady">85%</span>
+                  <span class="muted" data-i18n="readiness">kesiapan</span>
+                </div>
+                <div class="meta">
+                  <div><span class="muted" data-i18n="lastRun">Komputasi terakhir</span>: <b id="engLast">2026-03-14</b></div>
+                  <div><span class="muted" data-i18n="errors">Kesalahan</span>: <b id="engErr">2</b></div>
+                </div>
+                <a class="link" href="engine.html" data-i18n="openEngine">Buka Impact Engine →</a>
+              </div>
+            </section>
           </div>
 
-          <!-- Results Workspace -->
+          <!-- ================= RIGHT COLUMN ================= -->
           <div class="card">
             <div class="tabs">
-              <button class="tab active" data-view="mpc" data-i18n="tabMPC">MPC View</button>
-              <button class="tab" data-view="h" data-i18n="tabH">Horizontal View</button>
-              <button class="tab" data-view="v" data-i18n="tabV">Vertical View</button>
-              <button class="tab" data-view="impact" data-i18n="tabImpact">Impact View</button>
+              <button class="tab active" data-view="mpc" data-i18n="tabMPC">Tampilan Nasional</button>
+              <button class="tab" data-view="h" data-i18n="tabH">Tampilan Sektoral</button>
+              <button class="tab" data-view="v" data-i18n="tabV">Tampilan Kewilayahan</button>
+              <button class="tab" data-view="impact" data-i18n="tabImpact">Tampilan Dampak</button>
             </div>
 
             <div class="view" id="view-mpc">
               <div class="kpi-row">
-                <div class="kpi-card"><div class="kpi-n" id="kpiActions">1,245</div><div class="kpi-l" data-i18n="kpiActions">Aksi validated</div></div>
-                <div class="kpi-card"><div class="kpi-n" id="kpiProgress">68%</div><div class="kpi-l" data-i18n="kpiProgress">Capaian indikator</div></div>
-                <div class="kpi-card"><div class="kpi-n" id="kpiReadiness">82%</div><div class="kpi-l" data-i18n="kpiReadiness">Readiness nasional</div></div>
+                <div class="kpi-card"><div class="kpi-n" id="kpiActions">1,245</div><div class="kpi-l" data-i18n="kpiActions">Aksi terverifikasi</div></div>
+                <div class="kpi-card"><div class="kpi-n" id="kpiProgress">68%</div><div class="kpi-l" data-i18n="kpiProgress">Kemajuan indikator</div></div>
+                <div class="kpi-card"><div class="kpi-n" id="kpiReadiness">82%</div><div class="kpi-l" data-i18n="kpiReadiness">Kesiapan nasional</div></div>
                 <div class="kpi-card"><div class="kpi-n" id="kpiCoverage">312/514</div><div class="kpi-l" data-i18n="kpiCoverage">Wilayah terlapor</div></div>
               </div>
 
@@ -250,9 +290,9 @@
                   <thead>
                     <tr>
                       <th data-i18n="colSector">Sektor</th>
-                      <th data-i18n="colActions">#Aksi</th>
-                      <th data-i18n="colApproved">%Approved</th>
-                      <th data-i18n="colReadiness">Avg Readiness</th>
+                      <th data-i18n="colActions"># Aksi</th>
+                      <th data-i18n="colApproved">% Disetujui</th>
+                      <th data-i18n="colReadiness">Rata-rata kesiapan</th>
                       <th data-i18n="colStatus">Status</th>
                     </tr>
                   </thead>
@@ -261,26 +301,26 @@
               </div>
 
               <div class="row wrap">
-                <a class="btn btn-ghost" href="reporting.html" data-i18n="viewReports">View Report Packages</a>
-                <button class="btn btn-ghost" id="briefBtn" data-i18n="brief">Generate Briefing Note</button>
+                <a class="btn btn-ghost" href="reporting.html" data-i18n="viewReports">Lihat Paket Laporan</a>
+                <button class="btn btn-ghost" id="briefBtn" data-i18n="brief">Buat Catatan Ringkas</button>
               </div>
             </div>
 
             <div class="view hidden" id="view-h">
-              <div class="muted" data-i18n="hHint">Tampilan ringkas sektoral/KL (mock). Klik baris untuk detail aksi.</div>
+              <div class="muted" data-i18n="hHint">Tampilan ringkas sektoral (mock). Klik baris untuk detail aksi.</div>
               <div class="table-wrap">
                 <table class="table" id="hTable">
                   <thead>
                     <tr>
-                      <th>K/L</th><th>Aksi</th><th>Sektor</th><th>Lokasi</th><th>Indikator</th><th>Target</th><th>Realisasi</th><th>Status QA</th>
+                      <th>K/L</th><th>Aksi</th><th>Sektor</th><th>Wilayah</th><th>Indikator</th><th>Target</th><th>Realisasi</th><th>Status Verifikasi</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
                 </table>
               </div>
               <div class="row wrap">
-                <a class="btn btn-ghost" href="input.html#horizontal" data-i18n="openInputH">Open Input Horizontal</a>
-                <button class="btn btn-ghost" id="dlH" data-i18n="download">Download Filtered Data</button>
+                <a class="btn btn-ghost" href="input.html#horizontal" data-i18n="openInputH">Buka Input Sektoral</a>
+                <button class="btn btn-ghost" id="dlH" data-i18n="download">Unduh Data Terfilter</button>
               </div>
             </div>
 
@@ -290,33 +330,33 @@
                 <table class="table" id="vTable">
                   <thead>
                     <tr>
-                      <th>Wilayah</th><th>#Aksi</th><th>#Ind</th><th>Readiness</th><th>Pending</th><th>Last Update</th>
+                      <th>Wilayah</th><th># Aksi</th><th># Indikator</th><th>Kesiapan</th><th>Tahap Verifikasi</th><th>Pembaruan Terakhir</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
                 </table>
               </div>
               <div class="row wrap">
-                <a class="btn btn-ghost" href="input.html#vertical" data-i18n="openInputV">Open Input Vertical</a>
-                <a class="btn btn-ghost" href="review.html" data-i18n="openInbox2">Open Review Inbox</a>
+                <a class="btn btn-ghost" href="input.html#vertical" data-i18n="openInputV">Buka Input Kewilayahan</a>
+                <a class="btn btn-ghost" href="review.html" data-i18n="openInbox2">Buka Kotak Masuk Verifikasi</a>
               </div>
             </div>
 
             <div class="view hidden" id="view-impact">
-              <div class="muted" data-i18n="impactHint">Output komputasi (mock). Klik baris untuk lineage.</div>
+              <div class="muted" data-i18n="impactHint">Output komputasi (mock). Klik baris untuk melihat jejak data (lineage).</div>
               <div class="table-wrap">
                 <table class="table" id="impactTable">
                   <thead>
                     <tr>
-                      <th>Domain</th><th>Indicator Group</th><th>Value</th><th>Trend</th><th>Coverage</th><th>Confidence</th>
+                      <th>Domain</th><th>Kelompok Indikator</th><th>Nilai</th><th>Tren</th><th>Cakupan</th><th>Tingkat Keyakinan</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
                 </table>
               </div>
               <div class="row wrap">
-                <button class="btn btn-ghost" id="runComputeBtn2" data-i18n="qaRunCompute">Run Computation</button>
-                <a class="btn btn-ghost" href="engine.html" data-i18n="viewLogs">View Logs</a>
+                <button class="btn btn-ghost" id="runComputeBtn2" data-i18n="qaRunCompute">Jalankan Komputasi</button>
+                <a class="btn btn-ghost" href="engine.html" data-i18n="viewLogs">Lihat Log</a>
               </div>
             </div>
 
@@ -327,8 +367,8 @@
         <div class="modal hidden" id="searchModal" role="dialog" aria-modal="true">
           <div class="modal-card">
             <div class="modal-head">
-              <div class="modal-title" id="searchTitle">Search Results</div>
-              <button class="icon-btn" id="closeSearch">✕</button>
+              <div class="modal-title" id="searchTitle">Hasil Pencarian</div>
+              <button class="icon-btn" id="closeSearch" aria-label="Tutup">✕</button>
             </div>
             <div class="modal-body" id="searchBody"></div>
           </div>
@@ -336,14 +376,15 @@
 
         <!-- MODAL: Lineage / Info -->
         <div class="modal hidden" id="infoModal" role="dialog" aria-modal="true">
-            <div class="modal-card">
-              <div class="modal-head">
-                <div class="modal-title" id="infoTitle">Details</div>
-                <button class="icon-btn" id="closeInfo">✕</button>
-              </div>
-              <div class="modal-body" id="infoBody"></div>
+          <div class="modal-card">
+            <div class="modal-head">
+              <div class="modal-title" id="infoTitle">Rincian</div>
+              <button class="icon-btn" id="closeInfo" aria-label="Tutup">✕</button>
             </div>
+            <div class="modal-body" id="infoBody"></div>
+          </div>
         </div>
+
       </main>
     </div>
   </div>

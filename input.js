@@ -1,8 +1,8 @@
 // Input Wizard (frontend-only)
-// - supports Horizontal/Vertical via #horizontal / #vertical
-// - autosave to localStorage
-// - readiness score + required validations
-// - evidence upload stub list
+// - Mode: Sektoral (HORIZONTAL) / Kewilayahan (VERTICAL) via #horizontal / #vertical
+// - Autosave ke localStorage
+// - Readiness score + validasi field wajib
+// - Evidence upload: stub (hanya list di UI)
 
 const STEPS = [
   { id: 1, name: "Identitas" },
@@ -10,12 +10,12 @@ const STEPS = [
   { id: 3, name: "Sektor" },
   { id: 4, name: "Indikator" },
   { id: 5, name: "Nilai" },
-  { id: 6, name: "Evidence" },
-  { id: 7, name: "Submit" },
+  { id: 6, name: "Bukti" },
+  { id: 7, name: "Ringkasan" },
 ];
 
 let currentStep = 1;
-let mode = "HORIZONTAL"; // or VERTICAL
+let mode = "HORIZONTAL"; // HORIZONTAL = Sektoral, VERTICAL = Kewilayahan
 
 const els = {};
 const state = {
@@ -56,221 +56,236 @@ const state = {
   _readiness: 0,
 };
 
-function qs(id){ return document.getElementById(id); }
+// ---------- Helpers ----------
+function qs(id) { return document.getElementById(id); }
 
-function initRefs(){
-  [
-    "wizTitle","wizSub","stepper","readinessPill","readinessPill2",
-    "modeH","modeV","clearDraftBtn",
-    "actionName","implStatus","institution","implementingUnit","actionDesc",
-    "prov","kab","kec","desa","coverageNotes",
-    "sector","typology","napMap",
-    "indicator","unit","methodNotes",
-    "baseline","target","actual","period","valueNotes",
-    "fileInput","fileList","evidenceLink","evidenceDesc",
-    "prevBtn","nextBtn","backBtn","submitBtn","navFooter","stepHint",
-    "saveDraftBtn","exportDraftBtn",
-    "summaryTitle","summaryMeta","summaryTable",
-    "toast","toastTitle","toastMsg"
-  ].forEach(k => els[k] = qs(k));
+function safeText(el, text) {
+  if (!el) return;
+  el.textContent = text;
 }
 
-function storageKey(){
+function safeToggleClass(el, cls, on) {
+  if (!el) return;
+  el.classList.toggle(cls, !!on);
+}
+
+function modeLabel(m) {
+  return m === "VERTICAL" ? "Kewilayahan" : "Sektoral";
+}
+
+function implStatusLabel(v) {
+  const map = { Planned: "Direncanakan", Ongoing: "Berjalan", Completed: "Selesai" };
+  return map[v] || v || "—";
+}
+
+function sectorLabel(v) {
+  const map = {
+    Food: "Pangan",
+    Water: "Air",
+    Health: "Kesehatan",
+    Ecosystems: "Ekosistem & Lanskap",
+    DRM: "Kebencanaan",
+    Coastal: "Pesisir & Pulau Kecil",
+  };
+  return map[v] || v || "—";
+}
+
+function typologyLabel(v) {
+  const map = {
+    Infrastructure: "Infrastruktur",
+    EbA: "Adaptasi Berbasis Ekosistem (EbA)",
+    Capacity: "Peningkatan Kapasitas",
+    Governance: "Tata Kelola/Kelembagaan",
+    EWS: "Peringatan Dini & Kesiapsiagaan",
+  };
+  return map[v] || v || "—";
+}
+
+function storageKey() {
   return `monev_draft_${mode.toLowerCase()}`;
 }
 
-function showToast(title, msg){
-  els.toastTitle.textContent = title;
-  els.toastMsg.textContent = msg;
-  els.toast.classList.add("show");
-  setTimeout(()=>els.toast.classList.remove("show"), 1700);
+function markUpdated() {
+  state._updatedAt = new Date().toISOString();
 }
 
-function setModeFromHash(){
+function autosave() {
+  try {
+    localStorage.setItem(storageKey(), JSON.stringify(state));
+  } catch (e) {
+    // ignore quota / privacy errors (frontend stub)
+  }
+}
+
+function loadDraft() {
+  const raw = localStorage.getItem(storageKey());
+  if (!raw) return false;
+  try {
+    const obj = JSON.parse(raw);
+    Object.assign(state, obj);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+  }[c]));
+}
+
+// ---------- UI Refs ----------
+function initRefs() {
+  [
+    "wizTitle", "wizSub", "stepper", "readinessPill", "readinessPill2",
+    "modeH", "modeV", "clearDraftBtn",
+    "actionName", "implStatus", "institution", "implementingUnit", "actionDesc",
+    "prov", "kab", "kec", "desa", "coverageNotes",
+    "sector", "typology", "napMap",
+    "indicator", "unit", "methodNotes",
+    "baseline", "target", "actual", "period", "valueNotes",
+    "fileInput", "fileList", "evidenceLink", "evidenceDesc",
+    "prevBtn", "nextBtn", "backBtn", "submitBtn", "navFooter", "stepHint",
+    "saveDraftBtn", "exportDraftBtn",
+    "summaryTitle", "summaryMeta", "summaryTable",
+    "toast", "toastTitle", "toastMsg"
+  ].forEach(k => els[k] = qs(k));
+}
+
+// ---------- Toast ----------
+function showToast(title, msg) {
+  if (!els.toast) return;
+  safeText(els.toastTitle, title);
+  safeText(els.toastMsg, msg);
+  els.toast.classList.add("show");
+  setTimeout(() => els.toast.classList.remove("show"), 1700);
+}
+
+// ---------- Mode ----------
+function setModeFromHash() {
   const h = (location.hash || "").toLowerCase();
   mode = h.includes("vertical") ? "VERTICAL" : "HORIZONTAL";
   state._mode = mode;
-  els.wizTitle.textContent = `Input Data – ${mode === "HORIZONTAL" ? "Horizontal" : "Vertical"}`;
-  els.modeH.classList.toggle("active", mode === "HORIZONTAL");
-  els.modeV.classList.toggle("active", mode === "VERTICAL");
-  // hint wording
-  els.wizSub.textContent =
+
+  safeText(els.wizTitle, `Input Data – ${modeLabel(mode)}`);
+  safeToggleClass(els.modeH, "active", mode === "HORIZONTAL");
+  safeToggleClass(els.modeV, "active", mode === "VERTICAL");
+
+  safeText(
+    els.wizSub,
     mode === "HORIZONTAL"
-      ? "Input oleh K/L untuk kompilasi nasional. Draft tersimpan otomatis di browser."
-      : "Input oleh Pemda/OPD untuk kompilasi kewilayahan. Draft tersimpan otomatis di browser.";
+      ? "Input oleh K/L untuk kompilasi nasional. Draf tersimpan otomatis di browser."
+      : "Input oleh Pemda/OPD untuk kompilasi kewilayahan. Draf tersimpan otomatis di browser."
+  );
 }
 
-function renderStepper(){
-  els.stepper.innerHTML = STEPS.map(s => {
+// ---------- Stepper ----------
+function renderStepper() {
+  if (!els.stepper) return;
+
+  els.stepper.innerHTML = "";
+  STEPS.forEach(s => {
     const btn = document.createElement("button");
+    btn.type = "button";
     btn.className = "step";
     btn.textContent = `${s.id}. ${s.name}`;
-    btn.onclick = () => goToStep(s.id);
     btn.dataset.step = String(s.id);
-    return btn.outerHTML;
-  }).join("");
+    btn.addEventListener("click", () => goToStep(s.id));
+    els.stepper.appendChild(btn);
+  });
+
   refreshStepper();
 }
 
-function refreshStepper(){
+function refreshStepper() {
   document.querySelectorAll(".step").forEach(b => {
     const s = Number(b.dataset.step);
     b.classList.toggle("active", s === currentStep);
     b.classList.toggle("done", s < currentStep);
   });
-  els.stepHint.textContent = `Step ${currentStep} of 7`;
+
+  safeText(els.stepHint, `Langkah ${currentStep} dari 7`);
 }
 
-function showStep(step){
+function showStep(step) {
   document.querySelectorAll(".step-page").forEach(p => {
     p.classList.toggle("hidden", Number(p.dataset.step) !== step);
   });
 
   // show/hide footer nav
   const isLast = step === 7;
-  els.navFooter.classList.toggle("hidden", isLast);
+  safeToggleClass(els.navFooter, "hidden", isLast);
 }
 
-function goToStep(step){
+// ---------- Validation / Navigation ----------
+function validateStep(step) {
+  const missing = [];
+  const req = (cond, label) => { if (!cond) missing.push(label); };
+
+  if (step === 1) {
+    req(state.actionName.trim().length > 0, "Nama Aksi");
+    req(state.implStatus.trim().length > 0, "Status Implementasi");
+    req(state.institution.trim().length > 0, "Instansi");
+  }
+  if (step === 2) {
+    req(state.prov.trim().length > 0, "Provinsi");
+  }
+  if (step === 3) {
+    req(state.sector.trim().length > 0, "Sektor");
+    req(state.typology.trim().length > 0, "Tipologi");
+  }
+  if (step === 4) {
+    req(state.indicator.trim().length > 0, "Indikator");
+    req(state.unit.trim().length > 0, "Satuan");
+  }
+  if (step === 5) {
+    req(String(state.target).trim().length > 0, "Target");
+    req(state.period.trim().length > 0, "Periode");
+  }
+  if (step === 6) {
+    req(
+      state.evidenceFiles.length > 0 || state.evidenceLink.trim().length > 0,
+      "Bukti (file atau tautan)"
+    );
+  }
+
+  return { ok: missing.length === 0, missing };
+}
+
+function goToStep(step) {
   // prevent jumping forward if current step has blocking errors (except backwards)
   if (step > currentStep) {
     const { ok } = validateStep(currentStep);
     if (!ok) {
-      showToast("Validation", "Lengkapi item wajib sebelum lanjut.");
+      showToast("Validasi", "Lengkapi item wajib sebelum lanjut.");
       return;
     }
   }
+
   currentStep = step;
   refreshStepper();
   showStep(step);
   if (step === 7) renderSummary();
 }
 
-function prev(){
+function prev() {
   if (currentStep > 1) goToStep(currentStep - 1);
 }
 
-function next(){
+function next() {
   const { ok } = validateStep(currentStep);
   if (!ok) {
-    showToast("Validation", "Masih ada field wajib yang belum valid.");
+    showToast("Validasi", "Masih ada field wajib yang belum valid.");
     return;
   }
   if (currentStep < 7) goToStep(currentStep + 1);
 }
 
-function bindInputs(){
-  // helper: bind input/select/textarea
-  const bind = (id, key) => {
-    const el = els[id];
-    const isSelect = el.tagName === "SELECT";
-    const isTextArea = el.tagName === "TEXTAREA";
-    const isInput = el.tagName === "INPUT";
-    const get = () => isSelect || isTextArea || isInput ? el.value : "";
-    const set = (v) => { el.value = v ?? ""; };
-
-    el.addEventListener("input", () => {
-      state[key] = get();
-      markUpdated();
-      updateReadiness();
-      if (currentStep === 7) renderSummary();
-      autosave();
-    });
-    // initial set
-    set(state[key]);
-  };
-
-  bind("actionName","actionName");
-  bind("implStatus","implStatus");
-  bind("institution","institution");
-  bind("implementingUnit","implementingUnit");
-  bind("actionDesc","actionDesc");
-
-  bind("prov","prov");
-  bind("kab","kab");
-  bind("kec","kec");
-  bind("desa","desa");
-  bind("coverageNotes","coverageNotes");
-
-  bind("sector","sector");
-  bind("typology","typology");
-  bind("napMap","napMap");
-
-  bind("indicator","indicator");
-  bind("unit","unit");
-  bind("methodNotes","methodNotes");
-
-  bind("baseline","baseline");
-  bind("target","target");
-  bind("actual","actual");
-  bind("period","period");
-  bind("valueNotes","valueNotes");
-
-  bind("evidenceLink","evidenceLink");
-  bind("evidenceDesc","evidenceDesc");
-
-  // file input
-  els.fileInput.addEventListener("change", () => {
-    const files = Array.from(els.fileInput.files || []);
-    state.evidenceFiles = files.map(f => ({ name: f.name, size: f.size, type: f.type || "unknown" }));
-    renderFileList();
-    markUpdated();
-    updateReadiness();
-    autosave();
-  });
-}
-
-function renderFileList(){
-  els.fileList.innerHTML = "";
-  if (!state.evidenceFiles.length){
-    els.fileList.innerHTML = `<li class="muted">Belum ada file dipilih.</li>`;
-    return;
-  }
-  state.evidenceFiles.forEach(f => {
-    const li = document.createElement("li");
-    const kb = Math.round((f.size || 0) / 1024);
-    li.textContent = `${f.name} — ${kb} KB`;
-    els.fileList.appendChild(li);
-  });
-}
-
-function validateStep(step){
-  // required by step
-  const missing = [];
-  const req = (cond, label) => { if (!cond) missing.push(label); };
-
-  if (step === 1){
-    req(state.actionName.trim().length > 0, "Nama Aksi");
-    req(state.implStatus.trim().length > 0, "Status Implementasi");
-    req(state.institution.trim().length > 0, "Instansi");
-  }
-  if (step === 2){
-    // minimal: province required for both (can be relaxed for purely national horizontal)
-    req(state.prov.trim().length > 0, "Provinsi");
-  }
-  if (step === 3){
-    req(state.sector.trim().length > 0, "Sektor");
-    req(state.typology.trim().length > 0, "Tipologi");
-  }
-  if (step === 4){
-    req(state.indicator.trim().length > 0, "Indikator");
-    req(state.unit.trim().length > 0, "Satuan");
-  }
-  if (step === 5){
-    req(String(state.target).trim().length > 0, "Target");
-    req(state.period.trim().length > 0, "Periode");
-  }
-  if (step === 6){
-    // evidence minimal: at least one file OR a link
-    req(state.evidenceFiles.length > 0 || state.evidenceLink.trim().length > 0, "Evidence (file atau link)");
-  }
-
-  return { ok: missing.length === 0, missing };
-}
-
-function calcReadiness(){
-  // simple scoring (can be refined later):
-  // Step1 required 20, Step2 10, Step3 15, Step4 15, Step5 20, Step6 20
+// ---------- Readiness ----------
+function calcReadiness() {
+  // scoring sederhana:
+  // Step1 20, Step2 10, Step3 15, Step4 15, Step5 20, Step6 20 = 100
   let score = 0;
 
   // Step1
@@ -300,22 +315,22 @@ function calcReadiness(){
   return Math.min(100, score);
 }
 
-function updateReadiness(){
+function updateReadiness() {
   const r = calcReadiness();
   state._readiness = r;
 
-  const setPill = (pillEl, r) => {
-    pillEl.textContent = `Readiness: ${r}%`;
-    pillEl.classList.remove("good","warn","bad");
+  const setPill = (pillEl) => {
+    if (!pillEl) return;
+    pillEl.textContent = `Kesiapan: ${r}%`;
+    pillEl.classList.remove("good", "warn", "bad");
     if (r >= 80) pillEl.classList.add("good");
     else if (r >= 60) pillEl.classList.add("warn");
     else pillEl.classList.add("bad");
   };
 
-  setPill(els.readinessPill, r);
-  if (els.readinessPill2) setPill(els.readinessPill2, r);
+  setPill(els.readinessPill);
+  setPill(els.readinessPill2);
 
-  // enable submit if minimum requirements for all steps satisfied
   const minOk =
     validateStep(1).ok &&
     validateStep(2).ok &&
@@ -324,135 +339,319 @@ function updateReadiness(){
     validateStep(5).ok &&
     validateStep(6).ok;
 
-  els.submitBtn.disabled = !minOk;
+  if (els.submitBtn) els.submitBtn.disabled = !minOk;
 }
 
-function markUpdated(){
-  state._updatedAt = new Date().toISOString();
+// ---------- Form Bind / Fill ----------
+let inputsBound = false;
+
+function fillInputsFromState() {
+  const setVal = (id, v) => { if (els[id]) els[id].value = v ?? ""; };
+
+  setVal("actionName", state.actionName);
+  setVal("implStatus", state.implStatus);
+  setVal("institution", state.institution);
+  setVal("implementingUnit", state.implementingUnit);
+  setVal("actionDesc", state.actionDesc);
+
+  setVal("prov", state.prov);
+  setVal("kab", state.kab);
+  setVal("kec", state.kec);
+  setVal("desa", state.desa);
+  setVal("coverageNotes", state.coverageNotes);
+
+  setVal("sector", state.sector);
+  setVal("typology", state.typology);
+  setVal("napMap", state.napMap);
+
+  setVal("indicator", state.indicator);
+  setVal("unit", state.unit);
+  setVal("methodNotes", state.methodNotes);
+
+  setVal("baseline", state.baseline);
+  setVal("target", state.target);
+  setVal("actual", state.actual);
+  setVal("period", state.period);
+  setVal("valueNotes", state.valueNotes);
+
+  setVal("evidenceLink", state.evidenceLink);
+  setVal("evidenceDesc", state.evidenceDesc);
 }
 
-function autosave(){
-  localStorage.setItem(storageKey(), JSON.stringify(state));
-}
+function bindInputsOnce() {
+  if (inputsBound) return;
+  inputsBound = true;
 
-function loadDraft(){
-  const raw = localStorage.getItem(storageKey());
-  if (!raw) return false;
-  try{
-    const obj = JSON.parse(raw);
-    Object.assign(state, obj);
-    return true;
-  }catch{
-    return false;
+  const bind = (id, key) => {
+    const el = els[id];
+    if (!el) return;
+
+    const isSelect = el.tagName === "SELECT";
+    const evt = isSelect ? "change" : "input";
+
+    el.addEventListener(evt, () => {
+      state[key] = el.value;
+      markUpdated();
+      updateReadiness();
+      if (currentStep === 7) renderSummary();
+      autosave();
+    });
+  };
+
+  bind("actionName", "actionName");
+  bind("implStatus", "implStatus");
+  bind("institution", "institution");
+  bind("implementingUnit", "implementingUnit");
+  bind("actionDesc", "actionDesc");
+
+  bind("prov", "prov");
+  bind("kab", "kab");
+  bind("kec", "kec");
+  bind("desa", "desa");
+  bind("coverageNotes", "coverageNotes");
+
+  bind("sector", "sector");
+  bind("typology", "typology");
+  bind("napMap", "napMap");
+
+  bind("indicator", "indicator");
+  bind("unit", "unit");
+  bind("methodNotes", "methodNotes");
+
+  bind("baseline", "baseline");
+  bind("target", "target");
+  bind("actual", "actual");
+  bind("period", "period");
+  bind("valueNotes", "valueNotes");
+
+  bind("evidenceLink", "evidenceLink");
+  bind("evidenceDesc", "evidenceDesc");
+
+  // File input
+  if (els.fileInput) {
+    els.fileInput.addEventListener("change", () => {
+      const files = Array.from(els.fileInput.files || []);
+      state.evidenceFiles = files.map(f => ({ name: f.name, size: f.size, type: f.type || "unknown" }));
+      renderFileList();
+      markUpdated();
+      updateReadiness();
+      autosave();
+    });
   }
 }
 
-function clearDraft(){
+// ---------- Evidence list ----------
+function renderFileList() {
+  if (!els.fileList) return;
+  els.fileList.innerHTML = "";
+
+  if (!state.evidenceFiles.length) {
+    els.fileList.innerHTML = `<li class="muted">Belum ada file dipilih.</li>`;
+    return;
+  }
+
+  state.evidenceFiles.forEach(f => {
+    const li = document.createElement("li");
+    const kb = Math.round((f.size || 0) / 1024);
+    li.textContent = `${f.name} — ${kb} KB`;
+    els.fileList.appendChild(li);
+  });
+}
+
+// ---------- Summary ----------
+function renderSummary() {
+  safeText(els.summaryTitle, state.actionName ? state.actionName : "—");
+
+  safeText(
+    els.summaryMeta,
+    `${modeLabel(mode)} • ${sectorLabel(state.sector)} • ${state.prov || "—"} • ${state.period || "—"} • ${state._status}`
+  );
+
+  const lokasi = [state.prov, state.kab, state.kec, state.desa].filter(Boolean).join(" / ") || "—";
+
+  const rows = [
+    ["Mode", modeLabel(mode)],
+    ["Nama Aksi", state.actionName || "—"],
+    ["Status Implementasi", implStatusLabel(state.implStatus)],
+    ["Instansi", state.institution || "—"],
+    ["Unit Pelaksana", state.implementingUnit || "—"],
+    ["Lokasi", lokasi],
+    ["Sektor", sectorLabel(state.sector)],
+    ["Tipologi", typologyLabel(state.typology)],
+    ["Indikator", state.indicator || "—"],
+    ["Satuan", state.unit || "—"],
+    ["Baseline", state.baseline || "—"],
+    ["Target", state.target || "—"],
+    ["Realisasi", state.actual || "—"],
+    ["Bukti", `${state.evidenceFiles.length} file${state.evidenceLink ? " + tautan" : ""}`],
+    ["Kesiapan", `${state._readiness}%`],
+    ["Terakhir diperbarui", state._updatedAt || "—"],
+  ];
+
+  const tb = els.summaryTable?.querySelector("tbody");
+  if (!tb) return;
+
+  tb.innerHTML = rows
+    .map(r => `<tr><td>${escapeHtml(r[0])}</td><td>${escapeHtml(r[1])}</td></tr>`)
+    .join("");
+}
+
+// ---------- Draft actions ----------
+function clearDraft() {
   localStorage.removeItem(storageKey());
-  // reset state
+
+  // reset state (tanpa rebind listener)
   Object.keys(state).forEach(k => {
     if (Array.isArray(state[k])) state[k] = [];
     else if (k.startsWith("_")) state[k] = (k === "_mode" ? mode : null);
     else state[k] = "";
   });
+
   state._mode = mode;
   state._status = "DRAFT";
   markUpdated();
-  // reset UI values
-  bindInputs(); // rebinding sets current values; safe for this stub
+
+  fillInputsFromState();
   renderFileList();
   updateReadiness();
-  showToast("Draft cleared", "Draft dihapus dari browser.");
+  showToast("Draf dihapus", "Draf dihapus dari browser.");
 }
 
-function renderSummary(){
-  els.summaryTitle.textContent = state.actionName ? state.actionName : "—";
-  els.summaryMeta.textContent =
-    `${mode} • ${state.sector || "—"} • ${state.prov || "—"} • ${state.period || "—"} • ${state._status}`;
-
-  const rows = [
-    ["Mode", mode],
-    ["Nama Aksi", state.actionName],
-    ["Status Implementasi", state.implStatus],
-    ["Instansi", state.institution],
-    ["Unit Pelaksana", state.implementingUnit],
-    ["Lokasi", [state.prov, state.kab, state.kec, state.desa].filter(Boolean).join(" / ") || "—"],
-    ["Sektor", state.sector],
-    ["Tipologi", state.typology],
-    ["Indikator", state.indicator],
-    ["Satuan", state.unit],
-    ["Baseline", state.baseline || "—"],
-    ["Target", state.target || "—"],
-    ["Realisasi", state.actual || "—"],
-    ["Evidence", `${state.evidenceFiles.length} file` + (state.evidenceLink ? " + link" : "")],
-    ["Readiness", `${state._readiness}%`],
-    ["Last updated", state._updatedAt || "—"],
-  ];
-
-  const tb = els.summaryTable.querySelector("tbody");
-  tb.innerHTML = rows.map(r => `<tr><td>${r[0]}</td><td>${escapeHtml(String(r[1] ?? ""))}</td></tr>`).join("");
-}
-
-function escapeHtml(s){
-  return s.replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c]));
-}
-
-function exportDraft(){
+function exportDraft() {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${storageKey()}_${(state.period||"draft").replace(/[^a-zA-Z0-9_-]/g,"")}.json`;
+  a.download = `${storageKey()}_${(state.period || "draft").replace(/[^a-zA-Z0-9_-]/g, "")}.json`;
   a.click();
   URL.revokeObjectURL(url);
-  showToast("Exported", "Draft JSON berhasil diunduh.");
+  showToast("Diekspor", "Draf JSON berhasil diunduh.");
 }
 
-function submit(){
-  // frontend-only: simulate submission
-  const allOk = validateStep(1).ok && validateStep(2).ok && validateStep(3).ok &&
-                validateStep(4).ok && validateStep(5).ok && validateStep(6).ok;
-  if (!allOk){
-    showToast("Cannot submit", "Masih ada item wajib belum lengkap.");
+function submit() {
+  const allOk =
+    validateStep(1).ok &&
+    validateStep(2).ok &&
+    validateStep(3).ok &&
+    validateStep(4).ok &&
+    validateStep(5).ok &&
+    validateStep(6).ok;
+
+  if (!allOk) {
+    showToast("Tidak bisa ajukan", "Masih ada item wajib yang belum lengkap.");
     return;
   }
+
   state._status = "SUBMITTED";
   markUpdated();
   autosave();
   updateReadiness();
-  showToast("Submitted", "Tersimpan sebagai SUBMITTED (stub). Nanti masuk Inbox Review.");
+  showToast("Diajukan", "Tersimpan sebagai SUBMITTED (stub). Nanti masuk inbox verifikasi.");
 }
 
-function bindNav(){
-  els.prevBtn.addEventListener("click", prev);
-  els.nextBtn.addEventListener("click", next);
-  els.backBtn.addEventListener("click", () => goToStep(6));
-  els.submitBtn.addEventListener("click", submit);
+// ---------- Sidebar toggle (opsional; aman walau elemennya belum ada) ----------
+function sidebarBehavior() {
+  // NOTE: fungsi ini hanya aktif kalau halaman menyediakan elemen berikut:
+  // - button#burgerBtn
+  // - aside#sidebar (atau elemen sidebar dengan id="sidebar")
+  // - div#sidebarOverlay (optional untuk drawer mobile)
+  const btn = document.getElementById("burgerBtn");
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebarOverlay");
 
-  els.saveDraftBtn.addEventListener("click", () => {
-    autosave();
-    showToast("Saved", "Draft tersimpan di browser.");
+  if (!btn || !sidebar) return;
+
+  const isMobile = () => window.matchMedia("(max-width: 980px)").matches;
+
+  // restore state desktop (closed/open)
+  const saved = localStorage.getItem("sidebar_state"); // "open" | "closed"
+  if (saved === "closed") document.body.classList.add("sidebar-closed");
+
+  const setAria = () => {
+    const isClosed = document.body.classList.contains("sidebar-closed");
+    btn.setAttribute("aria-expanded", String(!isClosed));
+    btn.setAttribute("aria-label", isClosed ? "Buka menu" : "Tutup menu");
+  };
+
+  const closeMobileDrawer = () => document.body.classList.remove("sidebar-open");
+
+  const toggleDesktop = () => {
+    const willClose = !document.body.classList.contains("sidebar-closed");
+    document.body.classList.toggle("sidebar-closed", willClose);
+    if (willClose) closeMobileDrawer();
+    localStorage.setItem("sidebar_state", willClose ? "closed" : "open");
+    setAria();
+  };
+
+  btn.addEventListener("click", () => {
+    if (isMobile()) {
+      // buka dulu jika sedang closed
+      if (document.body.classList.contains("sidebar-closed")) {
+        document.body.classList.remove("sidebar-closed");
+        localStorage.setItem("sidebar_state", "open");
+      }
+      document.body.classList.add("sidebar-open");
+      setAria();
+      return;
+    }
+    toggleDesktop();
   });
-  els.exportDraftBtn.addEventListener("click", exportDraft);
 
-  els.clearDraftBtn.addEventListener("click", clearDraft);
+  if (overlay) overlay.addEventListener("click", closeMobileDrawer);
 
-  els.modeH.addEventListener("click", () => { location.hash = "#horizontal"; location.reload(); });
-  els.modeV.addEventListener("click", () => { location.hash = "#vertical"; location.reload(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMobileDrawer();
+  });
+
+  sidebar.querySelectorAll("a").forEach(a => {
+    a.addEventListener("click", () => { if (isMobile()) closeMobileDrawer(); });
+  });
+
+  window.addEventListener("resize", () => {
+    if (!isMobile()) closeMobileDrawer();
+  });
+
+  setAria();
 }
 
-function init(){
+// ---------- Nav bind ----------
+function bindNav() {
+  els.prevBtn?.addEventListener("click", prev);
+  els.nextBtn?.addEventListener("click", next);
+  els.backBtn?.addEventListener("click", () => goToStep(6));
+  els.submitBtn?.addEventListener("click", submit);
+
+  els.saveDraftBtn?.addEventListener("click", () => {
+    autosave();
+    showToast("Tersimpan", "Draf tersimpan di browser.");
+  });
+
+  els.exportDraftBtn?.addEventListener("click", exportDraft);
+  els.clearDraftBtn?.addEventListener("click", clearDraft);
+
+  // mode switch
+  els.modeH?.addEventListener("click", () => { location.hash = "#horizontal"; location.reload(); });
+  els.modeV?.addEventListener("click", () => { location.hash = "#vertical"; location.reload(); });
+}
+
+// ---------- Init ----------
+function init() {
   initRefs();
   setModeFromHash();
+
   renderStepper();
 
   const loaded = loadDraft();
-  bindInputs();
+
+  bindInputsOnce();
+  fillInputsFromState();
   renderFileList();
   updateReadiness();
 
-  // if loaded, show small toast
-  if (loaded) showToast("Loaded", "Draft sebelumnya dimuat dari browser.");
+  // sidebar toggle (kalau elemennya ada)
+  sidebarBehavior();
+
+  if (loaded) showToast("Dimuat", "Draf sebelumnya dimuat dari browser.");
 
   bindNav();
   showStep(currentStep);

@@ -1,10 +1,10 @@
-// Impact Engine UI (frontend-only)
-// - pipeline steps + run controls
-// - dry pre-check: counts approved vs missing
-// - job run stub: generates fake outputs following schema
-// - persists to localStorage: impact_jobs, impact_output_indicator, impact_output_aggregate
+// Mesin Komputasi Dampak (frontend-only)
+// - langkah pipeline + kontrol eksekusi
+// - pra-pemeriksaan: hitung approved vs gap
+// - eksekusi stub: generate keluaran palsu mengikuti skema
+// - persist ke localStorage: impact_jobs, impact_output_indicator, impact_output_aggregate
 //
-// IMPORTANT: no formulas computed here (only mock numbers). Backend will do official computations.
+// PENTING: tidak ada rumus resmi dihitung di sini (hanya angka contoh). Backend yang menghitung resmi.
 
 const $ = (id) => document.getElementById(id);
 
@@ -55,20 +55,96 @@ const els = {
 };
 
 const STORAGE = {
-  records: "monev_records",              // merged records from review.js
+  records: "monev_records",              // record gabungan dari review.js
   jobs: "impact_jobs",
   outIndicator: "impact_output_indicator",
   outAggregate: "impact_output_aggregate",
   engineLogs: "impact_engine_logs",
 };
 
+// Tetap simpan kode status (OK/WARN/ERR/IDLE) untuk styling,
+// tapi tampilkan label Indonesia.
+function labelStepState(code){
+  const s = (code || "IDLE").toUpperCase();
+  if (s === "OK") return "BAIK";
+  if (s === "WARN") return "PERINGATAN";
+  if (s === "ERR") return "GAGAL";
+  return "Tidak aktif";
+}
+
+function labelJobStatus(code){
+  const s = (code || "").toUpperCase();
+  if (s === "RUNNING") return "BERJALAN";
+  if (s === "SUCCEEDED") return "BERHASIL";
+  if (s === "FAILED") return "GAGAL";
+  return code || "—";
+}
+
+function labelJobType(code){
+  const t = (code || "").toUpperCase();
+  if (t === "DRY_RUN") return "UJI COBA";
+  if (t === "FULL_RUN") return "EKSEKUSI PENUH";
+  return code || "—";
+}
+
+function labelScope(code){
+  const s = (code || "").toUpperCase();
+  if (s === "NATIONAL") return "Nasional";
+  if (s === "SECTOR") return "Sektor";
+  if (s === "REGION") return "Wilayah";
+  if (s === "ACTION") return "Aksi";
+  return code || "—";
+}
+
+function labelYesNo(v){
+  return v ? "YA" : "TIDAK";
+}
+
+function labelQualityFlag(code){
+  const s = (code || "").toUpperCase();
+  if (s === "OK") return "BAIK";
+  if (s === "WARN") return "PERINGATAN";
+  if (s === "ERR") return "GAGAL";
+  return code || "—";
+}
+
 const PIPELINE = [
-  { id:"ingest", title:"1) Ingest Approved Inputs", desc:"Ambil data APPROVED dari Horizontal & Vertical (latest review).", state:"IDLE" },
-  { id:"standardize", title:"2) Standardize & Map Keys", desc:"Normalize action_id, indicator_id, location_id, period_id.", state:"IDLE" },
-  { id:"gate", title:"3) Readiness & Eligibility Gate", desc:"Filter record eligible sesuai parameter threshold.", state:"IDLE" },
-  { id:"compute", title:"4) Compute (Backend)", desc:"Jalankan formula set (progress / delta / others).", state:"IDLE" },
-  { id:"aggregate", title:"5) Aggregate", desc:"Hitung agregasi sektor/wilayah/nasional.", state:"IDLE" },
-  { id:"publish", title:"6) Publish Outputs", desc:"Simpan outputs + lineage (job_id, method_version).", state:"IDLE" },
+  {
+    id:"ingest",
+    title:"1) Ambil Input yang Disetujui",
+    desc:"Ambil data berstatus APPROVED dari modul Verifikasi & Validasi (terbaru).",
+    state:"IDLE"
+  },
+  {
+    id:"standardize",
+    title:"2) Standarisasi & Pemetaan Kunci",
+    desc:"Normalisasi action_id, indicator_id, location_id, period_id.",
+    state:"IDLE"
+  },
+  {
+    id:"gate",
+    title:"3) Gerbang Kesiapan & Kelayakan",
+    desc:"Saring record layak dihitung sesuai ambang parameter.",
+    state:"IDLE"
+  },
+  {
+    id:"compute",
+    title:"4) Komputasi (Backend)",
+    desc:"Menjalankan paket perhitungan (kemajuan/delta/dll).",
+    state:"IDLE"
+  },
+  {
+    id:"aggregate",
+    title:"5) Agregasi",
+    desc:"Hitung agregasi sektor/wilayah/nasional.",
+    state:"IDLE"
+  },
+  {
+    id:"publish",
+    title:"6) Publikasi Keluaran",
+    desc:"Simpan keluaran + jejak asal-usul (job_id, method_version).",
+    state:"IDLE"
+  },
 ];
 
 function modal(el, show){
@@ -76,6 +152,7 @@ function modal(el, show){
 }
 
 function nowIso(){ return new Date().toISOString(); }
+
 function fmtDate(iso){
   if(!iso) return "—";
   const d = new Date(iso);
@@ -116,7 +193,7 @@ function renderPipeline(){
         <div class="title">${s.title}</div>
         <div class="desc">${s.desc}</div>
       </div>
-      <div class="${badgeClass(s.state)}">${s.state}</div>
+      <div class="${badgeClass(s.state)}">${labelStepState(s.state)}</div>
     </div>
   `).join("");
 }
@@ -141,18 +218,26 @@ function clearLogs(){
 }
 
 function loadRecords(){
-  // records are maintained by review module; include statuses
+  // record dipelihara oleh modul review; mencakup status
   return readJSON(STORAGE.records, []);
 }
 
-function countReadiness(records, threshold){
-  const approved = records.filter(r => (r.status || "").toUpperCase() === "APPROVED");
-  const returned = records.filter(r => (r.status || "").toUpperCase() === "RETURNED");
-  const rejected = records.filter(r => (r.status || "").toUpperCase() === "REJECTED");
+function getThreshold(paramSet){
+  // Set parameter:
+  // default_v1: 0.8; strict_v1: 0.9
+  if ((paramSet || "").startsWith("strict")) return 0.9;
+  return 0.8;
+}
+
+function countReadiness(records, threshold01){
+  const approved  = records.filter(r => (r.status || "").toUpperCase() === "APPROVED");
+  const returned  = records.filter(r => (r.status || "").toUpperCase() === "RETURNED");
+  const rejected  = records.filter(r => (r.status || "").toUpperCase() === "REJECTED");
   const submitted = records.filter(r => (r.status || "").toUpperCase() === "SUBMITTED");
 
-  // readiness heuristic for UI only (not official): based on readiness field if present, else 0
-  const eligible = approved.filter(r => Number(r.readiness || 0) >= threshold);
+  // readiness di record tersimpan sebagai persen (0–100)
+  const thrPct = Math.round(threshold01 * 100);
+  const eligible = approved.filter(r => Number(r.readiness || 0) >= thrPct);
 
   return {
     approved: approved.length,
@@ -163,19 +248,14 @@ function countReadiness(records, threshold){
   };
 }
 
-function getThreshold(paramSet){
-  // parameter sets from data dictionary
-  // default_v1: 0.8; strict_v1: 0.9
-  if (paramSet.startsWith("strict")) return 0.9;
-  return 0.8;
-}
-
 function updateKPIs(){
   const threshold = getThreshold(els.parameterSet.value);
   const records = loadRecords();
   const c = countReadiness(records, threshold);
-  els.kReady.textContent = `${c.approved} approved / ${c.eligible} eligible (≥${Math.round(threshold*100)}%)`;
-  els.kMissing.textContent = `${c.submitted} submitted, ${c.returned} returned, ${c.rejected} rejected`;
+  const thrPct = Math.round(threshold*100);
+
+  els.kReady.textContent = `${c.approved} disetujui / ${c.eligible} layak (≥${thrPct}%)`;
+  els.kMissing.textContent = `${c.submitted} dikirim, ${c.returned} dikembalikan, ${c.rejected} ditolak`;
 }
 
 function latestJob(){
@@ -186,25 +266,26 @@ function latestJob(){
 function renderJobs(){
   const jobs = readJSON(STORAGE.jobs, []);
   const tbody = els.tblJobs.querySelector("tbody");
+
   tbody.innerHTML = jobs.map(j => `
     <tr>
       <td><b>${j.job_id}</b></td>
-      <td>${j.job_type}</td>
-      <td>${j.scope}${j.scope_id ? ` • ${j.scope_id}` : ""}</td>
+      <td>${labelJobType(j.job_type)} <span class="muted small">(${j.job_type})</span></td>
+      <td>${labelScope(j.scope)}${j.scope_id ? ` • ${escapeHtml(j.scope_id)}` : ""}</td>
       <td>${j.period_id}</td>
       <td>${j.method_version}</td>
       <td>${j.parameter_set_id}</td>
-      <td>${j.status}</td>
+      <td>${labelJobStatus(j.status)} <span class="muted small">(${j.status})</span></td>
       <td>${fmtDate(j.started_at)}</td>
     </tr>
-  `).join("") || `<tr><td colspan="8" class="muted">No jobs yet.</td></tr>`;
+  `).join("") || `<tr><td colspan="8" class="muted">Belum ada pekerjaan.</td></tr>`;
 }
 
 function renderOutputs(){
   const outsI = readJSON(STORAGE.outIndicator, []);
   const outsA = readJSON(STORAGE.outAggregate, []);
 
-  // latest job filter (show latest by default)
+  // default tampilkan keluaran dari pekerjaan terbaru
   const j = latestJob();
   const jobId = j?.job_id;
 
@@ -215,30 +296,30 @@ function renderOutputs(){
   tbI.innerHTML = showI.map(o => `
     <tr>
       <td>${o.job_id}</td>
-      <td><b>${o.action_id}</b></td>
-      <td>${o.indicator_id}</td>
-      <td>${o.period_id}</td>
-      <td>${o.method_used}</td>
-      <td>${o.readiness_score}</td>
-      <td>${o.eligibility_flag ? "YES" : "NO"}</td>
+      <td><b>${escapeHtml(o.action_id)}</b></td>
+      <td>${escapeHtml(o.indicator_id)}</td>
+      <td>${escapeHtml(o.period_id)}</td>
+      <td>${escapeHtml(o.method_used)}</td>
+      <td>${escapeHtml(o.readiness_score)}</td>
+      <td>${labelYesNo(o.eligibility_flag)}</td>
       <td><b>${o.progress_pct}</b></td>
-      <td>${o.quality_flag}</td>
+      <td>${labelQualityFlag(o.quality_flag)}</td>
     </tr>
-  `).join("") || `<tr><td colspan="9" class="muted">No indicator outputs yet.</td></tr>`;
+  `).join("") || `<tr><td colspan="9" class="muted">Belum ada keluaran level indikator.</td></tr>`;
 
   const tbA = els.tblAggregate.querySelector("tbody");
   tbA.innerHTML = showA.map(a => `
     <tr>
       <td>${a.job_id}</td>
-      <td>${a.agg_type}</td>
-      <td><b>${a.agg_key}</b></td>
-      <td>${a.period_id}</td>
+      <td>${escapeHtml(labelScope(a.agg_type))} <span class="muted small">(${escapeHtml(a.agg_type)})</span></td>
+      <td><b>${escapeHtml(a.agg_key)}</b></td>
+      <td>${escapeHtml(a.period_id)}</td>
       <td>${a.n_actions}</td>
       <td>${a.n_eligible}</td>
       <td><b>${a.progress_pct}</b></td>
-      <td class="muted">${a.notes || ""}</td>
+      <td class="muted">${escapeHtml(a.notes || "")}</td>
     </tr>
-  `).join("") || `<tr><td colspan="8" class="muted">No aggregate outputs yet.</td></tr>`;
+  `).join("") || `<tr><td colspan="8" class="muted">Belum ada keluaran agregat.</td></tr>`;
 }
 
 function setActiveTab(name){
@@ -249,8 +330,8 @@ function setActiveTab(name){
 }
 
 function runPrecheck(){
-  setEngineState("Pre-check", "warn");
-  log("Running pre-check (eligibility gate)…");
+  setEngineState("Pra-Pemeriksaan", "warn");
+  log("Menjalankan pra-pemeriksaan (gerbang kelayakan)…");
 
   setStep("ingest", "OK");
   setStep("standardize", "OK");
@@ -261,10 +342,12 @@ function runPrecheck(){
 
   const threshold = getThreshold(els.parameterSet.value);
   const c = countReadiness(loadRecords(), threshold);
-  log(`Pre-check results: approved=${c.approved}, eligible=${c.eligible} (threshold=${threshold})`);
-  log(`Gaps: submitted=${c.submitted}, returned=${c.returned}, rejected=${c.rejected}`);
+  const thrPct = Math.round(threshold * 100);
 
-  setEngineState("Ready", "good");
+  log(`Hasil pra-pemeriksaan: disetujui=${c.approved}, layak=${c.eligible} (ambang=${thrPct}%)`);
+  log(`Kesenjangan: dikirim=${c.submitted}, dikembalikan=${c.returned}, ditolak=${c.rejected}`);
+
+  setEngineState("Siap", "good");
   updateKPIs();
 }
 
@@ -276,10 +359,10 @@ function runJob(){
   const method_version = els.methodVersion.value;
   const parameter_set_id = els.parameterSet.value;
 
-  const threshold = getThreshold(parameter_set_id);
+  const threshold01 = getThreshold(parameter_set_id);
+  const thrPct = Math.round(threshold01 * 100);
   const records = loadRecords();
 
-  // simulate
   const job_id = rid("JOB");
   const job = {
     job_id,
@@ -289,45 +372,46 @@ function runJob(){
     period_id,
     method_version,
     parameter_set_id,
-    triggered_by: "User (stub)",
+    triggered_by: "Pengguna (stub)",
     started_at: nowIso(),
     ended_at: null,
     status: "RUNNING",
     log: ""
   };
 
-  // store job
+  // simpan job
   const jobs = readJSON(STORAGE.jobs, []);
   jobs.unshift(job);
   writeJSON(STORAGE.jobs, jobs);
 
   els.kLastJob.textContent = job_id;
 
-  // pipeline animation (simple)
-  setEngineState("Running", "warn");
+  // animasi pipeline (sederhana)
+  setEngineState("Sedang Berjalan", "warn");
   clearPipelineStates();
-  log(`Job started: ${job_id} type=${job_type} scope=${scope}${scope_id?`(${scope_id})`:""} period=${period_id}`);
-  log(`Method=${method_version}, ParamSet=${parameter_set_id} (readiness_threshold=${threshold})`);
+
+  log(`Pekerjaan dimulai: ${job_id} jenis=${job_type} cakupan=${scope}${scope_id ? `(${scope_id})` : ""} periode=${period_id}`);
+  log(`Metode=${method_version}, SetParameter=${parameter_set_id} (ambang_kesiapan=${thrPct}%)`);
 
   setStep("ingest", "OK");
-  log("Step 1 ingest: collected APPROVED submissions.");
+  log("Langkah 1 ambil: mengumpulkan record berstatus APPROVED.");
 
   setStep("standardize", "OK");
-  log("Step 2 standardize: mapped action_id / indicator_id / location_id / period_id.");
+  log("Langkah 2 standarisasi: memetakan action_id / indicator_id / location_id / period_id.");
 
   // gate
   const approved = records.filter(r => (r.status || "").toUpperCase() === "APPROVED");
-  const eligible = approved.filter(r => Number(r.readiness || 0) >= Math.round(threshold * 100)); // records store readiness as %
+  const eligible = approved.filter(r => Number(r.readiness || 0) >= thrPct);
   const ineligible = approved.length - eligible.length;
 
   setStep("gate", eligible.length ? "OK" : "WARN");
-  log(`Step 3 gate: approved=${approved.length}, eligible=${eligible.length}, ineligible=${ineligible}`);
+  log(`Langkah 3 gerbang: disetujui=${approved.length}, layak=${eligible.length}, tidak_layak=${ineligible}`);
 
   // compute (stub)
   setStep("compute", eligible.length ? "OK" : "WARN");
-  log("Step 4 compute: (stub) generating outputs following schema…");
+  log("Langkah 4 komputasi: (stub) membangkitkan keluaran mengikuti skema…");
 
-  // create mock outputs per eligible record (limit to avoid huge table)
+  // keluaran palsu per record layak (batasi agar tabel tidak kebesaran)
   const maxRows = 25;
   const rows = eligible.slice(0, maxRows).map(r => {
     const progressPct = mockProgressPct(job_type, r.readiness);
@@ -352,11 +436,12 @@ function runJob(){
 
   // aggregate mock
   setStep("aggregate", "OK");
-  log("Step 5 aggregate: (stub) aggregating by scope…");
+  log("Langkah 5 agregasi: (stub) mengagregasi sesuai cakupan…");
 
   const agg = makeAggregate(job_id, period_id, scope, scope_id, rows);
+
   setStep("publish", "OK");
-  log("Step 6 publish: saved outputs with lineage (job_id, method_version, parameter_set_id).");
+  log("Langkah 6 publikasi: menyimpan keluaran dengan jejak asal-usul (job_id, method_version, parameter_set_id).");
 
   // persist outputs
   const outI = readJSON(STORAGE.outIndicator, []);
@@ -365,21 +450,21 @@ function runJob(){
   const outA = readJSON(STORAGE.outAggregate, []);
   writeJSON(STORAGE.outAggregate, [agg, ...outA]);
 
-  // finish job
+  // selesai
   job.status = "SUCCEEDED";
   job.ended_at = nowIso();
-  job.log = `eligible=${eligible.length}, outputs=${rows.length}`;
+  job.log = `layak=${eligible.length}, keluaran=${rows.length}`;
   jobs[0] = job;
   writeJSON(STORAGE.jobs, jobs);
 
-  setEngineState("Succeeded", "good");
+  setEngineState("Berhasil", "good");
   updateKPIs();
   renderJobs();
   renderOutputs();
 }
 
 function mockProgressPct(jobType, readinessPct){
-  // purely illustrative, NOT formula
+  // hanya ilustrasi, BUKAN rumus resmi
   const base = Math.max(10, Math.min(95, Math.round(Number(readinessPct || 60) - 10)));
   const jitter = Math.round((Math.random()*10) - 5);
   const add = jobType === "FULL_RUN" ? 3 : 0;
@@ -394,13 +479,13 @@ function makeAggregate(job_id, period_id, scope, scope_id, rows){
     agg_id: rid("AGG"),
     job_id,
     period_id,
-    agg_type: scope === "ACTION" ? "NATIONAL" : scope, // keep simple stub
+    agg_type: scope === "ACTION" ? "NATIONAL" : scope, // stub sederhana
     agg_key: key,
     progress_value: +(mean/100).toFixed(2),
     progress_pct: mean,
     n_actions: n,
     n_eligible: n,
-    notes: "Stub aggregation (frontend-only)"
+    notes: "Agregasi stub (hanya frontend)"
   };
 }
 
@@ -410,19 +495,16 @@ function clearPipelineStates(){
 }
 
 function resetEngine(){
-  if (!confirm("Reset engine UI state? (does not delete stored jobs unless you clear storage manually)")) return;
+  if (!confirm("Atur ulang status UI mesin komputasi? (pekerjaan tersimpan tidak dihapus)")) return;
   clearPipelineStates();
-  setEngineState("Idle", "");
+  setEngineState("Tidak aktif", "");
   updateKPIs();
-  log("Engine reset (UI state).");
-}
-
-function clearAllEngineStorage(){
-  // not used by default (too destructive)
+  log("Mesin komputasi diatur ulang (status UI).");
 }
 
 function runSearch(){
-  const q = (els.globalSearch.value || "").trim().toLowerCase();
+  const qRaw = (els.globalSearch.value || "").trim();
+  const q = qRaw.toLowerCase();
   if (!q) return;
 
   const scope = els.searchScope.value;
@@ -431,22 +513,38 @@ function runSearch(){
   const outsA = readJSON(STORAGE.outAggregate, []);
 
   const res = [];
+
   if (scope === "all" || scope === "jobs"){
-    const hit = jobs.filter(j => (`${j.job_id} ${j.scope} ${j.period_id} ${j.method_version} ${j.parameter_set_id}`.toLowerCase()).includes(q));
-    res.push(section("Jobs", hit.map(h => `${h.job_id} • ${h.status} • ${h.period_id}`)));
-  }
-  if (scope === "all" || scope === "outputs"){
-    const hitI = outsI.filter(o => (`${o.job_id} ${o.action_id} ${o.indicator_id} ${o.period_id}`.toLowerCase()).includes(q));
-    const hitA = outsA.filter(a => (`${a.job_id} ${a.agg_type} ${a.agg_key} ${a.period_id}`.toLowerCase()).includes(q));
-    res.push(section("Outputs (Indicator)", hitI.slice(0,12).map(x => `${x.action_id} • ${x.indicator_id} • ${x.progress_pct}%`)));
-    res.push(section("Outputs (Aggregate)", hitA.slice(0,12).map(x => `${x.agg_type}:${x.agg_key} • ${x.progress_pct}%`)));
-  }
-  if (scope === "all" || scope === "help"){
-    res.push(section("Help", q.includes("method") ? ["Method versioning: keep impact_v1, impact_v1_1, etc."] : []));
+    const hit = jobs.filter(j =>
+      (`${j.job_id} ${j.scope} ${j.period_id} ${j.method_version} ${j.parameter_set_id} ${j.status}`.toLowerCase()).includes(q)
+    );
+    res.push(section("Pekerjaan", hit.map(h => `${h.job_id} • ${labelJobStatus(h.status)} • ${h.period_id}`)));
   }
 
-  els.searchTitle.textContent = `Search Results: "${els.globalSearch.value}"`;
-  els.searchBody.innerHTML = res.join("") || `<div class="muted">No results.</div>`;
+  if (scope === "all" || scope === "outputs"){
+    const hitI = outsI.filter(o =>
+      (`${o.job_id} ${o.action_id} ${o.indicator_id} ${o.period_id}`.toLowerCase()).includes(q)
+    );
+    const hitA = outsA.filter(a =>
+      (`${a.job_id} ${a.agg_type} ${a.agg_key} ${a.period_id}`.toLowerCase()).includes(q)
+    );
+    res.push(section("Keluaran (Level Indikator)", hitI.slice(0,12).map(x => `${x.action_id} • ${x.indicator_id} • ${x.progress_pct}%`)));
+    res.push(section("Keluaran (Agregat)", hitA.slice(0,12).map(x => `${x.agg_type}:${x.agg_key} • ${x.progress_pct}%`)));
+  }
+
+  if (scope === "all" || scope === "help"){
+    const helpItems = [];
+    if (q.includes("metode") || q.includes("method")){
+      helpItems.push("Versi metode: gunakan penamaan impact_v1, impact_v1_1, dst. untuk pelacakan perubahan.");
+    }
+    if (q.includes("parameter") || q.includes("threshold") || q.includes("ambang")){
+      helpItems.push("Set parameter: default_v1 (≥80%), strict_v1 (≥90%) untuk gerbang kesiapan.");
+    }
+    res.push(section("Bantuan", helpItems));
+  }
+
+  els.searchTitle.textContent = `Hasil Pencarian: "${qRaw}"`;
+  els.searchBody.innerHTML = res.join("") || `<div class="muted">Tidak ada hasil.</div>`;
   modal(els.searchModal, true);
 }
 
@@ -455,12 +553,15 @@ function section(title, items){
   return `
     <div style="margin-bottom:12px">
       <div style="font-weight:900; margin-bottom:6px">${title} (${arr.length})</div>
-      ${arr.length ? `<ul>${arr.map(i => `<li>${escapeHtml(i)}</li>`).join("")}</ul>` : `<div class="muted">No results</div>`}
+      ${arr.length ? `<ul>${arr.map(i => `<li>${escapeHtml(i)}</li>`).join("")}</ul>` : `<div class="muted">Tidak ada hasil</div>`}
     </div>
   `;
 }
+
 function escapeHtml(s){
-  return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c]));
+  return String(s ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[c]));
 }
 
 function bindTabs(){
@@ -478,14 +579,14 @@ function showApiContract(){
   };
 
   els.apiPost.textContent = JSON.stringify({
-    request: "POST /engine/jobs",
+    permintaan: "POST /engine/jobs",
     body,
-    response_example: { job_id: "JOB-XXXX", status: "RUNNING" }
+    contoh_respons: { job_id: "JOB-XXXX", status: "RUNNING" }
   }, null, 2);
 
   els.apiGet.textContent = JSON.stringify({
-    request: "GET /engine/jobs/JOB-XXXX",
-    response_example: {
+    permintaan: "GET /engine/jobs/JOB-XXXX",
+    contoh_respons: {
       job_id: "JOB-XXXX",
       status: "SUCCEEDED",
       started_at: nowIso(),
@@ -498,15 +599,15 @@ function showApiContract(){
   }, null, 2);
 
   els.apiOutputs.textContent = JSON.stringify({
-    request: "GET /engine/outputs",
-    query_params: {
+    permintaan: "GET /engine/outputs",
+    parameter_query: {
       type: "indicator|aggregate",
       job_id: "JOB-XXXX",
       period_id: els.period.value,
       scope: els.scope.value,
       scope_id: (els.scopeId.value || "").trim() || null
     },
-    response_example: [
+    contoh_respons: [
       { out_id:"OUT-..", job_id:"JOB-..", action_id:"ACT-..", indicator_id:"IND-..", progress_pct: 72, eligibility_flag:true }
     ]
   }, null, 2);
@@ -514,14 +615,80 @@ function showApiContract(){
   modal(els.apiModal, true);
 }
 
+// ---------- Sidebar toggle (opsional; aman walau elemennya belum ada) ----------
+function sidebarBehavior() {
+  // NOTE: fungsi ini hanya aktif kalau halaman menyediakan elemen berikut:
+  // - button#burgerBtn
+  // - aside#sidebar (atau elemen sidebar dengan id="sidebar")
+  // - div#sidebarOverlay (optional untuk drawer mobile)
+  const btn = document.getElementById("burgerBtn");
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+
+  if (!btn || !sidebar) return;
+
+  const isMobile = () => window.matchMedia("(max-width: 980px)").matches;
+
+  // restore state desktop (closed/open)
+  const saved = localStorage.getItem("sidebar_state"); // "open" | "closed"
+  if (saved === "closed") document.body.classList.add("sidebar-closed");
+
+  const setAria = () => {
+    const isClosed = document.body.classList.contains("sidebar-closed");
+    btn.setAttribute("aria-expanded", String(!isClosed));
+    btn.setAttribute("aria-label", isClosed ? "Buka menu" : "Tutup menu");
+  };
+
+  const closeMobileDrawer = () => document.body.classList.remove("sidebar-open");
+
+  const toggleDesktop = () => {
+    const willClose = !document.body.classList.contains("sidebar-closed");
+    document.body.classList.toggle("sidebar-closed", willClose);
+    if (willClose) closeMobileDrawer();
+    localStorage.setItem("sidebar_state", willClose ? "closed" : "open");
+    setAria();
+  };
+
+  btn.addEventListener("click", () => {
+    if (isMobile()) {
+      // buka dulu jika sedang closed
+      if (document.body.classList.contains("sidebar-closed")) {
+        document.body.classList.remove("sidebar-closed");
+        localStorage.setItem("sidebar_state", "open");
+      }
+      document.body.classList.add("sidebar-open");
+      setAria();
+      return;
+    }
+    toggleDesktop();
+  });
+
+  if (overlay) overlay.addEventListener("click", closeMobileDrawer);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMobileDrawer();
+  });
+
+  sidebar.querySelectorAll("a").forEach(a => {
+    a.addEventListener("click", () => { if (isMobile()) closeMobileDrawer(); });
+  });
+
+  window.addEventListener("resize", () => {
+    if (!isMobile()) closeMobileDrawer();
+  });
+
+  setAria();
+}
+
 function init(){
   renderPipeline();
-  setEngineState("Idle", "");
+  setEngineState("Tidak aktif", "");
   els.logbox.textContent = readJSON(STORAGE.engineLogs, []).join("\n");
   updateKPIs();
   renderJobs();
   renderOutputs();
   bindTabs();
+  sidebarBehavior();
 
   els.clearLogs.addEventListener("click", clearLogs);
   els.resetEngine.addEventListener("click", resetEngine);
@@ -537,14 +704,15 @@ function init(){
   els.openApiBtn.addEventListener("click", showApiContract);
   els.closeApi.addEventListener("click", ()=> modal(els.apiModal, false));
 
+  // toggle bahasa (stub)
   els.langToggle.addEventListener("click", ()=>{
     els.langToggle.textContent = (els.langToggle.textContent === "ID") ? "EN" : "ID";
   });
 
-  // set default tab
+  // default tab
   setActiveTab("indicator");
 
-  // small banner logs
+  // info pekerjaan terakhir
   const lj = latestJob();
   els.kLastJob.textContent = lj ? lj.job_id : "—";
 }

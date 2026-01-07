@@ -3,102 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MoNEv Adaptasi – Impact Engine</title>
+  <title>MoNEv Adaptasi – Mesin Komputasi Dampak</title>
   <link rel="stylesheet" href="app1.css" />
   <style>
-    /* .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:14px}
-    @media (max-width: 1100px){ .grid2{grid-template-columns:1fr} }
-
-    .grid3{display:grid; grid-template-columns: 1.2fr .8fr; gap:14px}
-    @media (max-width: 1100px){ .grid3{grid-template-columns:1fr} }
-
-    .input{
-      background: rgba(17,31,56,.9);
-      color: var(--text);
-      border:1px solid rgba(32,52,87,.9);
-      border-radius:12px;
-      padding:10px 12px;
-      outline:none;
-      min-width:220px;
-    }
-
-    .pill{
-      padding:6px 10px; border-radius:999px;
-      border:1px solid rgba(32,52,87,.85);
-      background: rgba(15,26,46,.55);
-      font-weight:900; display:inline-flex; gap:8px; align-items:center;
-    }
-    .pill.good{color:var(--good); border-color: rgba(61,220,151,.45); background: rgba(61,220,151,.12)}
-    .pill.warn{color:var(--warn); border-color: rgba(255,204,102,.45); background: rgba(255,204,102,.12)}
-    .pill.bad{color:var(--bad); border-color: rgba(255,107,107,.45); background: rgba(255,107,107,.12)}
-    .muted2{color:var(--muted); font-weight:800}
-
-    .pipeline{display:grid; gap:10px}
-    .step{
-      border-radius:16px;
-      border:1px solid rgba(32,52,87,.85);
-      background: rgba(15,26,46,.55);
-      padding:12px;
-      display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
-    }
-    .step .left{display:grid; gap:4px}
-    .step .title{font-weight:900}
-    .step .desc{color:var(--muted); font-size:12px}
-    .badge{
-      font-weight:900; font-size:12px;
-      padding:6px 10px; border-radius:999px;
-      border:1px solid rgba(32,52,87,.85);
-      background: rgba(17,31,56,.75);
-    }
-    .b-idle{color:var(--muted)}
-    .b-ok{color:var(--good); border-color: rgba(61,220,151,.45); background: rgba(61,220,151,.12)}
-    .b-warn{color:var(--warn); border-color: rgba(255,204,102,.45); background: rgba(255,204,102,.12)}
-    .b-err{color:var(--bad); border-color: rgba(255,107,107,.45); background: rgba(255,107,107,.12)}
-
-    .kv{display:flex; justify-content:space-between; gap:10px; padding:8px 10px; border-radius:12px; border:1px solid rgba(32,52,87,.7); background: rgba(15,26,46,.55)}
-    .kv .k{color:var(--muted); font-weight:800}
-    .kv .v{font-weight:900}
-
-    .tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px}
-    .tab{
-      padding:8px 12px; border-radius:999px;
-      border:1px solid rgba(32,52,87,.85);
-      background: rgba(15,26,46,.55);
-      font-weight:900; color:var(--muted);
-      cursor:pointer;
-    }
-    .tab.active{color:var(--text); background: rgba(79,156,255,.18); border-color: rgba(79,156,255,.45)}
-
-    .logbox{
-      border-radius:16px;
-      border:1px solid rgba(32,52,87,.85);
-      background: rgba(15,26,46,.55);
-      padding:12px;
-      min-height: 220px;
-      max-height: 320px;
-      overflow:auto;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-      font-size:12px;
-      color: rgba(230,240,255,.92);
-      line-height: 1.55;
-      white-space: pre-wrap;
-    }
-
-    .rightSticky{position:sticky; top:84px}
-    @media (max-width: 1100px){ .rightSticky{position:static} }
-
-    .note{
-      padding:10px 12px; border-radius:14px;
-      border:1px solid rgba(79,156,255,.35);
-      background: rgba(79,156,255,.10);
-      color: rgba(230,240,255,.94);
-      font-size:12px;
-      margin-top:10px;
-    }
-
-    .modal .modal-card{width:min(1080px, 94vw)}
-    .twoCol{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
-    @media (max-width: 900px){ .twoCol{grid-template-columns:1fr} } */
     .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:14px}
     @media (max-width: 1100px){ .grid2{grid-template-columns:1fr} }
 
@@ -240,50 +147,59 @@
     <!-- TOP BAR -->
     <header class="topbar">
       <div class="brand">
+        <button id="burgerBtn"
+          class="icon-btn burger-btn"
+          type="button"
+          aria-label="Buka menu"
+          aria-expanded="false"
+          aria-controls="sidebar">
+          ☰
+        </button>
         <div class="logo-container">
-          <img src="assets/Logo_KLH.png" alt="Logo" class="logo">
+          <img src="assets/Logo_KLH.png" alt="Logo KLH" class="logo">
         </div>
         <div class="brand-text">
           <div class="brand-title">MoNEv Adaptasi – MPC</div>
-          <div class="brand-sub">Impact Engine – Pipeline (Frontend-only)</div>
+          <div class="brand-sub">Mesin Komputasi Dampak – Alur Komputasi (Hanya Frontend)</div>
         </div>
       </div>
 
       <div class="search">
-        <input id="globalSearch" type="search" placeholder="Cari aksi / indikator / lokasi / periode / job…" />
+        <input id="globalSearch" type="search" placeholder="Cari aksi / indikator / lokasi / periode / pekerjaan komputasi…" />
         <select id="searchScope">
-          <option value="all">All</option>
-          <option value="jobs">Jobs</option>
-          <option value="outputs">Outputs</option>
-          <option value="actions">Actions</option>
-          <option value="help">Help</option>
+          <option value="all">Semua</option>
+          <option value="jobs">Pekerjaan</option>
+          <option value="outputs">Keluaran</option>
+          <option value="actions">Aksi</option>
+          <option value="help">Bantuan</option>
         </select>
-        <button id="searchBtn" class="btn">Search</button>
+        <button id="searchBtn" class="btn">Cari</button>
       </div>
 
       <div class="top-actions">
         <button class="chip" id="langToggle">ID</button>
-        <button class="icon-btn" title="Help">?</button>
-        <button class="icon-btn" title="Notifications">🔔</button>
-        <button class="icon-btn" title="User">👤</button>
+        <button class="icon-btn" title="Bantuan">?</button>
+        <button class="icon-btn" title="Notifikasi">🔔</button>
+        <button class="icon-btn" title="Pengguna">👤</button>
       </div>
     </header>
 
     <div class="body">
       <!-- SIDEBAR -->
-      <aside class="sidebar">
+      <aside class="sidebar" id="sidebar">
         <nav class="nav">
-          <a class="nav-item" href="home.html">Dashboard (Home)</a>
+          <a class="nav-item" href="home.html">Dashboard (Beranda)</a>
           <a class="nav-item" href="input.html">Input Data</a>
-          <a class="nav-item" href="review.html">Review & Validasi</a>
-          <a class="nav-item active" href="engine.html">Impact Engine</a>
+          <a class="nav-item" href="review.html">Verifikasi & Validasi</a>
+          <a class="nav-item active" href="engine.html">Komputasi</a>
           <a class="nav-item" href="reporting.html">Pelaporan & Ekspor</a>
-          <a class="nav-item" href="help.html">Help Center</a>
+          <a class="nav-item" href="help.html">Pusat Bantuan</a>
         </nav>
-        <div class="sidebar-footer">
-          <div class="small muted">Impact Engine UI v0.1</div>
-        </div>
+        <div class="sidebar-footer"></div>
       </aside>
+
+      <!-- OVERLAY (klik untuk menutup) -->
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
       <!-- MAIN -->
       <main class="main">
@@ -291,36 +207,36 @@
         <section class="panel">
           <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
             <div>
-              <div style="font-weight:900; font-size:18px">Impact Engine Control Panel</div>
+              <div style="font-weight:900; font-size:18px">Panel Kendali Mesin Komputasi Dampak</div>
               <div class="muted small">
-                Pipeline UI untuk menjalankan komputasi resmi di backend (nanti).
-                Sekarang: dry run / full run **stub**, output viewer mengikuti schema.
+                Antarmuka alur komputasi untuk menjalankan komputasi resmi di backend (nanti).
+                Saat ini: simulasi uji coba / eksekusi penuh (stub), penampil keluaran mengikuti skema.
               </div>
             </div>
 
             <div class="row wrap">
-              <span class="pill" id="engineState"><span>●</span> Idle</span>
-              <button class="btn btn-ghost" id="resetEngine">Reset</button>
+              <span class="pill" id="engineState"><span>●</span> Tidak aktif</span>
+              <button class="btn btn-ghost" id="resetEngine">Atur Ulang</button>
             </div>
           </div>
 
           <div class="note">
-            <b>Catatan:</b> Rumus/eq tidak dihitung di frontend. Frontend hanya:
-            (1) memilih <i>method_version</i> & <i>parameter_set</i>, (2) menjalankan job (nanti via API),
-            (3) menampilkan output & lineage/audit trail.
+            <b>Catatan:</b> Rumus/persamaan tidak dihitung di frontend. Frontend hanya:
+            (1) memilih <i>method_version</i> & <i>parameter_set</i>, (2) menjalankan pekerjaan (nanti via API),
+            (3) menampilkan keluaran serta jejak asal-usul (lineage) / jejak audit.
           </div>
 
           <div style="height:12px"></div>
 
           <div class="grid2">
             <div class="card">
-              <div class="card-title">Run Setup</div>
-              <div class="muted small">Pilih scope, periode, dan versi metode. (Stub – no backend)</div>
+              <div class="card-title">Pengaturan Eksekusi</div>
+              <div class="muted small">Pilih cakupan, periode, dan versi metode. (Stub – belum ada backend)</div>
 
               <div style="height:10px"></div>
               <div class="grid2">
                 <div>
-                  <div class="muted2 small">Period</div>
+                  <div class="muted2 small">Periode</div>
                   <select id="period" class="input">
                     <option value="2026-S1">2026-S1</option>
                     <option value="2026-S2">2026-S2</option>
@@ -328,10 +244,10 @@
                   </select>
                 </div>
                 <div>
-                  <div class="muted2 small">Job Type</div>
+                  <div class="muted2 small">Jenis Pekerjaan</div>
                   <select id="jobType" class="input">
-                    <option value="DRY_RUN">DRY_RUN</option>
-                    <option value="FULL_RUN">FULL_RUN</option>
+                    <option value="DRY_RUN">Uji Coba (DRY_RUN)</option>
+                    <option value="FULL_RUN">Eksekusi Penuh (FULL_RUN)</option>
                   </select>
                 </div>
               </div>
@@ -339,54 +255,54 @@
               <div style="height:10px"></div>
               <div class="grid2">
                 <div>
-                  <div class="muted2 small">Scope</div>
+                  <div class="muted2 small">Cakupan</div>
                   <select id="scope" class="input">
-                    <option value="NATIONAL">NATIONAL</option>
-                    <option value="SECTOR">SECTOR</option>
-                    <option value="REGION">REGION</option>
-                    <option value="ACTION">ACTION</option>
+                    <option value="NATIONAL">Nasional</option>
+                    <option value="SECTOR">Sektor</option>
+                    <option value="REGION">Wilayah</option>
+                    <option value="ACTION">Aksi</option>
                   </select>
                 </div>
                 <div>
-                  <div class="muted2 small">Scope ID (if needed)</div>
-                  <input id="scopeId" class="input" placeholder="SECTOR: Water | REGION: ID-31 | ACTION: ACT-000123" />
+                  <div class="muted2 small">ID Cakupan (jika diperlukan)</div>
+                  <input id="scopeId" class="input" placeholder="SEKTOR: Air | WILAYAH: ID-31 | AKSI: ACT-000123" />
                 </div>
               </div>
 
               <div style="height:10px"></div>
               <div class="grid2">
                 <div>
-                  <div class="muted2 small">Method Version</div>
+                  <div class="muted2 small">Versi Metode</div>
                   <select id="methodVersion" class="input">
                     <option value="impact_v1">impact_v1</option>
                     <option value="impact_v1_1">impact_v1_1</option>
                   </select>
                 </div>
                 <div>
-                  <div class="muted2 small">Parameter Set</div>
+                  <div class="muted2 small">Set Parameter</div>
                   <select id="parameterSet" class="input">
                     <option value="default_v1">default_v1</option>
-                    <option value="strict_v1">strict_v1 (higher readiness threshold)</option>
+                    <option value="strict_v1">strict_v1 (ambang kesiapan lebih tinggi)</option>
                   </select>
                 </div>
               </div>
 
               <div style="height:10px"></div>
               <div class="row wrap">
-                <button class="btn" id="runBtn">Run Job</button>
-                <button class="btn btn-ghost" id="dryCheckBtn">Pre-check (Eligibility)</button>
-                <button class="btn btn-ghost" id="openApiBtn">API Contract</button>
+                <button class="btn" id="runBtn">Jalankan</button>
+                <button class="btn btn-ghost" id="dryCheckBtn">Pra-Pemeriksaan (Kelayakan)</button>
+                <button class="btn btn-ghost" id="openApiBtn">Kontrak API</button>
               </div>
 
               <div style="height:10px"></div>
-              <div class="kv"><div class="k">Approved inputs ready</div><div class="v" id="kReady">—</div></div>
-              <div class="kv"><div class="k">Missing / returned items</div><div class="v" id="kMissing">—</div></div>
-              <div class="kv"><div class="k">Last job</div><div class="v" id="kLastJob">—</div></div>
+              <div class="kv"><div class="k">Input disetujui yang siap dihitung</div><div class="v" id="kReady">—</div></div>
+              <div class="kv"><div class="k">Item kurang / dikembalikan</div><div class="v" id="kMissing">—</div></div>
+              <div class="kv"><div class="k">Pekerjaan terakhir</div><div class="v" id="kLastJob">—</div></div>
             </div>
 
             <div class="card rightSticky">
-              <div class="card-title">Pipeline Status</div>
-              <div class="muted small">Tahapan komputasi (stub) + status per step.</div>
+              <div class="card-title">Status Alur Komputasi</div>
+              <div class="muted small">Tahapan komputasi (stub) + status per langkah.</div>
               <div style="height:10px"></div>
 
               <div class="pipeline" id="pipeline">
@@ -394,8 +310,8 @@
               </div>
 
               <div class="note">
-                <b>Gate utama:</b> hanya record yang <b>APPROVED</b> & memenuhi readiness threshold yang dihitung.
-                Item RETURNED/REJECTED tetap terlihat sebagai “gap list”.
+                <b>Gerbang utama:</b> hanya record berstatus <b>APPROVED</b> dan memenuhi ambang kesiapan yang dihitung.
+                Item RETURNED/REJECTED tetap terlihat sebagai daftar kesenjangan.
               </div>
             </div>
           </div>
@@ -406,11 +322,11 @@
           <div class="card">
             <div class="row" style="justify-content:space-between; gap:10px; flex-wrap:wrap">
               <div>
-                <div class="card-title">Job Logs</div>
-                <div class="muted small">Simulasi log eksekusi job (audit trail style).</div>
+                <div class="card-title">Log Pekerjaan</div>
+                <div class="muted small">Simulasi log eksekusi pekerjaan (gaya jejak audit).</div>
               </div>
               <div class="row wrap">
-                <button class="btn btn-ghost" id="clearLogs">Clear</button>
+                <button class="btn btn-ghost" id="clearLogs">Bersihkan</button>
               </div>
             </div>
             <div style="height:10px"></div>
@@ -420,31 +336,31 @@
           <div class="card">
             <div class="row" style="justify-content:space-between; gap:10px; flex-wrap:wrap">
               <div>
-                <div class="card-title">Outputs</div>
-                <div class="muted small">Viewer untuk schema output (indicator-level & aggregate).</div>
+                <div class="card-title">Keluaran</div>
+                <div class="muted small">Penampil keluaran sesuai skema (level indikator & agregat).</div>
               </div>
             </div>
 
             <div style="height:10px"></div>
             <div class="tabs">
-              <div class="tab active" data-tab="indicator">Indicator-level</div>
-              <div class="tab" data-tab="aggregate">Aggregate</div>
-              <div class="tab" data-tab="jobs">Job History</div>
+              <div class="tab active" data-tab="indicator">Level Indikator</div>
+              <div class="tab" data-tab="aggregate">Agregat</div>
+              <div class="tab" data-tab="jobs">Riwayat Pekerjaan</div>
             </div>
 
             <div class="table-wrap" id="tab-indicator">
               <table class="table" id="tblIndicator">
                 <thead>
                   <tr>
-                    <th>Job</th>
-                    <th>Action</th>
-                    <th>Indicator</th>
-                    <th>Period</th>
-                    <th>Method</th>
-                    <th>Readiness</th>
-                    <th>Eligible</th>
-                    <th>Progress%</th>
-                    <th>Quality</th>
+                    <th>Pekerjaan</th>
+                    <th>Aksi</th>
+                    <th>Indikator</th>
+                    <th>Periode</th>
+                    <th>Metode</th>
+                    <th>Kesiapan</th>
+                    <th>Layak</th>
+                    <th>Kemajuan (%)</th>
+                    <th>Kualitas</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -455,14 +371,14 @@
               <table class="table" id="tblAggregate">
                 <thead>
                   <tr>
-                    <th>Job</th>
-                    <th>Type</th>
-                    <th>Key</th>
-                    <th>Period</th>
-                    <th>N actions</th>
-                    <th>N eligible</th>
-                    <th>Progress%</th>
-                    <th>Notes</th>
+                    <th>Pekerjaan</th>
+                    <th>Jenis</th>
+                    <th>Kunci</th>
+                    <th>Periode</th>
+                    <th>Jumlah aksi</th>
+                    <th>Jumlah layak</th>
+                    <th>Kemajuan (%)</th>
+                    <th>Catatan</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -473,14 +389,14 @@
               <table class="table" id="tblJobs">
                 <thead>
                   <tr>
-                    <th>Job ID</th>
-                    <th>Type</th>
-                    <th>Scope</th>
-                    <th>Period</th>
-                    <th>Method</th>
-                    <th>Param</th>
+                    <th>ID Pekerjaan</th>
+                    <th>Jenis</th>
+                    <th>Cakupan</th>
+                    <th>Periode</th>
+                    <th>Metode</th>
+                    <th>Parameter</th>
                     <th>Status</th>
-                    <th>Started</th>
+                    <th>Mulai</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -494,7 +410,7 @@
         <div class="modal hidden" id="searchModal" role="dialog" aria-modal="true">
           <div class="modal-card">
             <div class="modal-head">
-              <div class="modal-title" id="searchTitle">Search Results</div>
+              <div class="modal-title" id="searchTitle">Hasil Pencarian</div>
               <button class="icon-btn" id="closeSearch">✕</button>
             </div>
             <div class="modal-body" id="searchBody"></div>
@@ -505,25 +421,25 @@
         <div class="modal hidden" id="apiModal" role="dialog" aria-modal="true">
           <div class="modal-card">
             <div class="modal-head">
-              <div class="modal-title">API Contract (placeholder)</div>
+              <div class="modal-title">Kontrak API (placeholder)</div>
               <button class="icon-btn" id="closeApi">✕</button>
             </div>
             <div class="modal-body">
               <div class="twoCol">
                 <div>
                   <div style="font-weight:900; margin-bottom:6px">POST /engine/jobs</div>
-                  <div class="muted small">Start komputasi (dry/full). Frontend mengirim parameter.</div>
+                  <div class="muted small">Memulai komputasi (uji coba / eksekusi penuh). Frontend mengirim parameter.</div>
                   <pre class="logbox" style="max-height:240px" id="apiPost"></pre>
                 </div>
                 <div>
                   <div style="font-weight:900; margin-bottom:6px">GET /engine/jobs/:id</div>
-                  <div class="muted small">Ambil status + output pointers.</div>
+                  <div class="muted small">Mengambil status serta penunjuk keluaran (output pointers).</div>
                   <pre class="logbox" style="max-height:240px" id="apiGet"></pre>
                 </div>
               </div>
               <div style="height:12px"></div>
               <div style="font-weight:900; margin-bottom:6px">GET /engine/outputs</div>
-              <div class="muted small">Ambil output indicator-level / aggregate berdasarkan job_id, period, scope.</div>
+              <div class="muted small">Mengambil keluaran level indikator / agregat berdasarkan job_id, periode, dan cakupan.</div>
               <pre class="logbox" style="max-height:240px" id="apiOutputs"></pre>
             </div>
           </div>
