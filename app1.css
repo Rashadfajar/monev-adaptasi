@@ -135,6 +135,13 @@ select{
   color:var(--text);
   border-color: rgba(79,156,255,.35);
 }
+.nav-divider{
+  height:1px;
+  background: var(--line);
+  margin: 12px 6px;
+  border-radius:999px;
+}
+
 .sidebar-footer{margin-top:16px; padding:10px 12px; border-top:1px solid rgba(32,52,87,.6)}
 
 .main{flex:1; padding:16px; display:flex; flex-direction:column; gap:14px}
@@ -262,7 +269,7 @@ body.sidebar-closed .sidebar *{
 }
 
 .field {
-  padding: 15px;
+  padding: 12px;
   box-sizing: border-box;
 }
 
@@ -271,9 +278,9 @@ body.sidebar-closed .sidebar *{
 .panel-row {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
+  gap: 15px;
   align-items: center;  /* Memastikan elemen grafik dan peta sejajar */
-   flex-wrap: wrap;   
+  flex-wrap: wrap;   
 }
 
 .card{

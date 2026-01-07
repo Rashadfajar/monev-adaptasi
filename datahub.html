@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MoNEv Adaptasi – Portal Data</title>
+  <link rel="stylesheet" href="app1.css" />
+  <style>
+    .grid2{display:grid; grid-template-columns: 1.15fr .85fr; gap:14px}
+    @media (max-width: 1100px){ .grid2{grid-template-columns:1fr} }
+
+    .grid3{display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px}
+    @media (max-width: 1100px){ .grid3{grid-template-columns:1fr} }
+
+    .input{
+      background:#ffffff;
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      outline:none;
+      width: 100%;
+      box-sizing:border-box;
+    }
+
+    .pill{
+      padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      background: rgb(255, 255, 255);
+      font-weight:900; display:inline-flex; gap:8px; align-items:center; color:var(--text);
+    }
+    .pill.good{color:var(--good); border-color:#bbf7d0; background:#dcfce7}
+    .pill.warn{color:var(--warn); border-color:#fde68a; background:#fef3c7}
+    .pill.bad{color:var(--bad); border-color:#fecaca; background:#fee2e2}
+
+    .tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px}
+    .tab{
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#ffffff;
+      font-weight:800;
+      color:var(--muted);
+      cursor:pointer;
+    }
+    .tab.active{
+      color:var(--accent);
+      background:#eff6ff;
+      border-color:#bfdbfe;
+    }
+    .row2{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .muted2{color:var(--muted); font-weight:800}
+
+    .kpi{
+      border-radius:16px; border:1px solid var(--line);;
+      background: rgb(255, 255, 255);
+      padding:10px 12px;
+    }
+    .kpi .n{font-size:18px; font-weight:900}
+    .kpi .t{font-size:12px; color:var(--muted); font-weight:800}
+
+    .conn{
+      border-radius:16px; border:1px solid var(--line);;
+      background: rgb(255, 255, 255);
+      padding:12px;
+      display:flex; flex-direction:column; gap:8px;
+    }
+    .conn .title{font-weight:900; font-size:14px}
+    .conn .meta{color:var(--muted); font-size:12px}
+    .conn .actions{display:flex; gap:8px; flex-wrap:wrap}
+
+    .note{
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid #bfdbfe;
+      background:#eff6ff;
+      color:var(--text);
+      font-size:12px;
+      margin-top:10px;
+    }
+
+    .drop{
+      border-radius:16px;
+      border:1px dashed rgba(0, 0, 0, 0.55);
+      background: rgb(255, 255, 255);
+      padding:14px;
+    }
+
+    .logbox{
+      border-radius:16px;
+      border:1px solid rgba(32,52,87,.85);
+      background: rgb(255, 255, 255);
+      padding:12px;
+      min-height: 120px;
+      max-height: 260px;
+      overflow:auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      font-size:12px;
+      color:var(--text);
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    .table-wrap{overflow:auto; border-radius:16px; border:1px solid rgba(32,52,87,.85); background: rgb(255, 255, 255)}
+    table{width:100%; border-collapse:collapse; font-size:12px}
+    th, td{padding:10px 10px; border-bottom:1px solid rgba(32,52,87,.65); vertical-align:top}
+    th{color:var(--muted); text-align:left; font-weight:900}
+    td b{font-weight:900}
+
+    .hidden{display:none !important}
+    .smalltag{
+      display:inline-block; font-size:12px; font-weight:900; color: rgba(6, 6, 7, 0.92);
+      padding:6px 10px; border-radius:999px; border:1px solid rgba(32,52,87,.85); background: rgb(255, 255, 255);
+    }
+
+    .modal .modal-card{width:min(1080px, 94vw)}
+    .twoCol{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
+    @media (max-width: 900px){ .twoCol{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="brand">
+        <button id="burgerBtn"
+          class="icon-btn burger-btn"
+          type="button"
+          aria-label="Buka menu"
+          aria-expanded="false"
+          aria-controls="sidebar">
+          ☰
+        </button>
+        <div class="logo-container">
+          <img src="assets/Logo_KLH.png" alt="Logo" class="logo">
+        </div>
+        <div class="brand-text">
+          <div class="brand-title">MoNEv Adaptasi</div>
+          <div class="brand-sub">Portal Data (Integrasi Sistem & Impor Data)</div>
+        </div>
+      </div>
+
+      <div class="search">
+        <input id="globalSearch" type="search" placeholder="Cari konektor / kolom / unggah / action_id…" />
+        <select id="searchScope">
+          <option value="all">Semua</option>
+          <option value="connectors">Konektor</option>
+          <option value="mappings">Aturan kolom</option>
+          <option value="batches">Batch unggahan</option>
+        </select>
+        <button id="searchBtn" class="btn">Cari</button>
+      </div>
+
+      <div class="top-actions">
+        <button class="chip" id="langToggle">ID</button>
+        <button class="icon-btn" title="Bantuan">?</button>
+        <button class="icon-btn" title="Notifikasi">🔔</button>
+        <button class="icon-btn" title="Pengguna">👤</button>
+      </div>
+    </header>
+
+    <div class="body">
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <nav class="nav">
+          <a class="nav-item" href="home.html">Dashboard (Beranda)</a>
+          <a class="nav-item" href="input.html">Input Data</a>
+          <a class="nav-item" href="review.html">Verifikasi & Validasi</a>
+          <a class="nav-item" href="engine.html">Komputasi</a>
+          <a class="nav-item" href="reporting.html">Pelaporan & Ekspor</a>
+          <a class="nav-item" href="help.html">Pusat Bantuan</a>
+          <div class="nav-divider"></div>
+          <a class="nav-item active" href="datahub.html">Portal Data</a>
+        </nav>
+        <!-- <div class="sidebar-footer"></div> -->
+      </aside>
+
+      <!-- OVERLAY (klik untuk menutup) -->
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+      <!-- MAIN -->
+      <main class="main">
+        <section class="panel">
+          <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
+            <div>
+              <div style="font-weight:900; font-size:18px">Portal Data</div>
+              <div class="muted small">
+                Memudahkan pemasokan data MoNEv melalui <b>integrasi sistem</b> atau <b>impor data</b> (fallback saat sistem eksternal tidak stabil).
+              </div>
+            </div>
+            <div class="row2">
+              <span class="pill" id="hubState"><span>●</span> Siap</span>
+              <button class="btn btn-ghost" id="refreshBtn">Muat Ulang</button>
+              <button class="btn btn-ghost" id="openAuditBtn">Lihat Penyimpanan</button>
+            </div>
+          </div>
+
+          <div class="note">
+            <b>Prinsip:</b> Data yang masuk melalui Portal Data akan dibuat sebagai <b>batch unggahan</b> dan dikirim ke <b>Kotak Masuk Tinjau</b>.
+            Komputasi hanya menggunakan data <b>DISETUJUI</b>.
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="grid3">
+            <div class="kpi">
+              <div class="n" id="kConn">—</div>
+              <div class="t">Konektor terkonfigurasi</div>
+            </div>
+            <div class="kpi">
+              <div class="n" id="kMap">—</div>
+              <div class="t">Aturan pemetaan</div>
+            </div>
+            <div class="kpi">
+              <div class="n" id="kBatch">—</div>
+              <div class="t">Batch unggahan</div>
+            </div>
+          </div>
+
+          <div style="height:14px"></div>
+
+          <div class="tabs">
+            <div class="tab active" data-tab="integrations">Integrasi</div>
+            <div class="tab" data-tab="upload">Impor Data</div>
+            <div class="tab" data-tab="mapping">Penyelarasan Kolom</div>
+            <div class="tab" data-tab="reliability">Pengaturan Konektor</div>
+          </div>
+
+          <!-- INTEGRATIONS -->
+          <div id="tab-integrations">
+            <div class="grid2">
+              <div class="card">
+                <div class="card-title">Panel Integrasi</div>
+                <div class="muted small">UI stub untuk mengelola koneksi: SRN, AKSARA, CBT, BMKG/BIG/BPS, SID, Portal Pemda.</div>
+                <div style="height:10px"></div>
+
+                <div class="grid3" id="connectorsGrid"></div>
+
+                <div class="note">
+                  <b>Praktik baik:</b> gunakan status koneksi (Sehat/Terdegradasi/Down) dan fallback ke Impor Data.
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-title">Detail Konektor</div>
+                <div class="muted small">Pilih konektor untuk melihat konfigurasi & riwayat sinkronisasi (stub).</div>
+                <div style="height:10px"></div>
+
+                <div class="row2">
+                  <div style="flex:1">
+                    <div class="muted2 small">Konektor terpilih</div>
+                    <select id="connectorSelect" class="input"></select>
+                  </div>
+                </div>
+
+                <div style="height:10px"></div>
+
+                <div class="row2">
+                  <div style="flex:1">
+                    <div class="muted2 small">Base URL</div>
+                    <input id="connBaseUrl" class="input" placeholder="https://..." />
+                  </div>
+                </div>
+
+                <div style="height:10px"></div>
+
+                <div class="row2">
+                  <div style="flex:1">
+                    <div class="muted2 small">Mode otentikasi (stub)</div>
+                    <select id="connAuthMode" class="input">
+                      <option value="NONE">NONE (publik / manual)</option>
+                      <option value="API_KEY">API_KEY</option>
+                      <option value="OAUTH2">OAUTH2 / SSO</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style="height:10px"></div>
+
+                <div class="row2">
+                  <button class="btn" id="saveConnBtn">Simpan</button>
+                  <button class="btn btn-ghost" id="syncNowBtn">Sinkronkan Sekarang (stub)</button>
+                  <button class="btn btn-ghost" id="disableConnBtn">Nonaktifkan</button>
+                </div>
+
+                <div style="height:10px"></div>
+                <div class="muted2 small">Log sinkronisasi</div>
+                <div style="height:8px"></div>
+                <div class="logbox" id="syncLog"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BULK UPLOAD -->
+          <div id="tab-upload" class="hidden">
+            <div class="grid2">
+              <div class="card">
+                <div class="card-title">Panduan Impor Data</div>
+                <div class="muted small">Impor CSV/JSON untuk mengisi template Sektoral (Horizontal)/ Kewilayahan (Vertikal) tanpa input manual.</div>
+
+                <div style="height:10px"></div>
+
+                <div class="row2">
+                  <div style="flex:1">
+                    <div class="muted2 small">Jenis dataset</div>
+                    <select id="datasetType" class="input">
+                      <option value="HORIZONTAL">Sektoral (Horizontal)</option>
+                      <option value="VERTICAL">Kewilayahan (Vertical)</option>
+                    </select>
+                  </div>
+                  <div style="flex:1">
+                    <div class="muted2 small">ID Periode</div>
+                    <input id="periodId" class="input" placeholder="mis., 2026-S1" />
+                  </div>
+                </div>
+
+                <div style="height:10px"></div>
+
+                <div class="row2">
+                  <button class="btn btn-ghost" id="downloadTemplateBtn">Unduh Template (CSV)</button>
+                  <span class="smalltag" id="reqTag">Wajib: —</span>
+                </div>
+
+                <div style="height:12px"></div>
+
+                <div class="drop">
+                  <div style="font-weight:900">Taruh file di sini</div>
+                  <div class="muted small">Didukung (stub): <b>.csv</b> dan <b>.json</b>. XLSX akan diterima tetapi belum diparsing.</div>
+                  <div style="height:10px"></div>
+                  <input id="fileInput" type="file" class="input" />
+                </div>
+
+                <div style="height:12px"></div>
+
+                <div class="row2">
+                  <button class="btn" id="validateBtn">Validasi</button>
+                  <button class="btn btn-ghost" id="submitBatchBtn" disabled>Kirim ke Kotak Masuk Tinjau</button>
+                  <button class="btn btn-ghost" id="clearUploadBtn">Bersihkan</button>
+                </div>
+
+                <div class="note">
+                  Setelah dikirim, batch akan muncul di <b>Verifikasi & Validasi</b> sebagai item baru (stub localStorage).
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-title">Pratinjau Validasi</div>
+                <div class="muted small">Ringkasan valid/tidak valid + contoh error per baris.</div>
+                <div style="height:10px"></div>
+
+                <div class="grid3">
+                  <div class="kpi"><div class="n" id="vTotal">—</div><div class="t">Total baris</div></div>
+                  <div class="kpi"><div class="n" id="vValid">—</div><div class="t">Baris valid</div></div>
+                  <div class="kpi"><div class="n" id="vInvalid">—</div><div class="t">Baris tidak valid</div></div>
+                </div>
+
+                <div style="height:12px"></div>
+                <div class="muted2 small">Error (50 teratas)</div>
+                <div style="height:8px"></div>
+                <div class="logbox" id="errorLog"></div>
+
+                <div style="height:12px"></div>
+                <div class="muted2 small">Pratinjau (20 baris teratas)</div>
+                <div style="height:8px"></div>
+                <div class="table-wrap">
+                  <table id="previewTable">
+                    <thead id="previewHead"></thead>
+                    <tbody id="previewBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MAPPING (PENYELARASAN KOLOM) -->
+          <div id="tab-mapping" class="hidden">
+            <div class="grid2">
+              <div class="card">
+                <div class="card-title">Penyelarasan Kolom</div>
+                <div class="muted small">Pencocokan kolom: MoNEv ↔ SRN/AKSARA/CBT/Portal lainnya (stub).</div>
+                <div style="height:10px"></div>
+
+                <div class="row2">
+                  <div style="flex:1">
+                    <div class="muted2 small">Sumber Data</div>
+                    <select id="mapSource" class="input">
+                      <option value="SRN">SRN</option>
+                      <option value="AKSARA">AKSARA</option>
+                      <option value="CBT">CBT (Kemenkeu)</option>
+                      <option value="BMKG">BMKG</option>
+                      <option value="BPS">BPS</option>
+                      <option value="BIG">BIG</option>
+                      <option value="SID">SID Desa</option>
+                      <option value="OTHER">Lainnya</option>
+                    </select>
+                  </div>
+                  <div style="flex:1">
+                    <div class="muted2 small">Target dataset</div>
+                    <select id="mapTarget" class="input">
+                      <option value="HORIZONTAL">HORIZONTAL</option>
+                      <option value="VERTICAL">VERTICAL</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style="height:10px"></div>
+
+                <div class="row2">
+                  <div style="flex:1">
+                    <div class="muted2 small">Kolom MoNEv</div>
+                    <input id="mapMonevField" class="input" placeholder="contoh: action_id" />
+                  </div>
+                  <div style="flex:1">
+                    <div class="muted2 small">Kolom Sumber Data</div>
+                    <input id="mapSourceField" class="input" placeholder="contoh: srn_action_code" />
+                  </div>
+                </div>
+
+                <div style="height:10px"></div>
+
+                <div class="row2">
+                  <div style="flex:1">
+                    <div class="muted2 small">Transformasi (opsional)</div>
+                    <input id="mapTransform" class="input" placeholder="contoh: upper() | unit_convert(mm->cm) | kodewil->id_kab" />
+                  </div>
+                </div>
+
+                <div style="height:10px"></div>
+
+                <div class="row2">
+                  <button class="btn" id="addMapBtn">Tambah Aturan</button>
+                  <button class="btn btn-ghost" id="exportMapBtn">Ekspor JSON</button>
+                  <button class="btn btn-ghost" id="clearMapBtn">Kosongkan Aturan</button>
+                </div>
+
+                <div class="note">
+                  Disarankan versioning untuk aturan penyelarasan (nanti di backend). Untuk UI stub ini, aturan disimpan di localStorage.
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-title">Daftar Aturan Penyelarasan</div>
+                <div class="muted small">Klik aturan untuk menghapus.</div>
+                <div style="height:10px"></div>
+
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Sumber Data</th>
+                        <th>Target</th>
+                        <th>Kolom MoNEv</th>
+                        <th>Kolom sumber</th>
+                        <th>Transformasi</th>
+                      </tr>
+                    </thead>
+                    <tbody id="mapTableBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- RELIABILITY -->
+          <div id="tab-reliability" class="hidden">
+            <div class="grid2">
+              <div class="card">
+                <div class="card-title">Pengaturan Cadangan</div>
+                <div class="muted small">Mengatur perilaku sistem saat konektor terganggu (otomatis/cadangan/ketat).</div>
+
+                <div style="height:10px"></div>
+
+                <div class="row2">
+                  <div style="flex:1">
+                    <div class="muted2 small">Mode</div>
+                    <select id="relMode" class="input">
+                      <option value="AUTO">OTOMATIS (utamakan konektor, gunakan impor data bila gagal)</option>
+                      <option value="UPLOAD_FIRST">IMPOR DAHULU (fokus impor data, konektor opsional)</option>
+                      <option value="CONNECT_ONLY">KONEKTOR SAJA (ketat, tanpa impor data)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style="height:10px"></div>
+
+                <div class="row2">
+                  <div style="flex:1">
+                    <div class="muted2 small">Batas waktu (detik)</div>
+                    <input id="relTimeout" class="input" type="number" min="1" max="120" />
+                  </div>
+                  <div style="flex:1">
+                    <div class="muted2 small">Jumlah percobaan ulang</div>
+                    <input id="relRetry" class="input" type="number" min="0" max="10" />
+                  </div>
+                </div>
+
+                <div style="height:10px"></div>
+
+                <div class="row2">
+                  <button class="btn" id="saveRelBtn">Simpan</button>
+                  <button class="btn btn-ghost" id="testRelBtn">Simulasikan Kegagalan</button>
+                </div>
+
+                <div class="note">
+                  <b>Rekomendasi:</b> gunakan <b>OTOMATIS</b> sebagai default; untuk wilayah dengan koneksi lemah gunakan <b>IMPOR DAHULU</b>.
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-title">Log Cadangan</div>
+                <div class="muted small">Catatan simulasi & perubahan pengaturan.</div>
+                <div style="height:10px"></div>
+                <div class="logbox" id="relLog"></div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- SEARCH MODAL -->
+        <div class="modal hidden" id="searchModal" role="dialog" aria-modal="true">
+          <div class="modal-card">
+            <div class="modal-head">
+              <div class="modal-title" id="searchTitle">Hasil Pencarian</div>
+              <button class="icon-btn" id="closeSearch">✕</button>
+            </div>
+            <div class="modal-body" id="searchBody"></div>
+          </div>
+        </div>
+
+        <!-- STORAGE/AUDIT MODAL -->
+        <div class="modal hidden" id="auditModal" role="dialog" aria-modal="true">
+          <div class="modal-card">
+            <div class="modal-head">
+              <div class="modal-title">Cuplikan Local Storage</div>
+              <button class="icon-btn" id="closeAudit">✕</button>
+            </div>
+            <div class="modal-body">
+              <div class="twoCol">
+                <div>
+                  <div style="font-weight:900; margin-bottom:6px">Kunci (stub MoNEv)</div>
+                  <pre class="logbox" id="auditKeys"></pre>
+                </div>
+                <div>
+                  <div style="font-weight:900; margin-bottom:6px">Pratinjau (kunci terpilih)</div>
+                  <select id="auditKeySelect" class="input"></select>
+                  <div style="height:8px"></div>
+                  <pre class="logbox" id="auditValue"></pre>
+                </div>
+              </div>
+              <div class="note">
+                Ini hanya untuk debugging UI. Pada sistem produksi, audit trail ada di database + log server.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="datahub.js"></script>
+</body>
+</html>

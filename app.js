@@ -91,6 +91,7 @@ const i18n = {
     qaInbox: "Verifikasi",
     qaRunCompute: "Komputasi",
     qaExport: "Pelaporan",
+    qaDataHub: "Portal Data",
 
     globalFilters: "Filter Global",
     reset: "Reset",
@@ -177,6 +178,7 @@ const i18n = {
     qaInbox: "Verification",
     qaRunCompute: "Computation",
     qaExport: "Reports",
+    qaDataHub: "Portal Data",
 
     globalFilters: "Global Filters",
     reset: "Reset",

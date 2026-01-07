@@ -18,6 +18,25 @@
       padding-top: 10px;
     }
 
+    /* Aksi Cepat: 1 baris */
+    .quick-actions{
+      /* flex-wrap: nowrap !important; */
+      /* overflow-x: auto;           */
+      gap: 10px;
+      padding-bottom: 6px;
+    }
+
+    /* Perkecil tombol */
+    .quick-actions .btn{
+      padding: 10px 12px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+
     /* Responsive: jadi 1 kolom di layar kecil */
     @media (max-width: 900px){
       .grid-status{ grid-template-columns:1fr; }
@@ -75,14 +94,16 @@
       <aside class="sidebar" id="sidebar">
         <nav class="nav">
           <a class="nav-item active" href="#" data-i18n="navDashboard">Dashboard (Beranda)</a>
+          <!-- <a class="nav-item" href="datahub.html" data-i18n="navDataHub">Data Hub</a> -->
           <a class="nav-item" href="input.html" data-i18n="navInput">Input Data</a>
           <a class="nav-item" href="review.html" data-i18n="navReview">Verifikasi & Validasi</a>
           <a class="nav-item" href="engine.html" data-i18n="navEngine">Impact Engine</a>
           <a class="nav-item" href="reporting.html" data-i18n="navReporting">Pelaporan & Ekspor</a>
           <a class="nav-item" href="help.html" data-i18n="navHelp">Pusat Bantuan</a>
+          <div class="nav-divider"></div>
+          <a class="nav-item" href="datahub.html" data-i18n="navDataHub">Portal Data</a>
         </nav>
-
-        <div class="sidebar-footer"></div>
+        <!-- <div class="sidebar-footer"></div> -->
       </aside>
 
       <!-- OVERLAY (klik untuk menutup) -->
@@ -115,12 +136,13 @@
 
             <div class="field grow">
               <label data-i18n="quickActions">Aksi Cepat</label>
-              <div class="row wrap">
+              <div class="row wrap quick-actions">
                 <a class="btn" href="input.html#horizontal" data-i18n="qaInputH">Sektoral</a>
                 <a class="btn" href="input.html#vertical" data-i18n="qaInputV">Kewilayahan</a>
                 <a class="btn" href="review.html" data-i18n="qaInbox">Verifikasi</a>
                 <a class="btn" href="engine.html" data-i18n="qaRunCompute">Analisis Dampak</a>
                 <a class="btn" href="reporting.html" data-i18n="qaExport">Laporan</a>
+                <a class="btn" href="datahub.html" data-i18n="qaDataHub">Portal Data</a>
               </div>
             </div>
           </div>
