@@ -90,7 +90,7 @@ const i18n = {
     qaInputV: "Kewilayahan",
     qaInbox: "Verifikasi",
     qaRunCompute: "Komputasi",
-    qaExport: "Laporan",
+    qaExport: "Pelaporan",
 
     globalFilters: "Filter Global",
     reset: "Reset",
@@ -561,7 +561,13 @@ function getEl(id){ return document.getElementById(id); }
 function readFiltersFromUI() {
   state.year = getEl("yearSel")?.value || state.year;
   state.subperiod = getEl("subperiodSel")?.value || state.subperiod;
-  state.sector = getEl("sectorSel")?.value || "";
+
+  const sectorEl = getEl("sectorSel");
+  state.sector =
+    (sectorEl?.value || "").trim() ||
+    (sectorEl?.selectedOptions?.[0]?.textContent || "").trim() ||
+    "";
+
   state.location = getEl("locationSel")?.value || "";
   state.institution = getEl("instSel")?.value || "";
   state.typology = getEl("typologySel")?.value || "";
@@ -589,7 +595,7 @@ function filterHorizontalRows() {
 // -------------------------------
 // SVG Trend Chart (NO <canvas>)
 // -------------------------------
-const trendLabels = ["Q1 2022","Q2 2022","Q3 2022","Q4 2022","Q1 2023","Q2 2023","Q3 2023","Q4 2023","Q1 2024"];
+const trendLabels = ["Q1 2025","Q2 2025","Q3 2025","Q4 2025","Q1 2026","Q2 2026","Q3 2026","Q4 2026","Q1 2027"];
 
 function getDummySectorSeries(sector) {
   const key = (sector || "").trim();
@@ -597,27 +603,27 @@ function getDummySectorSeries(sector) {
   let label = "Tidak ada data";
 
   switch (key) {
-    case "Pangan":
+    case "Food":
       data = [230, 240, 250, 260, 270, 280, 290, 300, 310];
       label = "Sektor Pangan";
       break;
-    case "Air":
+    case "Water":
       data = [180, 190, 200, 210, 220, 230, 240, 250, 260];
       label = "Sektor Air";
       break;
-    case "Kesehatan":
+    case "Health":
       data = [95, 100, 105, 110, 115, 120, 125, 130, 135];
       label = "Sektor Kesehatan";
       break;
-    case "Ekosistem":
+    case "Ecosystem":
       data = [210, 220, 230, 240, 250, 260, 270, 280, 290];
       label = "Sektor Ekosistem";
       break;
-    case "Kebencanaan":
+    case "DRM":
       data = [160, 170, 180, 190, 200, 210, 220, 230, 240];
       label = "Sektor Kebencanaan";
       break;
-    case "Pesisir":
+    case "Coastal":
       data = [120, 130, 140, 150, 160, 170, 180, 190, 200];
       label = "Sektor Pesisir";
       break;
@@ -647,13 +653,19 @@ function seededNoise(seed) {
 }
 
 function buildTrendValues(filteredRows) {
-  const n = filteredRows.length || 0;
+  // baseline "masuk akal" biar grafik berubah sesuai filter
+  let baseline = 0;
 
-  let baseline = n;
-  if (baseline === 0 && state.sector) {
-    const m = mock.mpcRows.find(x => x.sector === state.sector);
-    baseline = m ? m.actions : 0;
+  if (state.location) {
+    baseline = mock.vRows.find(x => x.loc === state.location)?.actions || 0;
+  } else if (state.sector) {
+    baseline = mock.mpcRows.find(x => x.sector === state.sector)?.actions || 0;
+  } else if (state.institution) {
+    baseline = Math.max(60, (filteredRows?.length || 0) * 60);
+  } else {
+    baseline = mock.mpcRows.reduce((s, r) => s + (r.actions || 0), 0) || 0;
   }
+
   if (baseline === 0) baseline = 60;
 
   const seed =
@@ -661,7 +673,8 @@ function buildTrendValues(filteredRows) {
     (state.subperiod === "S2" ? 13 : 5) +
     (state.sector ? state.sector.length * 17 : 3) +
     (state.location ? state.location.length * 11 : 2) +
-    (state.institution ? state.institution.length * 19 : 1);
+    (state.institution ? state.institution.length * 19 : 1) +
+    (state.typology ? state.typology.length * 23 : 0);
 
   const vals = trendLabels.map((_, i) => {
     const t = i / (trendLabels.length - 1);
@@ -673,6 +686,7 @@ function buildTrendValues(filteredRows) {
 
   return vals;
 }
+
 
 function renderTrendSvg(svgId, labels, values, seriesLabel = "") {
   const svg = getEl(svgId);
@@ -840,19 +854,79 @@ function updateMapMarkers() {
   }
 }
 
+function computeTrendSeries() {
+  // BASE SERIES:
+  // - kalau state.sector kosong => default getDummySectorSeries() sudah TOTAL (jumlah semua sektor)
+  // - kalau pilih sektor => series sektor itu
+  const base = getDummySectorSeries(state.sector);
+  const baseData = base.data.slice();
+
+  // faktor skala agar grafik berubah saat filter berubah (mock yang masuk akal)
+  let factor = 1;
+
+  // lokasi: pakai vRows.actions sebagai skala (dibanding prov max)
+  if (state.location) {
+    const v = mock.vRows.find(x => x.loc === state.location)?.actions || 0;
+    const vmax = Math.max(...mock.vRows.map(x => x.actions || 0), 1);
+    const r = v / vmax;               // 0..1
+    factor *= (0.75 + 0.5 * r);       // 0.75..1.25
+  }
+
+  // instansi: pakai proporsi baris yg match
+  if (state.institution) {
+    const filtered = filterHorizontalRows().length || 0;
+    const total = mock.hRows.length || 1;
+    const r = filtered / total;       // 0..1
+    factor *= (0.85 + 0.6 * r);       // 0.85..1.45 (tapi biasanya kecil)
+  }
+
+  // tipologi (karena belum ada data) → efek kecil saja biar tetap responsif
+  if (state.typology) factor *= 1.03;
+
+  // subperiod
+  if (state.subperiod === "S2") factor *= 1.02;
+
+  // year: shift kecil (+/- 6% max)
+  const y = parseInt(state.year || "2026", 10);
+  const yShift = Math.max(-0.06, Math.min(0.06, (y - 2026) * 0.02));
+  factor *= (1 + yShift);
+
+  // wiggle kecil per titik agar beda antar-filter tapi tetap "total" berbasis baseData
+  const seed =
+    (parseInt(state.year || "2026", 10) * 7) +
+    (state.subperiod === "S2" ? 13 : 5) +
+    (state.sector ? state.sector.length * 17 : 3) +
+    (state.location ? state.location.length * 11 : 2) +
+    (state.institution ? state.institution.length * 19 : 1) +
+    (state.typology ? state.typology.length * 23 : 0);
+
+  const data = baseData.map((v, i) => {
+    const wiggle = (seededNoise(seed + i * 7) - 0.5) * 0.06; // ±3%
+    return Math.max(0, Math.round(v * factor * (1 + wiggle)));
+  });
+
+  // label tampil
+  const labelParts = [base.label];
+  if (state.location) labelParts.push(`Wilayah: ${state.location}`);
+  if (state.institution) labelParts.push(`Instansi: ${state.institution}`);
+  if (state.typology) labelParts.push(`Tipologi: ${state.typology}`);
+
+  return { label: labelParts.join(" • "), data };
+}
+
+
 // -------------------------------
 // Single source of truth: update visuals
 // -------------------------------
 function updateVisuals() {
   readFiltersFromUI();
 
-  // Trend chart (dummy series)
-  const series = getDummySectorSeries(state.sector);
+  const series = computeTrendSeries(); // <-- BARU
   renderTrendSvg("trendSvg", trendLabels, series.data, series.label);
 
-  // Map
   if (map) updateMapMarkers();
 }
+
 
 function filtersBehavior() {
   ["yearSel","subperiodSel","sectorSel","locationSel","instSel","typologySel"].forEach(id => {
@@ -868,7 +942,14 @@ function filtersBehavior() {
       updateVisuals();
     });
   }
+
+  // OPTIONAL tapi bikin kebal kalau elemen filter dibuat ulang / id berubah saat render
+  document.addEventListener("change", (e) => {
+    const ids = ["yearSel","subperiodSel","sectorSel","locationSel","instSel","typologySel"];
+    if (ids.includes(e.target?.id)) updateVisuals();
+  });
 }
+
 
 function sidebarBehavior() {
   const btn = document.getElementById("burgerBtn");
