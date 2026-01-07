@@ -89,7 +89,7 @@ const i18n = {
     qaInputH: "Sektoral",
     qaInputV: "Kewilayahan",
     qaInbox: "Verifikasi",
-    qaRunCompute: "Evaluasi",
+    qaRunCompute: "Komputasi",
     qaExport: "Laporan",
 
     globalFilters: "Filter Global",
@@ -175,7 +175,7 @@ const i18n = {
     qaInputH: "Sectoral",
     qaInputV: "Regional",
     qaInbox: "Verification",
-    qaRunCompute: "Impact Analysis",
+    qaRunCompute: "Computation",
     qaExport: "Reports",
 
     globalFilters: "Global Filters",
