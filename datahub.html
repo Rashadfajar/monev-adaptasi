@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MoNEv Adaptasi – Portal Data</title>
+  <title>MoNEv Adaptasi – Koneksi Data</title>
   <link rel="stylesheet" href="app1.css" />
   <style>
     .grid2{display:grid; grid-template-columns: 1.15fr .85fr; gap:14px}
@@ -136,7 +136,7 @@
         </div>
         <div class="brand-text">
           <div class="brand-title">MoNEv Adaptasi</div>
-          <div class="brand-sub">Portal Data (Integrasi Sistem & Impor Data)</div>
+          <div class="brand-sub">Koneksi Data (Integrasi Sistem & Impor Data)</div>
         </div>
       </div>
 
@@ -170,7 +170,7 @@
           <a class="nav-item" href="reporting.html">Pelaporan & Ekspor</a>
           <a class="nav-item" href="help.html">Pusat Bantuan</a>
           <div class="nav-divider"></div>
-          <a class="nav-item active" href="datahub.html">Portal Data</a>
+          <a class="nav-item active" href="datahub.html">Koneksi Data</a>
         </nav>
         <!-- <div class="sidebar-footer"></div> -->
       </aside>
@@ -183,7 +183,7 @@
         <section class="panel">
           <div class="row" style="justify-content:space-between; gap:12px; flex-wrap:wrap">
             <div>
-              <div style="font-weight:900; font-size:18px">Portal Data</div>
+              <div style="font-weight:900; font-size:18px">Koneksi Data</div>
               <div class="muted small">
                 Memudahkan pemasokan data MoNEv melalui <b>integrasi sistem</b> atau <b>impor data</b> (fallback saat sistem eksternal tidak stabil).
               </div>
@@ -196,7 +196,7 @@
           </div>
 
           <div class="note">
-            <b>Prinsip:</b> Data yang masuk melalui Portal Data akan dibuat sebagai <b>batch unggahan</b> dan dikirim ke <b>Kotak Masuk Tinjau</b>.
+            <b>Prinsip:</b> Data yang masuk melalui Koneksi Data akan dibuat sebagai <b>batch unggahan</b> dan dikirim ke <b>Kotak Masuk Tinjau</b>.
             Komputasi hanya menggunakan data <b>DISETUJUI</b>.
           </div>
 
@@ -466,7 +466,7 @@
           <div id="tab-reliability" class="hidden">
             <div class="grid2">
               <div class="card">
-                <div class="card-title">Pengaturan Cadangan</div>
+                <div class="card-title">Pengaturan Konektor</div>
                 <div class="muted small">Mengatur perilaku sistem saat konektor terganggu (otomatis/cadangan/ketat).</div>
 
                 <div style="height:10px"></div>
@@ -508,7 +508,7 @@
               </div>
 
               <div class="card">
-                <div class="card-title">Log Cadangan</div>
+                <div class="card-title">Log Konektor</div>
                 <div class="muted small">Catatan simulasi & perubahan pengaturan.</div>
                 <div style="height:10px"></div>
                 <div class="logbox" id="relLog"></div>
