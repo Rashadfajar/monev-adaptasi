@@ -389,9 +389,11 @@ function downloadText(filename, text, mime="text/plain"){
   setTimeout(()=> URL.revokeObjectURL(url), 800);
 }
 
-function clearUpload(){
+function clearUpload(resetFileInput = true){
   uploadContext = { file:null, rows:[], validRows:[], invalidRows:[], errors:[], columns:[] };
-  els.fileInput.value = "";
+
+  if (resetFileInput) els.fileInput.value = "";
+
   els.vTotal.textContent = "—";
   els.vValid.textContent = "—";
   els.vInvalid.textContent = "—";
@@ -400,6 +402,7 @@ function clearUpload(){
   els.previewBody.innerHTML = "";
   els.submitBatchBtn.disabled = true;
 }
+
 
 function parseCSV(text){
   // Parser CSV sederhana: delimiter koma, mendukung quoted values (dasar)
@@ -517,8 +520,8 @@ function renderPreview(allRows, requiredCols){
 }
 
 async function handleFile(){
-  clearUpload();
   const file = els.fileInput.files?.[0];
+  clearUpload(false); 
   if (!file) return;
 
   uploadContext.file = file;
