@@ -71,7 +71,7 @@ let lang = "ID";
 
 const i18n = {
   ID: {
-    appTitle: "MoNEv Adaptasi",
+    appTitle: "Monev Adaptasi",
     appSub: "Dashboard / Pusat Kendali",
 
     navDashboard: "Dashboard (Beranda)",
@@ -178,7 +178,7 @@ const i18n = {
   },
 
   EN: {
-    appTitle: "Adaptation MoNEv – MPC",
+    appTitle: "Adaptation Monev – MPC",
     appSub: "Dashboard / Control Tower",
 
     navDashboard: "Dashboard (Home)",
